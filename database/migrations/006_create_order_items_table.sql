@@ -1,2 +1,0 @@
--- File: database/migrations/006_create_order_items_table.sql
--- TODO: implement

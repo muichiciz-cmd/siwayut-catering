@@ -1,2 +1,0 @@
--- File: database/migrations/004_create_customers_table.sql
--- TODO: implement

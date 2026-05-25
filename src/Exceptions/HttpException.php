@@ -10,12 +10,11 @@ class HttpException extends AppException {
     // CONTRACT: Constructor MUST assign $statusCode property.
     public function __construct(int $code, string $message = '') {
         $this->statusCode = $code;
-        // TODO: implement
+        parent::__construct($message ?: $this->defaultMessage($code));
     }
 
     public function getStatusCode(): int {
-        // TODO: implement
-        return 500;
+        return $this->statusCode;
     }
 
     private function defaultMessage(int $code): string {

@@ -1,2 +1,0 @@
--- File: database/migrations/003_create_menus_table.sql
--- TODO: implement

@@ -6,6 +6,6 @@ namespace App\Exceptions;
 
 class NotFoundException extends HttpException {
     public function __construct(string $message = 'Resource not found') {
-        // TODO: implement
+        parent::__construct(404, $message);
     }
 }
