@@ -1,0 +1,10 @@
+# File: .gitignore
+/vendor/
+.env
+/storage/logs/*.log
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+.DS_Store
+Thumbs.db
+*.cache
+.context/

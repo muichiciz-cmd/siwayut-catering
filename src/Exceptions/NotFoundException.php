@@ -1,0 +1,11 @@
+<?php
+declare(strict_types=1);
+// File: src/Exceptions/NotFoundException.php
+
+namespace App\Exceptions;
+
+class NotFoundException extends HttpException {
+    public function __construct(string $message = 'Resource not found') {
+        // TODO: implement
+    }
+}

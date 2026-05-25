@@ -1,0 +1,25 @@
+{
+  "name": "yourvendor/php-framework",
+  "description": "General purpose PHP vanilla framework",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    },
+    "files": ["src/Helpers/functions.php"]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Database\\": "database/"
+    }
+  },
+  "scripts": {
+    "dev": "php -S localhost:8000 -t public",
+    "post-autoload-dump": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ]
+  }
+}

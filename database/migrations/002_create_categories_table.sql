@@ -1,0 +1,2 @@
+-- File: database/migrations/002_create_categories_table.sql
+-- TODO: implement

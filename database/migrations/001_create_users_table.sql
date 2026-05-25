@@ -1,0 +1,2 @@
+-- File: database/migrations/001_create_users_table.sql
+-- TODO: implement
