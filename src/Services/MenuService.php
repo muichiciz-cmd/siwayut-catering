@@ -34,6 +34,7 @@ class MenuService {
             'description' => $data['description'] ?? '',
             'price' => $data['price'],
             'category_id' => $data['category_id'],
+            'event_id' => $data['event_id'],
             'minimum_portions' => $data['minimum_portions'] ?? 1,
             'image' => $imagePath,
             'status' => $data['status'] ?? 'active',
@@ -48,6 +49,7 @@ class MenuService {
             'description' => $data['description'] ?? '',
             'price' => $data['price'],
             'category_id' => $data['category_id'],
+            'event_id' => $data['event_id'],
             'minimum_portions' => $data['minimum_portions'] ?? 1,
             'status' => $data['status'] ?? 'active',
             'updated_at' => date('Y-m-d H:i:s'),
@@ -66,8 +68,8 @@ class MenuService {
 
     public function delete(int $id): bool {
         $oldMenu = $this->find($id);
-        if ($oldMenu && $oldMenu['gambar']) {
-            $this->fileUpload->delete($oldMenu['gambar']);
+        if ($oldMenu && $oldMenu['image']) {
+            $this->fileUpload->delete($oldMenu['image']);
         }
         return $this->menu->delete($id);
     }

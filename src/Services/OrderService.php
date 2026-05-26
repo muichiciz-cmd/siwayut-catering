@@ -64,6 +64,7 @@ class OrderService {
         // 3. Create Order
         return $this->order->create([
             'customer_id' => $customerId,
+            'event_id' => $data['event_id'],
             'menu_id' => $menuItem['id'],
             'event_date' => $data['event_date'],
             'quantity' => $quantity,

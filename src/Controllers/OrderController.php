@@ -10,12 +10,14 @@ use App\Core\Database;
 use App\Exceptions\NotFoundException;
 use App\Services\OrderService;
 use App\Services\MenuService;
+use App\Services\EventService;
 use App\Models\Customer;
 
 class OrderController extends BaseController {
     public function __construct(
         private OrderService $orderService,
         private MenuService $menuService,
+        private EventService $eventService,
         private Customer $customer
     ) {
         parent::__construct();
@@ -47,21 +49,24 @@ class OrderController extends BaseController {
 
     public function create(Request $request): void {
         $menus = $this->menuService->paginate(1, 100)['data'];
+        $events = $this->eventService->getActive();
 
         $this->render('order/create', [
             'title' => 'Create New Order',
             'menus' => $menus,
+            'events' => $events,
         ]);
     }
 
     public function store(Request $request): void {
-        $data = $request->only(['phone', 'customer_name', 'delivery_address', 'menu_id', 'quantity', 'event_date', 'notes']);
+        $data = $request->only(['phone', 'customer_name', 'delivery_address', 'event_id', 'menu_id', 'quantity', 'event_date', 'notes']);
 
         $validator = new Validator(Database::getInstance());
         $validator->validate($data, [
             'phone' => 'required|min:10|max:20',
             'customer_name' => 'required|min:3|max:255',
             'delivery_address' => 'required|min:10',
+            'event_id' => 'required|numeric',
             'menu_id' => 'required|numeric',
             'quantity' => 'required|numeric',
             'event_date' => 'required',

@@ -3,7 +3,7 @@ declare(strict_types=1);
 // File: config/routes.php
 
 use App\Core\Router;
-use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController};
+use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController, EventController};
 
 return function (Router $router): void {
     $router->get('/', [WelcomeController::class, 'index']);
@@ -21,7 +21,14 @@ return function (Router $router): void {
             $r->get('/users/{id}/edit',    [UserController::class, 'edit']);
             $r->post('/users/{id}',        [UserController::class, 'update']);
             $r->post('/users/{id}/delete', [UserController::class, 'destroy']);
-            
+            // Events
+            $r->get('/events',              [EventController::class, 'index']);
+            $r->get('/events/create',       [EventController::class, 'create']);
+            $r->post('/events',             [EventController::class, 'store']);
+            $r->get('/events/{id}/edit',    [EventController::class, 'edit']);
+            $r->post('/events/{id}',        [EventController::class, 'update']);
+            $r->post('/events/{id}/delete', [EventController::class, 'destroy']);
+
             // Categories
             $r->get('/categories',              [CategoryController::class, 'index']);
             $r->get('/categories/create',       [CategoryController::class, 'create']);

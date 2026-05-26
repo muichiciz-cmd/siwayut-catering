@@ -24,20 +24,27 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <?php 
-                $catOptions = [];
-                foreach ($categories as $kat) {
-                    $catOptions[$kat['id']] = $kat['name'];
-                }
                 component('form/select', [
                     'name' => 'category_id',
                     'label' => 'Category *',
-                    'options' => $catOptions,
+                    'options' => array_column($categories, 'name', 'id'),
                     'selected' => old('category_id', $menu['category_id']),
                     'placeholder' => '-- Select Category --',
                     'required' => true
                 ]); 
                 ?>
 
+                <?php component('form/select', [
+                    'name' => 'event_id',
+                    'label' => 'Hari Raya / Event',
+                    'options' => array_column($events ?? [], 'name', 'id'),
+                    'selected' => old('event_id', $menu['event_id'] ?? ''),
+                    'placeholder' => '-- Select Event --',
+                    'required' => true
+                ]); ?>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <?php component('form/select', [
                     'name' => 'status',
                     'label' => 'Status *',

@@ -10,11 +10,13 @@ use App\Core\Validator;
 use App\Exceptions\NotFoundException;
 use App\Services\MenuService;
 use App\Services\CategoryService;
+use App\Services\EventService;
 
 class MenuController extends BaseController {
     public function __construct(
         private MenuService $menuService,
-        private CategoryService $categoryService
+        private CategoryService $categoryService,
+        private EventService $eventService
     ) {
         parent::__construct();
     }
@@ -41,11 +43,12 @@ class MenuController extends BaseController {
         $this->render('menu/create', [
             'title' => 'Add Menu',
             'categories' => $this->categoryService->all(),
+            'events' => $this->eventService->getActive(),
         ]);
     }
 
     public function store(Request $request): void {
-        $data = $request->only(['name', 'description', 'price', 'category_id', 'minimum_portions', 'status']);
+        $data = $request->only(['name', 'description', 'price', 'category_id', 'event_id', 'minimum_portions', 'status']);
         $gambar = $request->file('image');
 
         $validator = new Validator();
@@ -53,6 +56,7 @@ class MenuController extends BaseController {
             'name' => 'required|min:3|max:255',
             'price' => 'required|numeric',
             'category_id' => 'required|numeric',
+            'event_id' => 'required|numeric',
             'minimum_portions' => 'required|numeric',
             'status' => 'required|in:active,inactive',
         ]);
@@ -85,12 +89,13 @@ class MenuController extends BaseController {
             'title' => 'Edit Menu',
             'menu' => $menu,
             'categories' => $this->categoryService->all(),
+            'events' => $this->eventService->getActive(),
         ]);
     }
 
     public function update(Request $request): void {
         $id = (int) $request->param('id');
-        $data = $request->only(['name', 'description', 'price', 'category_id', 'minimum_portions', 'status']);
+        $data = $request->only(['name', 'description', 'price', 'category_id', 'event_id', 'minimum_portions', 'status']);
         $gambar = $request->file('image');
 
         $validator = new Validator();
@@ -98,6 +103,7 @@ class MenuController extends BaseController {
             'name' => 'required|min:3|max:255',
             'price' => 'required|numeric',
             'category_id' => 'required|numeric',
+            'event_id' => 'required|numeric',
             'minimum_portions' => 'required|numeric',
             'status' => 'required|in:active,inactive',
         ]);
