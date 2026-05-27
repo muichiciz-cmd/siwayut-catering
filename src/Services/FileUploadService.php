@@ -62,6 +62,8 @@ class FileUploadService {
             throw new \RuntimeException('Failed to move uploaded file.');
         }
 
+        $this->generateThumbnail($destination);
+
         return $subdirectory !== null ? $subdirectory . '/' . $filename : $filename;
     }
 
@@ -98,14 +100,51 @@ class FileUploadService {
             throw new \RuntimeException('Failed to save downloaded image.');
         }
 
+        $this->generateThumbnail($destination);
+
         return $subdirectory !== null ? $subdirectory . '/' . $filename : $filename;
     }
 
     public function delete(string $filename): bool {
+        $this->deleteThumbnail($filename);
         $filepath = $this->uploadPath . '/' . $filename;
         if (file_exists($filepath)) {
             return unlink($filepath);
         }
         return false;
+    }
+
+    private function generateThumbnail(string $fullPath): void {
+        $info = @getimagesize($fullPath);
+        if ($info === false) return;
+
+        [$origW, $origH] = $info;
+        $thumbW = 20;
+        $thumbH = max(1, (int)round($origH * $thumbW / $origW));
+
+        $srcImg = match ($info[2]) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($fullPath),
+            IMAGETYPE_PNG  => @imagecreatefrompng($fullPath),
+            IMAGETYPE_WEBP => @imagecreatefromwebp($fullPath),
+            default        => null,
+        };
+        if ($srcImg === null) return;
+
+        $thumbImg = imagecreatetruecolor($thumbW, $thumbH);
+        imagecopyresampled($thumbImg, $srcImg, 0, 0, 0, 0, $thumbW, $thumbH, $origW, $origH);
+
+        $thumbDir = dirname($fullPath) . '/thumbs';
+        if (!is_dir($thumbDir)) {
+            mkdir($thumbDir, 0755, true);
+        }
+        $thumbPath = $thumbDir . '/' . basename($fullPath);
+        imagejpeg($thumbImg, $thumbPath, 30);
+    }
+
+    private function deleteThumbnail(string $filename): void {
+        $thumbPath = $this->uploadPath . '/' . dirname($filename) . '/thumbs/' . basename($filename);
+        if (file_exists($thumbPath)) {
+            unlink($thumbPath);
+        }
     }
 }

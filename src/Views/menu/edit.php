@@ -78,7 +78,7 @@
                 <div class="form-group">
                     <label class="form-label">Current Image</label>
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
-                        <img src="<?= str_starts_with($menu['image'], 'http') ? e($menu['image']) : '/uploads/' . e($menu['image']) ?>" alt="Current Image" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border);">
+                        <?php component('progressive-image', ['src' => $menu['image'], 'alt' => 'Current Image', 'style' => 'width:80px;height:80px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--color-border)']); ?>
                         <small style="color: var(--color-text-muted);">Drop a new file below to replace, or leave empty to keep current.</small>
                     </div>
                 </div>

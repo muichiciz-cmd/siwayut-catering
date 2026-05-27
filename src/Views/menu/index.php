@@ -31,7 +31,7 @@
                     <td><?= e($menu['id']) ?></td>
                     <td>
                         <?php if ($menu['image']): ?>
-                            <img src="<?= str_starts_with($menu['image'], 'http') ? e($menu['image']) : '/uploads/' . e($menu['image']) ?>" alt="<?= e($menu['name']) ?>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            <?php component('progressive-image', ['src' => $menu['image'], 'alt' => $menu['name'], 'style' => 'width:40px;height:40px;object-fit:cover;border-radius:4px']); ?>
                         <?php else: ?>
                             <div style="width: 40px; height: 40px; background: var(--color-border); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); font-size: 0.75rem;">No Img</div>
                         <?php endif; ?>

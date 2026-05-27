@@ -167,6 +167,23 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.file-upload-zone').forEach(initFileUploadZone);
 });
 
+// Progressive image loading (blur-up)
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.progressive-img[data-full]').forEach(function (img) {
+        var full = new Image();
+        full.onload = function () {
+            img.src = full.src;
+            img.classList.remove('blur-up');
+            img.classList.add('loaded');
+        };
+        full.onerror = function () {
+            img.classList.remove('blur-up');
+            img.classList.add('loaded');
+        };
+        full.src = img.getAttribute('data-full');
+    });
+});
+
 function generateDescription(btn) {
     var form = btn.closest('form');
     if (!form) return;

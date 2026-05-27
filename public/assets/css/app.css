@@ -676,3 +676,15 @@ tbody tr:last-child td {
         padding: 1rem;
     }
 }
+
+.progressive-img {
+    transition: filter 0.4s ease;
+}
+
+.progressive-img.blur-up {
+    filter: blur(20px);
+}
+
+.progressive-img.loaded {
+    filter: blur(0);
+}

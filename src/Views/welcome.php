@@ -299,19 +299,24 @@
             will-change: transform;
         }
 
-        .food-gallery .row img {
+        .food-gallery .row .progressive-wrap {
             height: 240px;
             border-radius: 12px;
-            object-fit: cover;
             flex-shrink: 0;
             transition: all .3s ease;
             outline: 1px solid rgba(255, 255, 255, 0.0);
             margin: .5rem;
         }
 
-        .food-gallery .row img:hover {
-            /* box-shadow: 0 0 24px 4px rgba(229, 142, 38, 0.5); */
+        .food-gallery .row .progressive-wrap:hover {
             outline: 1px solid var(--accent-gold);
+        }
+
+        .food-gallery .row .progressive-wrap > .progressive-img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            border-radius: inherit;
         }
 
         .food-gallery .row:hover {
@@ -389,7 +394,6 @@
         .menu-img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
         }
 
         .menu-tag {
@@ -502,6 +506,17 @@
                 grid-template-columns: 1fr;
             }
         }
+        .progressive-img {
+            transition: filter 0.4s ease;
+        }
+
+        .progressive-img.blur-up {
+            filter: blur(20px);
+        }
+
+        .progressive-img.loaded {
+            filter: blur(0);
+        }
     </style>
 </head>
 
@@ -568,7 +583,6 @@
                 $galleryMenus = array_values($galleryMenus);
                 $count = count($galleryMenus);
                 if ($count > 10):
-                    $imgUrl = fn($m) => str_starts_with($m['image'], 'http') ? \App\Core\View::e($m['image']) : '/uploads/' . \App\Core\View::e($m['image']);
                     $widthSets = [[320, 280, 340, 260, 300, 360], [300, 340, 270, 310, 290, 350], [330, 280, 310, 290, 350, 260]];
                     $numRows = $count <= 20 ? 2 : 3;
                     for ($r = 0; $r < $numRows; $r++):
@@ -580,13 +594,13 @@
                                 $m = $galleryMenus[$i];
                                 $wi = $w[$i % count($w)];
                                 ?>
-                                <img src="<?= $imgUrl($m) ?>" style="width:<?= $wi ?>px" alt="<?= \App\Core\View::e($m['name']) ?>">
+                                <?php component('progressive-image', ['src' => $m['image'], 'alt' => $m['name'], 'style' => "width:{$wi}px"]); ?>
                             <?php endfor; ?>
                             <?php for ($i = 0; $i < $count; $i++):
                                 $m = $galleryMenus[$i];
                                 $wi = $w[$i % count($w)];
                                 ?>
-                                <img src="<?= $imgUrl($m) ?>" style="width:<?= $wi ?>px" alt="<?= \App\Core\View::e($m['name']) ?>">
+                                <?php component('progressive-image', ['src' => $m['image'], 'alt' => $m['name'], 'style' => "width:{$wi}px"]); ?>
                             <?php endfor; ?>
                         </div>
                     <?php endfor; endif; ?>
@@ -611,8 +625,7 @@
                                     <div class="menu-card">
                                         <div class="menu-img-container">
                                             <?php if ($menu['image']): ?>
-                                                <img src="<?= str_starts_with($menu['image'], 'http') ? \App\Core\View::e($menu['image']) : '/uploads/' . \App\Core\View::e($menu['image']) ?>"
-                                                    alt="<?= \App\Core\View::e($menu['name']) ?>" class="menu-img">
+                                                <?php component('progressive-image', ['src' => $menu['image'], 'alt' => $menu['name'], 'class' => 'menu-img']); ?>
                                             <?php else: ?>
                                                 <span style="font-size: 3.5rem;">🍱</span>
                                             <?php endif; ?>
@@ -666,6 +679,20 @@
             window.addEventListener('scroll', update, { passive: true });
             update();
         })();
+
+        document.querySelectorAll('.progressive-img[data-full]').forEach(function (img) {
+            var full = new Image();
+            full.onload = function () {
+                img.src = full.src;
+                img.classList.remove('blur-up');
+                img.classList.add('loaded');
+            };
+            full.onerror = function () {
+                img.classList.remove('blur-up');
+                img.classList.add('loaded');
+            };
+            full.src = img.getAttribute('data-full');
+        });
     </script>
 </body>
 
