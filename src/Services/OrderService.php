@@ -72,14 +72,16 @@ class OrderService {
             'delivery_address' => $data['delivery_address'],
             'notes' => $data['notes'] ?? '',
             'status' => 'pending',
+            'payment_status' => 'unpaid',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
 
-    public function updateStatus(int $id, string $status): bool {
+    public function updateStatus(int $id, string $status, string $paymentStatus): bool {
         return $this->order->update($id, [
             'status' => $status,
+            'payment_status' => $paymentStatus,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }

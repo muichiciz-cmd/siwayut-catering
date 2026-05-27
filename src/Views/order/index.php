@@ -22,6 +22,7 @@
                     <th>Qty</th>
                     <th>Total Price</th>
                     <th>Status</th>
+                    <th>Payment</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -50,6 +51,24 @@
                         ?>
                         <span class="badge" style="background: <?= $colorClass ?>; color: white; text-transform: uppercase;">
                             <?= htmlspecialchars($order['status']) ?>
+                        </span>
+                    </td>
+                    <td>
+                        <?php
+                        $paymentColors = [
+                            'unpaid' => 'var(--color-warning)',
+                            'paid' => 'var(--color-success)',
+                            'refunded' => 'var(--color-danger)',
+                        ];
+                        $paymentColor = $paymentColors[$order['payment_status']] ?? 'var(--color-text-muted)';
+                        $paymentLabels = [
+                            'unpaid' => 'Unpaid',
+                            'paid' => 'Paid',
+                            'refunded' => 'Refunded',
+                        ];
+                        ?>
+                        <span class="badge" style="background: <?= $paymentColor ?>; color: white; text-transform: uppercase;">
+                            <?= htmlspecialchars($paymentLabels[$order['payment_status']] ?? $order['payment_status']) ?>
                         </span>
                     </td>
                     <td>

@@ -408,7 +408,7 @@
                 <span class="logo-icon">🍲</span>
                 <span class="logo-text">Siwayut Catering</span>
             </a>
-            <a href="/login" class="btn-login">Dashboard Admin</a>
+            <a href="/track-order" class="btn-login">Lacak Pesanan</a>
         </div>
     </header>
 
@@ -420,7 +420,7 @@
             <span class="hero-badge">✨ Katering Premium Hari Raya</span>
             <h1>Cita Rasa Istimewa<br>Untuk Momen Paling Suci</h1>
             <p>Siwayut Catering menyediakan menu katering eksklusif yang diracik khusus untuk menyemarakkan perayaan Hari Raya Anda. Nikmati sajian lezat tanpa repot bersama kerabat tercinta.</p>
-            <a href="/login" class="btn-login" style="background: var(--accent-gold); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold-glow); padding: 0.8rem 2.2rem; font-size: 1rem;">Pesan Sekarang</a>
+            <a href="/login" class="btn-login" style="background: var(--accent-gold); border-color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold-glow); padding: 0.8rem 2.2rem; font-size: 1rem;">Dashboard Admin</a>
         </section>
 
         <?php

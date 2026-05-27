@@ -23,6 +23,77 @@ class OrderController extends BaseController {
         parent::__construct();
     }
 
+    public function trackForm(Request $request): void {
+        $this->render('order/track', [
+            'title' => 'Lacak Pesanan — Siwayut Catering'
+        ], '');
+    }
+
+    public function track(Request $request): void {
+        $orderId = $request->input('order_id');
+        $phone = $request->input('phone');
+
+        $validator = new Validator();
+        $validator->validate(['order_id' => $orderId, 'phone' => $phone], [
+            'order_id' => 'required|numeric',
+            'phone' => 'required|min:10|max:20',
+        ]);
+
+        if ($validator->fails()) {
+            $this->withOldInput(['order_id' => $orderId, 'phone' => $phone]);
+            $firstError = reset($validator->errors());
+            Session::flash('error', $firstError);
+            $this->redirect('/track-order');
+        }
+
+        $order = $this->orderService->find((int)$orderId);
+        if (!$order) {
+            $this->withOldInput(['order_id' => $orderId, 'phone' => $phone]);
+            Session::flash('error', 'Pesanan tidak ditemukan. Periksa kembali nomor pesanan Anda.');
+            $this->redirect('/track-order');
+        }
+
+        $customer = $this->customer->find((int)$order['customer_id']);
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $cleanCustomerPhone = preg_replace('/[^0-9]/', '', $customer['phone'] ?? '');
+
+        if ($cleanCustomerPhone !== $cleanPhone) {
+            $this->withOldInput(['order_id' => $orderId, 'phone' => $phone]);
+            Session::flash('error', 'Nomor HP tidak sesuai dengan data pesanan.');
+            $this->redirect('/track-order');
+        }
+
+        $this->redirect('/track-order/' . $orderId . '?phone=' . urlencode($phone));
+    }
+
+    public function trackResult(Request $request): void {
+        $orderId = (int) $request->param('id');
+        $phone = $request->input('phone');
+
+        $order = $this->orderService->find($orderId);
+        if (!$order) {
+            $this->redirect('/track-order');
+        }
+
+        $customer = $this->customer->find((int)$order['customer_id']);
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $cleanCustomerPhone = preg_replace('/[^0-9]/', '', $customer['phone'] ?? '');
+        if ($cleanCustomerPhone !== $cleanPhone) {
+            $this->redirect('/track-order');
+        }
+
+        $menu = $this->menuService->find((int)$order['menu_id']);
+        $event = $this->eventService->find((int)$order['event_id']);
+
+        $this->render('order/track-result', [
+            'title' => 'Detail Pesanan #' . $orderId . ' — Siwayut Catering',
+            'order' => $order,
+            'customer' => $customer,
+            'menu' => $menu,
+            'event' => $event,
+        ], '');
+    }
+
     public function index(Request $request): void {
         $page = (int) $request->input('page', 1);
         $result = $this->orderService->paginate($page);
@@ -109,11 +180,12 @@ class OrderController extends BaseController {
 
     public function update(Request $request): void {
         $id = (int) $request->param('id');
-        $data = $request->only(['status']);
+        $data = $request->only(['status', 'payment_status']);
 
         $validator = new Validator();
         $validator->validate($data, [
             'status' => 'required|in:pending,processing,delivering,completed,cancelled',
+            'payment_status' => 'required|in:unpaid,paid,refunded',
         ]);
 
         if ($validator->fails()) {
@@ -121,7 +193,7 @@ class OrderController extends BaseController {
             $this->redirect("/orders/{$id}/edit");
         }
 
-        $this->orderService->updateStatus($id, $data['status']);
+        $this->orderService->updateStatus($id, $data['status'], $data['payment_status']);
         $this->redirectWithFlash('/orders', 'success', 'Order status successfully updated.');
     }
 }

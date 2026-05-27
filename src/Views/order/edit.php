@@ -18,6 +18,21 @@
                 <div><?= $order['quantity'] ?> portions</div>
                 <div style="font-weight: 500;">Total Price</div>
                 <div style="color: var(--color-success); font-weight: 600;">Rp <?= number_format((float)$order['total_price'], 0, ',', '.') ?></div>
+                <div style="font-weight: 500;">Payment Status</div>
+                <div>
+                    <?php
+                    $paymentBadgeColors = [
+                        'unpaid' => 'var(--color-warning)',
+                        'paid' => 'var(--color-success)',
+                        'refunded' => 'var(--color-danger)',
+                    ];
+                    $pColor = $paymentBadgeColors[$order['payment_status']] ?? 'var(--color-text-muted)';
+                    $pLabels = ['unpaid' => 'Unpaid', 'paid' => 'Paid', 'refunded' => 'Refunded'];
+                    ?>
+                    <span class="badge" style="background: <?= $pColor ?>; color: white; text-transform: uppercase;">
+                        <?= htmlspecialchars($pLabels[$order['payment_status']] ?? $order['payment_status']) ?>
+                    </span>
+                </div>
                 <div style="font-weight: 500;">Event Date</div>
                 <div><?= date('d F Y, H:i', strtotime($order['event_date'])) ?></div>
                 <div style="font-weight: 500;">Delivery Address</div>
@@ -45,6 +60,18 @@
                         'cancelled' => 'Cancelled'
                     ],
                     'selected' => old('status', $order['status']),
+                    'required' => true
+                ]); ?>
+
+                <?php component('form/select', [
+                    'name' => 'payment_status',
+                    'label' => 'Payment Status',
+                    'options' => [
+                        'unpaid' => 'Unpaid',
+                        'paid' => 'Paid',
+                        'refunded' => 'Refunded',
+                    ],
+                    'selected' => old('payment_status', $order['payment_status'] ?? 'unpaid'),
                     'required' => true
                 ]); ?>
 

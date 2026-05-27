@@ -12,6 +12,11 @@ return function (Router $router): void {
     $router->post('/login',  [AuthController::class, 'login']);
     $router->post('/logout', [AuthController::class, 'logout']);
 
+    // Public: Order Tracking
+    $router->get('/track-order',             [OrderController::class, 'trackForm']);
+    $router->post('/track-order',            [OrderController::class, 'track']);
+    $router->get('/track-order/{id}',        [OrderController::class, 'trackResult']);
+
     $router->group(['middleware' => ['auth'], 'prefix' => ''], function (Router $r): void {
         $r->group(['middleware' => ['role:admin']], function (Router $r): void {
             // Users
