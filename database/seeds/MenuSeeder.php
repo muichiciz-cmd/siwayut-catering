@@ -24,6 +24,7 @@ if (!defined('APP_NAME')) {
 }
 
 use App\Core\Database;
+use App\Services\FileUploadService;
 
 class MenuSeeder {
     public static function run(): void {
@@ -195,6 +196,7 @@ class MenuSeeder {
         ];
 
         echo "Seeding menus...\n";
+        $fileUpload = new FileUploadService(BASE_PATH . '/storage/uploads');
         $stmtMenu = $db->prepare(
             "INSERT INTO `menus` (`name`, `description`, `price`, `category_id`, `event_id`, `minimum_portions`, `image`, `status`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
         );
@@ -208,6 +210,17 @@ class MenuSeeder {
                 continue;
             }
 
+            $image = $m['image'];
+            if (str_starts_with($image, 'http')) {
+                try {
+                    $image = $fileUpload->uploadFromUrl($image, 'menus');
+                    echo "  Downloaded image for: {$m['name']}\n";
+                } catch (\RuntimeException $e) {
+                    echo "  Warning: Failed to download image for {$m['name']}: {$e->getMessage()}\n";
+                    $image = '';
+                }
+            }
+
             $stmtMenu->execute([
                 $m['name'],
                 $m['description'],
@@ -215,7 +228,7 @@ class MenuSeeder {
                 $catId,
                 $eventId,
                 $m['minimum_portions'],
-                $m['image'],
+                $image,
                 $m['status']
             ]);
             echo "  Created Menu: {$m['name']} (Event: {$m['event_name']})\n";
