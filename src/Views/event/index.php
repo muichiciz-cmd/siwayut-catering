@@ -34,7 +34,7 @@
                             </td>
                             <td>
                                 <?php if ($event['status'] === 'active'): ?>
-                                    <span class="badge" style="background-color: var(--success); color: white;">Active</span>
+                                    <span class="badge" style="background-color: var(--color-success); color: white;">Active</span>
                                 <?php else: ?>
                                     <span class="badge" style="background-color: var(--text-muted); color: white;">Inactive</span>
                                 <?php endif; ?>

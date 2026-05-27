@@ -1,7 +1,7 @@
-<!-- File: src/Views/partials/sidebar.php -->
 <aside class="sidebar">
     <div class="sidebar-brand">
-        <?= htmlspecialchars((string)APP_NAME, ENT_QUOTES, 'UTF-8') ?>
+        <span style="filter: drop-shadow(0 0 8px var(--accent-gold-glow));">🍲</span>
+        <span class="logo-text"><?= htmlspecialchars((string)APP_NAME, ENT_QUOTES, 'UTF-8') ?></span>
     </div>
     <nav class="sidebar-nav">
         <a href="/categories" class="sidebar-link<?= (str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/categories')) ? ' active' : '' ?>">
