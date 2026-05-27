@@ -568,11 +568,11 @@
                 $galleryMenus = array_values($galleryMenus);
                 $count = count($galleryMenus);
                 if ($count > 10):
-                    shuffle($galleryMenus);
                     $imgUrl = fn($m) => str_starts_with($m['image'], 'http') ? \App\Core\View::e($m['image']) : '/uploads/' . \App\Core\View::e($m['image']);
                     $widthSets = [[320, 280, 340, 260, 300, 360], [300, 340, 270, 310, 290, 350], [330, 280, 310, 290, 350, 260]];
                     $numRows = $count <= 20 ? 2 : 3;
                     for ($r = 0; $r < $numRows; $r++):
+                        shuffle($galleryMenus);
                         $w = $widthSets[$r];
                         ?>
                         <div class="row row-<?= $r + 1 ?>">
