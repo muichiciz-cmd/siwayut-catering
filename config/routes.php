@@ -38,12 +38,13 @@ return function (Router $router): void {
             $r->post('/categories/{id}/delete', [CategoryController::class, 'destroy']);
 
             // Menus
-            $r->get('/menus',              [MenuController::class, 'index']);
-            $r->get('/menus/create',       [MenuController::class, 'create']);
-            $r->post('/menus',             [MenuController::class, 'store']);
-            $r->get('/menus/{id}/edit',    [MenuController::class, 'edit']);
-            $r->post('/menus/{id}',        [MenuController::class, 'update']);
-            $r->post('/menus/{id}/delete', [MenuController::class, 'destroy']);
+            $r->get('/menus',                           [MenuController::class, 'index']);
+            $r->get('/menus/create',                    [MenuController::class, 'create']);
+            $r->post('/menus',                          [MenuController::class, 'store']);
+            $r->post('/menus/generate-description',     [MenuController::class, 'generateDescription']);
+            $r->get('/menus/{id}/edit',                 [MenuController::class, 'edit']);
+            $r->post('/menus/{id}',                     [MenuController::class, 'update']);
+            $r->post('/menus/{id}/delete',              [MenuController::class, 'destroy']);
             
             // Orders
             $r->get('/orders',              [OrderController::class, 'index']);

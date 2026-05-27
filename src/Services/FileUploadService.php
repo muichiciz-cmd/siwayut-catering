@@ -5,15 +5,45 @@ declare(strict_types=1);
 namespace App\Services;
 
 class FileUploadService {
+    private array $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    private int $maxFileSize = 5242880; // 5MB
+
     public function __construct(private string $uploadPath) {
         if (!is_dir($this->uploadPath)) {
             mkdir($this->uploadPath, 0755, true);
         }
     }
 
+    public function setAllowedMimes(array $mimes): self {
+        $this->allowedMimes = $mimes;
+        return $this;
+    }
+
+    public function setMaxFileSize(int $bytes): self {
+        $this->maxFileSize = $bytes;
+        return $this;
+    }
+
     public function upload(array $file, ?string $subdirectory = null): string {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new \RuntimeException('File upload failed with error code: ' . $file['error']);
+        }
+
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($file['tmp_name']);
+
+        if (!in_array($mimeType, $this->allowedMimes, true)) {
+            $allowed = array_map(function ($m) {
+                return strtoupper(str_replace('image/', '', $m));
+            }, $this->allowedMimes);
+            throw new \RuntimeException('Invalid file type. Only ' . implode(', ', $allowed) . ' files are allowed.');
+        }
+
+        if ($file['size'] > $this->maxFileSize) {
+            $maxLabel = $this->maxFileSize >= 1048576
+                ? (round($this->maxFileSize / 1048576, 1) . ' MB')
+                : (round($this->maxFileSize / 1024, 1) . ' KB');
+            throw new \RuntimeException('File too large. Maximum size is ' . $maxLabel . '.');
         }
 
         $destinationPath = $this->uploadPath;

@@ -21,6 +21,7 @@
                 'value' => old('description', $menu['description']),
                 'rows' => 4
             ]); ?>
+            <button type="button" class="btn btn-sm btn-secondary" style="margin-top: -0.75rem; margin-bottom: 1.25rem;" onclick="generateDescription(this)">Generate with AI</button>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <?php 
@@ -73,19 +74,23 @@
                 ]); ?>
             </div>
 
-            <div class="form-group">
-                <label for="image" class="form-label">Menu Image (Optional)</label>
-                <?php if ($menu['image']): ?>
-                    <div style="margin-bottom: 0.5rem;">
-                        <img src="<?= str_starts_with($menu['image'], 'http') ? e($menu['image']) : '/uploads/' . e($menu['image']) ?>" alt="Current Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border);">
+            <?php if ($menu['image']): ?>
+                <div class="form-group">
+                    <label class="form-label">Current Image</label>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+                        <img src="<?= str_starts_with($menu['image'], 'http') ? e($menu['image']) : '/uploads/' . e($menu['image']) ?>" alt="Current Image" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--color-border);">
+                        <small style="color: var(--color-text-muted);">Drop a new file below to replace, or leave empty to keep current.</small>
                     </div>
-                <?php endif; ?>
-                <input type="file" id="image" name="image" class="form-input" accept="image/jpeg,image/png,image/webp">
-                <small style="color: var(--color-text-muted); margin-top: 0.25rem; display: block;">Supported formats: JPG, PNG, WEBP. Max 5MB. Leave empty to keep current image.</small>
-                <?php if ($err = error('image')): ?>
-                <div class="form-error"><?= e($err) ?></div>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
+
+            <?php component('form/input', [
+                'name' => 'image',
+                'label' => $menu['image'] ? 'Replace Image (Optional)' : 'Menu Image (Optional)',
+                'type' => 'file',
+                'accept' => 'image/jpeg,image/png,image/webp',
+                'max_size' => 5 * 1024 * 1024,
+            ]); ?>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Save Changes</button>

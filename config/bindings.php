@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Core\Container;
 use App\Models\{User, Menu, Category, Customer, Order, Event};
-use App\Services\{AuthService, UserService, FileUploadService, MenuService, CategoryService, OrderService, EventService};
+use App\Services\{AuthService, UserService, FileUploadService, MenuService, CategoryService, OrderService, EventService, AiService};
 use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController, EventController};
 
 // Models
@@ -34,5 +34,10 @@ $container->bind(AuthController::class, fn(Container $c): object => new AuthCont
 $container->bind(UserController::class, fn(Container $c): object => new UserController($c->make(UserService::class)));
 $container->bind(CategoryController::class, fn(Container $c): object => new CategoryController($c->make(CategoryService::class)));
 $container->bind(EventController::class, fn(Container $c): object => new EventController($c->make(EventService::class)));
-$container->bind(MenuController::class, fn(Container $c): object => new MenuController($c->make(MenuService::class), $c->make(CategoryService::class), $c->make(EventService::class)));
+$container->bind(MenuController::class, fn(Container $c): object => new MenuController(
+    $c->make(MenuService::class),
+    $c->make(CategoryService::class),
+    $c->make(EventService::class),
+    $c->make(AiService::class)
+));
 $container->bind(OrderController::class, fn(Container $c): object => new OrderController($c->make(OrderService::class), $c->make(MenuService::class), $c->make(EventService::class), $c->make(Customer::class)));

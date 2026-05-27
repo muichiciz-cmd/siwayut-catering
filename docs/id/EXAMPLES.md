@@ -380,4 +380,93 @@ php vanilla tinker
 
 ---
 
+---
+
+## 9. Pembuatan Deskripsi dengan AI (AI-Powered Description)
+
+Hasilkan deskripsi menu secara otomatis menggunakan API AI apa pun yang kompatibel dengan OpenAI.
+
+### 9.1 Penyiapan
+
+Tambahkan ke `.env`:
+
+```env
+AI_API_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+AI_API_KEY=your_gemini_api_key
+AI_MODEL=gemini-2.0-flash
+```
+
+`AiService` mendukung semua endpoint yang kompatibel dengan OpenAI:
+
+| Penyedia | URL API | Otentikasi |
+|----------|---------|------------|
+| Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai/` | Kunci API gratis |
+| FreeTheAi | `https://api.freetheai.xyz/v1` | Pendaftaran Discord |
+| Free.ai | `https://api.free.ai/v1` | 30K token/hari gratis |
+| Ollama (lokal) | `http://localhost:11434/v1` | Tidak perlu |
+
+Jika `AI_API_URL` atau `AI_MODEL` kosong, tombol generate akan menampilkan pesan error yang jelas.
+
+### 9.2 Penggunaan
+
+Pada form create/edit menu, tombol **"Generate with AI"** muncul di bawah textarea deskripsi. Saat diklik:
+
+1. Mengumpulkan data form (nama, kategori, acara, harga, porsi minimal)
+2. Mengirim `POST /menus/generate-description` dengan token CSRF
+3. Memanggil API AI dengan prompt dalam Bahasa Indonesia
+4. Mengisi textarea deskripsi dengan hasilnya
+
+### 9.3 Menambahkan AI ke form Anda sendiri
+
+```php
+// View — tambahkan tombol setelah textarea
+<button type="button" class="btn btn-sm btn-secondary"
+        onclick="generateDescription(this)">
+    Generate with AI
+</button>
+```
+
+```php
+// Controller — buat endpoint
+use App\Services\AiService;
+use App\Core\Response;
+
+public function __construct(
+    private AiService $aiService,
+    // ... dependensi lain
+) {}
+
+public function generateDescription(Request $request): void {
+    $description = $this->aiService->generateDescription([
+        'name' => $request->input('name'),
+        'category' => $request->input('category'),
+        'event' => $request->input('event'),
+        'price' => $request->input('price'),
+        'minimum_portions' => $request->input('minimum_portions'),
+    ]);
+    Response::json(['description' => $description]);
+}
+```
+
+```php
+// Routes
+$r->post('/menus/generate-description', [MenuController::class, 'generateDescription']);
+```
+
+### 9.4 Memperluas AiService
+
+Prompt dibuat di `AiService::buildPrompt()`. Ubah atau timpa untuk mengganti bahasa, nada, atau panjang teks:
+
+```php
+private function buildPrompt(array $ctx): string {
+    return "Buat deskripsi menu catering yang menggugah selera "
+         . "dalam Bahasa Indonesia berdasarkan data berikut:\n"
+         . "Menu: {$ctx['name']}\n"
+         . "Kategori: {$ctx['category']}\n"
+         . "Deskripsi:";
+}
+```
+
+---
+
 Lihat: [DATABASE.md](DATABASE.md) · [ROUTING.md](ROUTING.md) · [VALIDATION.md](VALIDATION.md)

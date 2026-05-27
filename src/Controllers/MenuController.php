@@ -11,12 +11,14 @@ use App\Exceptions\NotFoundException;
 use App\Services\MenuService;
 use App\Services\CategoryService;
 use App\Services\EventService;
+use App\Services\AiService;
 
 class MenuController extends BaseController {
     public function __construct(
         private MenuService $menuService,
         private CategoryService $categoryService,
-        private EventService $eventService
+        private EventService $eventService,
+        private AiService $aiService
     ) {
         parent::__construct();
     }
@@ -67,6 +69,23 @@ class MenuController extends BaseController {
             $this->redirect('/menus/create');
         }
 
+        if ($gambar) {
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+            $maxSize = 5242880;
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mime = $finfo->file($gambar['tmp_name']);
+            if (!in_array($mime, $allowedMimes, true)) {
+                $this->withOldInput($data);
+                Session::flash('error', 'Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                $this->redirect('/menus/create');
+            }
+            if ($gambar['size'] > $maxSize) {
+                $this->withOldInput($data);
+                Session::flash('error', 'File too large. Maximum size is 5 MB.');
+                $this->redirect('/menus/create');
+            }
+        }
+
         try {
             $this->menuService->create($data, $gambar);
             $this->redirectWithFlash('/menus', 'success', 'Menu successfully added.');
@@ -114,6 +133,23 @@ class MenuController extends BaseController {
             $this->redirect("/menus/{$id}/edit");
         }
 
+        if ($gambar) {
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+            $maxSize = 5242880;
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mime = $finfo->file($gambar['tmp_name']);
+            if (!in_array($mime, $allowedMimes, true)) {
+                $this->withOldInput($data);
+                Session::flash('error', 'Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                $this->redirect("/menus/{$id}/edit");
+            }
+            if ($gambar['size'] > $maxSize) {
+                $this->withOldInput($data);
+                Session::flash('error', 'File too large. Maximum size is 5 MB.');
+                $this->redirect("/menus/{$id}/edit");
+            }
+        }
+
         try {
             $this->menuService->update($id, $data, $gambar);
             $this->redirectWithFlash('/menus', 'success', 'Menu successfully updated.');
@@ -121,6 +157,23 @@ class MenuController extends BaseController {
             $this->withOldInput($data);
             Session::flash('error', 'Failed to update menu: ' . $e->getMessage());
             $this->redirect("/menus/{$id}/edit");
+        }
+    }
+
+    public function generateDescription(Request $request): void {
+        try {
+            $context = [
+                'name' => $request->input('name', ''),
+                'category' => $request->input('category', ''),
+                'event' => $request->input('event', ''),
+                'price' => $request->input('price', ''),
+                'minimum_portions' => $request->input('minimum_portions', ''),
+            ];
+
+            $description = $this->aiService->generateDescription($context);
+            Response::json(['description' => $description]);
+        } catch (\Throwable $e) {
+            Response::jsonError($e->getMessage(), [], 500);
         }
     }
 

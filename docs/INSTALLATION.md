@@ -47,6 +47,9 @@ Edit `.env` with your settings:
 | `DB_DATABASE` | Database name | `myapp` |
 | `DB_USERNAME` | Database username | `root` |
 | `DB_PASSWORD` | Database password | *(empty)* |
+| `AI_API_URL` | OpenAI-compatible API base URL (e.g. `https://generativelanguage.googleapis.com/v1beta/openai/`) | *(empty)* |
+| `AI_API_KEY` | API key for the AI provider | *(empty)* |
+| `AI_MODEL` | Model name (e.g. `gemini-2.0-flash`, `gpt-4o-mini`) | *(empty)* |
 
 > **Important**: Set `APP_DEBUG=false` in production to prevent exposing stack traces.
 

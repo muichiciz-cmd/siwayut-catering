@@ -47,6 +47,9 @@ Edit `.env` sesuai dengan pengaturan Anda:
 | `DB_DATABASE` | Nama database | `myapp` |
 | `DB_USERNAME` | Nama pengguna database | `root` |
 | `DB_PASSWORD` | Kata sandi database | *(kosong)* |
+| `AI_API_URL` | URL dasar API AI yang kompatibel dengan OpenAI (contoh: `https://generativelanguage.googleapis.com/v1beta/openai/`) | *(kosong)* |
+| `AI_API_KEY` | Kunci API untuk penyedia AI | *(kosong)* |
+| `AI_MODEL` | Nama model (contoh: `gemini-2.0-flash`, `gpt-4o-mini`) | *(kosong)* |
 
 > **Penting**: Setel `APP_DEBUG=false` pada lingkungan produksi (production) agar tidak mengekspos rincian sistem (stack traces).
 

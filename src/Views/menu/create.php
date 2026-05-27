@@ -19,6 +19,7 @@
                 'label' => 'Description',
                 'rows' => 4
             ]); ?>
+            <button type="button" class="btn btn-sm btn-secondary" style="margin-top: -0.75rem; margin-bottom: 1.25rem;" onclick="generateDescription(this)">Generate with AI</button>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <?php component('form/select', [
@@ -71,7 +72,8 @@
                 'name' => 'image',
                 'label' => 'Menu Image (Optional)',
                 'type' => 'file',
-                'help_text' => 'Supported formats: JPG, PNG, WEBP. Max 5MB.'
+                'accept' => 'image/jpeg,image/png,image/webp',
+                'max_size' => 5 * 1024 * 1024,
             ]); ?>
 
             <div class="form-actions">

@@ -380,4 +380,93 @@ php vanilla tinker
 
 ---
 
+---
+
+## 9. AI-Powered Description Generation
+
+Automatically generate menu descriptions using any OpenAI-compatible API.
+
+### 9.1 Setup
+
+Add to `.env`:
+
+```env
+AI_API_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+AI_API_KEY=your_gemini_api_key
+AI_MODEL=gemini-2.0-flash
+```
+
+The `AiService` supports any OpenAI-compatible endpoint:
+
+| Provider | API URL | Auth |
+|----------|---------|------|
+| Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai/` | Free API key |
+| FreeTheAi | `https://api.freetheai.xyz/v1` | Discord signup |
+| Free.ai | `https://api.free.ai/v1` | 30K tokens/day free |
+| Ollama (local) | `http://localhost:11434/v1` | None |
+
+If `AI_API_URL` or `AI_MODEL` is empty, the generate button throws a clear error message.
+
+### 9.2 Usage
+
+In menu create/edit forms, a **"Generate with AI"** button appears below the description textarea. Clicking it:
+
+1. Collects form context (name, category, event, price, minimum portions)
+2. Sends `POST /menus/generate-description` with CSRF token
+3. Calls the AI API with a prompt in Indonesian
+4. Fills the description textarea with the result
+
+### 9.3 Add AI to your own forms
+
+```php
+// View — add button after textarea
+<button type="button" class="btn btn-sm btn-secondary"
+        onclick="generateDescription(this)">
+    Generate with AI
+</button>
+```
+
+```php
+// Controller — create endpoint
+use App\Services\AiService;
+use App\Core\Response;
+
+public function __construct(
+    private AiService $aiService,
+    // ... other dependencies
+) {}
+
+public function generateDescription(Request $request): void {
+    $description = $this->aiService->generateDescription([
+        'name' => $request->input('name'),
+        'category' => $request->input('category'),
+        'event' => $request->input('event'),
+        'price' => $request->input('price'),
+        'minimum_portions' => $request->input('minimum_portions'),
+    ]);
+    Response::json(['description' => $description]);
+}
+```
+
+```php
+// Routes
+$r->post('/menus/generate-description', [MenuController::class, 'generateDescription']);
+```
+
+### 9.4 Extending AiService
+
+The prompt is built in `AiService::buildPrompt()`. Override or modify it to change language, tone, or length:
+
+```php
+private function buildPrompt(array $ctx): string {
+    return "Buat deskripsi menu catering yang menggugah selera "
+         . "dalam Bahasa Indonesia berdasarkan data berikut:\n"
+         . "Menu: {$ctx['name']}\n"
+         . "Kategori: {$ctx['category']}\n"
+         . "Deskripsi:";
+}
+```
+
+---
+
 See: [DATABASE.md](DATABASE.md) · [ROUTING.md](ROUTING.md) · [VALIDATION.md](VALIDATION.md)
