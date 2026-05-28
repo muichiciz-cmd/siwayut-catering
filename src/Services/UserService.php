@@ -14,7 +14,7 @@ class UserService {
     public function getAll(int $page = 1, int $perPage = 15, string $search = '', array $filters = [], string $orderBy = 'created_at', string $direction = 'DESC'): array {
         $conditions = [];
         if (!empty($filters['role'])) $conditions['role'] = $filters['role'];
-        return $this->userModel->paginate($page, $perPage, $conditions, $search, ['name', 'email'], $orderBy, $direction);
+        return $this->userModel->paginate($page, $perPage, $conditions, $search, $this->userModel->getSearchableColumns(), $orderBy, $direction);
     }
 
     public function getById(int $id): array {

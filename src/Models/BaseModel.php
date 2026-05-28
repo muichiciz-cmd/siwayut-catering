@@ -11,6 +11,7 @@ abstract class BaseModel {
     protected string $table;
     protected string $primaryKey = 'id';
     protected array $sortableColumns = ['id', 'created_at', 'updated_at'];
+    protected array $searchableColumns = [];
 
     public function __construct() {
         // DB connection deferred — initialized lazily on first query
@@ -184,6 +185,10 @@ abstract class BaseModel {
     protected function execute(string $sql, array $bindings = []): bool {
         $stmt = $this->db()->prepare($sql);
         return $stmt->execute($bindings);
+    }
+
+    public function getSearchableColumns(): array {
+        return $this->searchableColumns;
     }
 
     private function validateSortColumn(string $column): string {
