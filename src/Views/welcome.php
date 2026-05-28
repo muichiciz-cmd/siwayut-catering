@@ -495,6 +495,84 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Location Section */
+        .location-section {
+            margin: 5rem 0;
+        }
+
+        .location-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .map-wrap {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            position: relative;
+        }
+
+        .map-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(9, 9, 11, 0.35);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .map-wrap iframe {
+            width: 100%;
+            height: 320px;
+            display: block;
+            border: 0;
+            position: relative;
+            z-index: 0;
+        }
+
+        .location-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .detail-item svg {
+            flex-shrink: 0;
+            color: var(--accent-gold);
+            margin-top: 2px;
+        }
+
+        .location-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .detail-link:hover {
+            color: var(--accent-gold);
+        }
+
         /* Responsive Utilities */
         @media (max-width: 768px) {
             .hero h1 {
@@ -507,6 +585,14 @@
 
             .grid-menus {
                 grid-template-columns: 1fr;
+            }
+
+            .location-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .map-wrap iframe {
+                height: 250px;
             }
         }
 
@@ -548,7 +634,6 @@
 
                 <!-- Hero Section -->
                 <section class="hero">
-                    <span class="hero-badge">✨ Premium Holiday Catering</span>
                     <h1>Exquisite Taste<br>For Your Most Sacred Moments</h1>
                     <p>Siwayut Catering provides exclusive catering menus specially crafted to celebrate your holidays.
                         Enjoy
@@ -662,6 +747,63 @@
                     <?php endif; ?>
                 </section>
             </div>
+
+            <!-- Our Location -->
+            <section class="location-section">
+                <div class="wrapper">
+                    <div class="section-header">
+                        <h2>Our Location</h2>
+                    </div>
+
+                    <div class="location-layout">
+                        <div class="map-wrap">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11381.726282786856!2d110.8340308035105!3d-6.714749301936785!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70db1830041541%3A0x986aac86d66f3252!2sSiwayut%20Catering!5e1!3m2!1sen!2sid!4v1779931576706!5m2!1sen!2sid"
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+
+                        <div class="location-details">
+                            <h3 class="location-brand">Siwayut Catering</h3>
+                            <div class="detail-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                                <a href="https://www.google.com/maps?daddr=-6.714749301936785,110.8340308035105"
+                                    target="_blank" class="detail-link">7RPM+4HF, Krandu, Kedungsari, Kec. Gebog,
+                                    Kabupaten Kudus, Jawa Tengah 59333</a>
+                            </div>
+                            <div class="detail-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                                <a href="tel:+6287865252313" class="detail-link">+62 878-6525-2313</a>
+                            </div>
+                            <div class="detail-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                </svg>
+                                <a href="https://www.instagram.com/siwayut_90/" target="_blank"
+                                    class="detail-link">@siwayut_90</a>
+                            </div>
+                            <div class="detail-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                <span>Sabtu - Kamis: 08:00 - 17:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->

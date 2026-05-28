@@ -1,0 +1,82 @@
+# AGENTS.md — Siwayut Catering
+
+## Project overview
+Custom PHP MVC ("Vanilla Framework"). Catering order management — landing page + admin dashboard.
+
+## Dev commands
+```bash
+php vanilla serve            # Start dev server (default port 8000)
+php vanilla serve --port=8080
+php vanilla migrate          # Run SQL migrations from database/migrations/
+php vanilla migrate:fresh    # Drop all tables + re-migrate
+php vanilla db:seed          # Run seeders (AdminSeeder, MenuSeeder, OrderSeeder)
+php vanilla make:controller  # Scaffold controllers/models/services/etc.
+php vanilla routes           # List registered routes
+```
+
+## Architecture
+
+### Directory layout
+- `public/index.php` — entrypoint, loads `.env` + bootstrap + routes
+- `config/routes.php` — all routes defined in a single closure
+- `config/bindings.php` — DI container wiring (Model → Service → Controller)
+- `src/Controllers/` — thin controllers, inject services via constructor
+- `src/Services/` — business logic layer
+- `src/Models/` — extends `BaseModel`. Queries use raw PDO + table name property
+- `src/Views/` — plain PHP templates (no Blade/Twig)
+- `public/assets/css/app.css` — admin dashboard CSS (dark/gold theme)
+- `public/assets/js/app.js` — shared JS (file-upload, LQIP, load-more)
+
+### No build tools
+Plain CSS/JS served directly. No npm, Vite, webpack, Tailwind CLI, etc.
+Cache busting: manual `?v=N` querystring on CSS/JS links.
+
+### Key patterns
+- **CSRF token** in every POST form: `<?= \App\Core\Csrf::field() ?>` or `<?= csrf_field() ?>`
+- **Component** helper: `<?php component('progressive-image', ['src' => ..., 'alt' => ...]) ?>`
+- **Session flash** for messages/errors via `\App\Core\Session::flash()`
+- **JSON response**: `\App\Core\Response::jsonSuccess($data)` or `::jsonError($msg)`
+
+### Two layouts
+1. **Landing page** (`welcome.php`) — standalone, no layout wrapper, own parallax/scroll JS
+2. **Admin dashboard** — uses `main.php` layout (sidebar + navbar) or `auth.php` layout (centered card)
+
+### Admin routes
+All admin routes require `middleware: ['auth', 'role:admin']`:
+- `/categories`, `/events`, `/menus`, `/orders`, `/users` — full CRUD
+
+### Public routes
+- `/` — landing page with food gallery + featured menus (load-more via API)
+- `/login` — admin login
+- `/order-form` — customer order form
+- `/track-order/{id}` — order tracking
+- `/api/menus?page=N` — load-more API (JSON, paginated, filtered by active status)
+
+### Progressive images (LQIP)
+- Thumbnail at `/uploads/{dir}/thumbs/{file}`, full at `/uploads/{dir}/{file}`
+- HTML structure: `<span class="progressive-wrap"><img class="progressive-img blur-up" src="thumb" data-full="full"></span>`
+- JS in `app.js` loads full image asynchronously and swaps src
+- Inline `onerror` fallback on each `<img>` tag
+
+## Database
+- MySQL, PDO with `FETCH_ASSOC`
+- Migrations: sequential SQL files in `database/migrations/` (e.g., `001_create_users_table.sql`)
+- No ORM — `BaseModel` provides `all()`, `find()`, `create()`, `update()`, `delete()`, `paginate()`
+- All queries ORDER BY `created_at DESC` by default
+
+## CSS conventions (admin)
+- `:root` variables for all colors/spacing: `--color-primary`, `--color-bg`, `--color-surface`, `--color-text`, etc.
+- Landing-page aliases also available: `--accent-gold`, `--card-border`, `--bg-dark`
+- Glassmorphism via `backdrop-filter`, gold accent (`#e58e26`), dark background (`#09090b`)
+- Component classes: `.card`, `.btn` / `.btn-primary`, `.table-wrapper`, `.form-input`, `.sidebar`, `.navbar`
+- Landing page (`welcome.php`) has its own inline `<style>` that overrides app.css
+
+## Gotchas
+- **No tests**. No test runner configured.
+- **DELETE / PUT / PATCH not used**. All mutations use POST + dedicated delete routes.
+- **`php vanilla serve`** uses `-t public` flag (document root = public/, index.php handles routing)
+- **`public/index.php` returns 404 for HEAD /** (known PHP built-in server quirk) — use GET for curl checks
+- **`.env`** is loaded manually via `parse_ini_file()` in `public/index.php` — no framework env helper
+- **Model paginate** calls `BaseModel::paginate()` which returns `{data, total, per_page, current_page, last_page}`
+- **No route model binding** — manual `$this->menuService->find($id)` in controllers
+- **AI description** generation uses OpenAI-compatible API via `AiService` (configured in `.env`)
