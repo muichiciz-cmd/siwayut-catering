@@ -14,8 +14,11 @@ class OrderService {
         private Menu $menu
     ) {}
 
-    public function paginate(int $page = 1, int $perPage = 10): array {
-        return $this->order->paginate($page, $perPage);
+    public function paginate(int $page = 1, int $perPage = 10, string $search = '', array $filters = [], string $orderBy = 'created_at', string $direction = 'DESC'): array {
+        $conditions = [];
+        if (!empty($filters['status'])) $conditions['status'] = $filters['status'];
+        if (!empty($filters['payment_status'])) $conditions['payment_status'] = $filters['payment_status'];
+        return $this->order->paginate($page, $perPage, $conditions, $search, ['id'], $orderBy, $direction);
     }
 
     public function find(int $id): ?array {

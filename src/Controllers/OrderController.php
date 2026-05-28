@@ -143,7 +143,14 @@ class OrderController extends BaseController {
 
     public function index(Request $request): void {
         $page = (int) $request->input('page', 1);
-        $result = $this->orderService->paginate($page);
+        $search = $request->input('search', '');
+        $orderBy = $request->input('sort_by', 'created_at');
+        $direction = $request->input('dir', 'DESC');
+        $filters = [
+            'status' => $request->input('status', ''),
+            'payment_status' => $request->input('payment_status', ''),
+        ];
+        $result = $this->orderService->paginate($page, 10, $search, $filters, $orderBy, $direction);
 
         $menus = $this->menuService->paginate(1, 1000)['data'];
         $menuMap = [];
@@ -162,6 +169,10 @@ class OrderController extends BaseController {
             'pagination' => $result,
             'menuMap' => $menuMap,
             'customerMap' => $customerMap,
+            'search' => $search,
+            'filters' => $filters,
+            'sort_by' => $orderBy,
+            'dir' => $direction,
         ]);
     }
 

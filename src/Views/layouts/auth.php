@@ -15,7 +15,7 @@
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
     </div>
-    <div class="auth-layout">
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-1">
         <?= $content ?? '' ?>
     </div>
     <script src="/assets/js/app.js"></script>

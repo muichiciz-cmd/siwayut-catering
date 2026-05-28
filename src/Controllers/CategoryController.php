@@ -15,9 +15,25 @@ class CategoryController extends BaseController {
     }
 
     public function index(Request $request): void {
+        $search = $request->input('search', '');
+        $orderBy = $request->input('sort_by', 'created_at');
+        $direction = $request->input('dir', 'DESC');
+        $categories = $this->categoryService->all($orderBy, $direction);
+
+        if ($search !== '') {
+            $categories = array_filter($categories, function ($c) use ($search) {
+                $s = strtolower($search);
+                return str_contains(strtolower($c['name'] ?? ''), $s)
+                    || str_contains(strtolower($c['slug'] ?? ''), $s);
+            });
+        }
+
         $this->render('category/index', [
             'title' => 'Menu Categories',
-            'categories' => $this->categoryService->all(),
+            'categories' => $categories,
+            'search' => $search,
+            'sort_by' => $orderBy,
+            'dir' => $direction,
         ]);
     }
 
