@@ -38,7 +38,13 @@ class OrderSeeder {
             return;
         }
 
-        // 2. Create Dummy Customers
+        // 2. Clear existing orders + customers for idempotency
+        $db->query("SET FOREIGN_KEY_CHECKS = 0");
+        $db->query("TRUNCATE TABLE orders");
+        $db->query("TRUNCATE TABLE customers");
+        $db->query("SET FOREIGN_KEY_CHECKS = 1");
+
+        // 3. Create Dummy Customers
         $customers = [
             [
                 'name' => 'Budi Santoso',
@@ -74,39 +80,25 @@ class OrderSeeder {
         $stmtCustomer = $db->prepare("INSERT INTO customers (name, phone, email, address, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
         
         foreach ($customers as $customer) {
-            // Check if phone exists
-            $stmtCheck = $db->prepare("SELECT id FROM customers WHERE phone = ?");
-            $stmtCheck->execute([$customer['phone']]);
-            $existingId = $stmtCheck->fetchColumn();
-
-            if ($existingId) {
-                $customerIds[] = $existingId;
-            } else {
-                $now = date('Y-m-d H:i:s');
-                $stmtCustomer->execute([
-                    $customer['name'],
-                    $customer['phone'],
-                    $customer['email'],
-                    $customer['address'],
-                    $customer['notes'],
-                    $now,
-                    $now
-                ]);
-                $customerIds[] = $db->lastInsertId();
-            }
+            $now = date('Y-m-d H:i:s');
+            $stmtCustomer->execute([
+                $customer['name'],
+                $customer['phone'],
+                $customer['email'],
+                $customer['address'],
+                $customer['notes'],
+                $now,
+                $now
+            ]);
+            $customerIds[] = $db->lastInsertId();
         }
         echo "Customers seeded successfully.\n";
 
-        // 3. Create Dummy Orders
+        // 4. Create Dummy Orders
         // Let's create about 15 dummy orders
         $statuses = ['pending', 'processing', 'delivering', 'completed', 'cancelled'];
         
         $stmtOrder = $db->prepare("INSERT INTO orders (customer_id, event_id, menu_id, event_date, quantity, total_price, delivery_address, notes, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-        // Clear existing orders for idempotency (optional, but good for resetting)
-        $db->query("SET FOREIGN_KEY_CHECKS = 0");
-        $db->query("TRUNCATE TABLE orders");
-        $db->query("SET FOREIGN_KEY_CHECKS = 1");
 
         for ($i = 0; $i < 15; $i++) {
             $customerId = $customerIds[array_rand($customerIds)];

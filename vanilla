@@ -429,25 +429,38 @@ function cmd_db_seed(array $args): void {
         return;
     }
 
+    // Seeder dependency map (prerequisites run first automatically)
+    $seederDependencies = [
+        'OrderSeeder' => ['MenuSeeder'],
+        'MenuSeeder'  => [],
+        'AdminSeeder' => [],
+    ];
+
     if ($class !== '') {
-        // Run specific seeder
-        $file = $seedsPath . '/' . $class . '.php';
-        if (!file_exists($file)) {
-            error("Seeder file not found: {$class}.php");
-            return;
+        // Run specific seeder + its dependencies
+        $queue = [$class];
+        if (isset($seederDependencies[$class])) {
+            $queue = array_merge($seederDependencies[$class], [$class]);
         }
-        info("Seeding: " . color($class, 'cyan'));
-        runSeederFile($file);
-        success("Seeded:  " . color($class, 'cyan'));
+        foreach (array_unique($queue) as $name) {
+            $file = $seedsPath . '/' . $name . '.php';
+            if (!file_exists($file)) {
+                error("Seeder file not found: {$name}.php");
+                return;
+            }
+            info("Seeding: " . color($name, 'cyan'));
+            runSeederFile($file);
+            success("Seeded:  " . color($name, 'cyan'));
+        }
     } else {
-        // Run all seeders
-        $files = glob($seedsPath . '/*.php');
-        if (empty($files)) {
-            info("No seeder files found.");
-            return;
-        }
-        foreach ($files as $file) {
-            $name = basename($file, '.php');
+        // Run all seeders in dependency-safe order
+        $order = ['AdminSeeder', 'MenuSeeder', 'OrderSeeder'];
+        foreach ($order as $name) {
+            $file = $seedsPath . '/' . $name . '.php';
+            if (!file_exists($file)) {
+                warn("Seeder file not found, skipping: {$name}.php");
+                continue;
+            }
             info("Seeding: " . color($name, 'cyan'));
             runSeederFile($file);
             success("Seeded:  " . color($name, 'cyan'));
