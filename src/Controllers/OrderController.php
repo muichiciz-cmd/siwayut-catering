@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Request;
-use App\Core\Session;
-use App\Core\Validator;
-use App\Core\Database;
+use App\Core\{Request, Session, Validator, Database, Turnstile};
 use App\Exceptions\NotFoundException;
 use App\Services\OrderService;
 use App\Services\MenuService;
@@ -37,6 +34,12 @@ class OrderController extends BaseController {
 
     public function publicSubmit(Request $request): void {
         $data = $request->only(['name', 'menu', 'event_date', 'quantity', 'address', 'notes']);
+
+        if (!Turnstile::verify($request->input('cf-turnstile-response', ''))) {
+            $this->withOldInput($data);
+            Session::flash('error', 'Captcha verification failed.');
+            $this->redirect('/order-form');
+        }
 
         $validator = new Validator();
         $validator->validate($data, [
@@ -79,6 +82,12 @@ class OrderController extends BaseController {
     public function track(Request $request): void {
         $orderId = $request->input('order_id');
         $phone = $request->input('phone');
+
+        if (!Turnstile::verify($request->input('cf-turnstile-response', ''))) {
+            $this->withOldInput(['order_id' => $orderId, 'phone' => $phone]);
+            Session::flash('error', 'Captcha verification failed.');
+            $this->redirect('/track-order');
+        }
 
         $validator = new Validator();
         $validator->validate(['order_id' => $orderId, 'phone' => $phone], [

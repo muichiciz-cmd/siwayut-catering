@@ -11,6 +11,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/app.css?v=3">
+    <?php if (\App\Core\Turnstile::enabled()): ?>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <?php endif; ?>
 </head>
 
 <body class="bg-bg text-text min-h-screen leading-relaxed font-body overflow-x-hidden bg-fixed bg-[radial-gradient(circle_at_15%_25%,rgba(229,142,38,0.12)_0%,transparent_45%),radial-gradient(circle_at_85%_75%,rgba(234,32,39,0.08)_0%,transparent_45%)]">
@@ -91,7 +94,10 @@
                         placeholder="E.g. additional requests, delivery time, etc."><?= \App\Core\View::e(old('notes')) ?></textarea>
                 </div>
 
-                <button type="submit"
+                <?= \App\Core\Turnstile::widget() ?>
+
+                <button type="submit" id="submit-btn"
+                    <?= \App\Core\Turnstile::enabled() ? 'disabled' : '' ?>
                     class="w-full py-[0.85rem] bg-gold border border-gold rounded-xl text-white text-base font-semibold cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_15px_var(--color-gold-glow)] hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-0.5 hover:shadow-[0_0_25px_var(--color-gold-glow)] font-body">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                         fill="currentColor">
@@ -105,6 +111,13 @@
         <div class="text-center text-muted text-xs mt-8 pb-8">
             <a href="/" class="text-gold no-underline hover:text-gold">Siwayut Catering</a> — Exquisite Taste For Your Most Sacred Moments
         </div>
+    <?php if (\App\Core\Turnstile::enabled()): ?>
+    <script>
+    function onTurnstileSuccess(token) {
+        document.getElementById('submit-btn').disabled = false;
+    }
+    </script>
+    <?php endif; ?>
     </main>
 </body>
 

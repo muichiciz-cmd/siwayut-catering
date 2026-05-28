@@ -97,13 +97,13 @@
                                 $m = $galleryMenus[$i];
                                 $wi = $w[$i % count($w)];
                                 ?>
-                                <?php component('progressive-image', ['src' => $m['image'], 'alt' => $m['name'], 'style' => "width:{$wi}px"]); ?>
+                                <?php component('progressive-image', ['src' => $m['image'], 'alt' => $m['name'], 'class' => 'border border-border hover:-translate-y-[5px] hover:border-gold/25 hover:shadow-xl', 'style' => "width:{$wi}px"]); ?>
                             <?php endfor; ?>
                             <?php for ($i = 0; $i < $count; $i++):
                                 $m = $galleryMenus[$i];
                                 $wi = $w[$i % count($w)];
                                 ?>
-                                <?php component('progressive-image', ['src' => $m['image'], 'alt' => $m['name'], 'style' => "width:{$wi}px"]); ?>
+                                <?php component('progressive-image', ['src' => $m['image'], 'alt' => $m['name'], 'class' => 'border border-border hover:-translate-y-[5px] hover:border-gold/25 hover:shadow-xl', 'style' => "width:{$wi}px"]); ?>
                             <?php endfor; ?>
                         </div>
                     <?php endfor; endif; ?>

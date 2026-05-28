@@ -26,9 +26,21 @@
         </div>
 
         <div class="flex items-center gap-3 mt-6">
-            <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-primary text-white border-primary hover:bg-primary-hover hover:border-primary-hover hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white w-full">
+            <?= \App\Core\Turnstile::widget() ?>
+
+            <button type="submit" id="submit-btn"
+                <?= \App\Core\Turnstile::enabled() ? 'disabled' : '' ?>
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-primary text-white border-primary hover:bg-primary-hover hover:border-primary-hover hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white w-full">
                 Sign In
             </button>
         </div>
     </form>
+
+    <?php if (\App\Core\Turnstile::enabled()): ?>
+    <script>
+    function onTurnstileSuccess(token) {
+        document.getElementById('submit-btn').disabled = false;
+    }
+    </script>
+    <?php endif; ?>
 </div>

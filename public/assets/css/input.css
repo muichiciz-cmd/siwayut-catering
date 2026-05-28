@@ -185,11 +185,7 @@
   border-radius: 12px;
   flex-shrink: 0;
   transition: all .3s ease;
-  outline: 1px solid rgba(255, 255, 255, 0.0);
   margin: .5rem;
-}
-.food-gallery .row .progressive-wrap:hover {
-  outline: 1px solid var(--color-gold);
 }
 .food-gallery .row .progressive-wrap > .progressive-img {
   height: 100%;
