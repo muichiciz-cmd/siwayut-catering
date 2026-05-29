@@ -33,7 +33,8 @@ class OrderController extends BaseController {
     }
 
     public function publicSubmit(Request $request): void {
-        $data = $request->only(['name', 'menu', 'event_date', 'quantity', 'address', 'notes']);
+        $data = $request->only(['name', 'event_date', 'address', 'notes']);
+        $items = $request->input('items', []);
 
         if (!Turnstile::verify($request->input('cf-turnstile-response', ''))) {
             $this->withOldInput($data);
@@ -44,9 +45,7 @@ class OrderController extends BaseController {
         $validator = new Validator();
         $validator->validate($data, [
             'name' => 'required|min:3|max:255',
-            'menu' => 'required',
             'event_date' => 'required',
-            'quantity' => 'required|numeric|min:1',
             'address' => 'required|min:10',
         ]);
 
@@ -57,15 +56,29 @@ class OrderController extends BaseController {
             $this->redirect('/order-form');
         }
 
+        if (empty($items) || !is_array($items)) {
+            $this->withOldInput($data);
+            Session::flash('error', 'Please select at least one menu item.');
+            $this->redirect('/order-form');
+        }
+
+        // Build WhatsApp message
         $message = "Hello Siwayut Catering, I would like to order:\n\n"
                  . "Name: {$data['name']}\n"
-                 . "Menu: {$data['menu']}\n"
                  . "Event Date: {$data['event_date']}\n"
-                 . "Portions: {$data['quantity']}\n"
-                 . "Delivery Address: {$data['address']}\n";
+                 . "Delivery Address: {$data['address']}\n"
+                 . "Menu Items:\n";
+
+        foreach ($items as $item) {
+            $menuId = (int)($item['menu_id'] ?? 0);
+            $menu = $this->menuService->find($menuId);
+            $menuName = $menu['name'] ?? 'Unknown';
+            $qty = (int)($item['quantity'] ?? 1);
+            $message .= "- {$menuName}: {$qty} portions\n";
+        }
 
         if (!empty($data['notes'])) {
-            $message .= "Notes: {$data['notes']}\n";
+            $message .= "\nNotes: {$data['notes']}\n";
         }
 
         $message .= "\nThank you.";
@@ -138,14 +151,14 @@ class OrderController extends BaseController {
             $this->redirect('/track-order');
         }
 
-        $menu = $this->menuService->find((int)$order['menu_id']);
+        $items = $this->orderService->getItems($orderId);
         $event = $this->eventService->find((int)$order['event_id']);
 
         $this->render('order/track-result', [
             'title' => 'Order Detail #' . $orderId . ' — Siwayut Catering',
             'order' => $order,
             'customer' => $customer,
-            'menu' => $menu,
+            'items' => $items,
             'event' => $event,
         ], '');
     }
@@ -162,24 +175,12 @@ class OrderController extends BaseController {
         $result = $this->orderService->paginate($page, 10, $search, $filters, $orderBy, $direction);
 
         $menus = $this->menuService->paginate(1, 1000)['data'];
-        $menuMap = [];
-        foreach ($menus as $m) $menuMap[$m['id']] = $m['name'];
-
-        $customers = $this->customer->all();
-        $customerMap = [];
-        foreach ($customers as $c) $customerMap[$c['id']] = [
-            'name' => $c['name'],
-            'phone' => $c['phone']
-        ];
-
         $events = $this->eventService->getActive();
 
         $this->render('order/index', [
             'title' => 'Order List',
             'orders' => $result['data'],
             'pagination' => $result,
-            'menuMap' => $menuMap,
-            'customerMap' => $customerMap,
             'menus' => $menus,
             'events' => $events,
             'search' => $search,
@@ -201,7 +202,8 @@ class OrderController extends BaseController {
     }
 
     public function store(Request $request): void {
-        $data = $request->only(['phone', 'customer_name', 'delivery_address', 'event_id', 'menu_id', 'quantity', 'event_date', 'notes']);
+        $data = $request->only(['phone', 'customer_name', 'delivery_address', 'event_id', 'event_date', 'notes']);
+        $items = $request->input('items', []);
 
         $validator = new Validator(Database::getInstance());
         $validator->validate($data, [
@@ -209,8 +211,6 @@ class OrderController extends BaseController {
             'customer_name' => 'required|min:3|max:255',
             'delivery_address' => 'required|min:10',
             'event_id' => 'required|numeric',
-            'menu_id' => 'required|numeric',
-            'quantity' => 'required|numeric',
             'event_date' => 'required',
         ]);
 
@@ -223,8 +223,17 @@ class OrderController extends BaseController {
             $this->redirect('/orders/create');
         }
 
+        if (empty($items) || !is_array($items)) {
+            if ($request->isAjax()) {
+                Response::jsonError('Please add at least one menu item.');
+            }
+            $this->withOldInput($data);
+            Session::flash('error', 'Please add at least one menu item.');
+            $this->redirect('/orders/create');
+        }
+
         try {
-            $this->orderService->createOrder($data);
+            $this->orderService->createOrder($data, $items);
             if ($request->isAjax()) {
                 Response::jsonSuccess(null, 'Order successfully created.');
             }
@@ -248,13 +257,13 @@ class OrderController extends BaseController {
         }
 
         $customer = $this->customer->find((int)$order['customer_id']);
-        $menu = $this->menuService->find((int)$order['menu_id']);
+        $items = $this->orderService->getItems($id);
 
         $this->render('order/show', [
             'title' => 'Order #' . $id,
             'order' => $order,
             'customer' => $customer,
-            'menu' => $menu,
+            'items' => $items,
         ]);
     }
 

@@ -82,6 +82,7 @@
             // Intercept form submissions (filter Apply, categories search)
             document.querySelectorAll('form').forEach(function(form) {
                 if (form.dataset.liveForm) return;
+                if (form.closest('[id$="Modal"]')) return;
                 var hasSearch = form.querySelector('input[name="search"]');
                 var hasFilter = form.querySelector('select[name="status"], select[name="payment_status"], select[name="category_id"], select[name="role"]');
                 if (!hasSearch && !hasFilter) return;

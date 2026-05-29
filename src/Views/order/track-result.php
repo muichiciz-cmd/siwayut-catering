@@ -84,14 +84,30 @@
                 <div class="text-muted font-medium max-md:text-[0.8rem]">Phone No.</div>
                 <div class="text-text"><?= \App\Core\View::e($customer['phone'] ?? '-') ?></div>
 
-                <div class="text-muted font-medium max-md:text-[0.8rem]">Menu</div>
-                <div class="text-text"><?= \App\Core\View::e($menu['name'] ?? '-') ?></div>
+                <div class="text-muted font-medium max-md:text-[0.8rem]">Menu Items</div>
+                <div class="text-text">
+                    <table class="w-full text-[0.85rem]">
+                        <thead>
+                            <tr class="text-muted border-b border-border">
+                                <th class="text-left pb-1.5 font-medium">Menu</th>
+                                <th class="text-right pb-1.5 font-medium">Qty</th>
+                                <th class="text-right pb-1.5 font-medium">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($items as $item): ?>
+                            <tr class="border-b border-border/50">
+                                <td class="py-1.5"><?= \App\Core\View::e($item['menu_name']) ?></td>
+                                <td class="py-1.5 text-right"><?= (int) $item['quantity'] ?></td>
+                                <td class="py-1.5 text-right font-medium">Rp <?= number_format((float) $item['subtotal'], 0, ',', '.') ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="text-muted font-medium max-md:text-[0.8rem]">Event</div>
                 <div class="text-text"><?= \App\Core\View::e($event['name'] ?? '-') ?></div>
-
-                <div class="text-muted font-medium max-md:text-[0.8rem]">Portions</div>
-                <div class="text-text"><?= (int) $order['quantity'] ?> portions</div>
 
                 <div class="text-muted font-medium max-md:text-[0.8rem]">Total Price</div>
                 <div class="font-display text-xl font-bold text-gold">Rp <?= number_format((float) $order['total_price'], 0, ',', '.') ?></div>

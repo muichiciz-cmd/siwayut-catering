@@ -191,7 +191,7 @@ abstract class BaseModel {
         return $this->searchableColumns;
     }
 
-    private function validateSortColumn(string $column): string {
+    protected function validateSortColumn(string $column): string {
         if (in_array($column, $this->sortableColumns, true)) {
             return $column;
         }

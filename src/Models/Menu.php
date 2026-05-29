@@ -7,7 +7,7 @@ class Menu extends BaseModel {
     public function __construct() {
         parent::__construct();
         $this->table = 'menus';
-        $this->sortableColumns = ['id', 'name', 'price', 'category_id', 'status', 'created_at'];
+        $this->sortableColumns = ['id', 'name', 'price', 'category_id', 'status', 'created_at', 'order_count'];
         $this->searchableColumns = [
             'id',
             'name',
@@ -36,16 +36,50 @@ class Menu extends BaseModel {
         return $result;
     }
 
-    public function countByEventIds(array $ids): array {
-        if (empty($ids)) return [];
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $sql = "SELECT event_id, COUNT(*) as cnt FROM `menus` WHERE event_id IN ($placeholders) GROUP BY event_id";
-        $stmt = $this->db()->prepare($sql);
-        $stmt->execute(array_map('intval', $ids));
-        $result = [];
-        foreach ($stmt->fetchAll() as $row) {
-            $result[(int)$row['event_id']] = (int)$row['cnt'];
+    public function paginate(int $page = 1, int $perPage = 15, array $conditions = [], string $search = '', array $searchColumns = [], string $orderBy = 'created_at', string $direction = 'DESC'): array {
+        $page = max(1, $page);
+        $bindings = [];
+        $clauses = [];
+
+        foreach ($conditions as $col => $val) {
+            if ($val !== '' && $val !== null) {
+                $clauses[] = "`{$col}` = ?";
+                $bindings[] = $val;
+            }
         }
-        return $result;
+
+        if ($search !== '' && !empty($searchColumns)) {
+            $likeClauses = [];
+            foreach ($searchColumns as $col) {
+                $likeClauses[] = "`{$col}` LIKE ?";
+                $bindings[] = "%{$search}%";
+            }
+            $clauses[] = '(' . implode(' OR ', $likeClauses) . ')';
+        }
+
+        $where = '';
+        if (!empty($clauses)) {
+            $where = ' WHERE ' . implode(' AND ', $clauses);
+        }
+
+        $countSql = "SELECT COUNT(*) FROM `{$this->table}`{$where}";
+        $stmt = $this->db()->prepare($countSql);
+        $stmt->execute($bindings);
+        $total = (int) $stmt->fetchColumn();
+
+        $lastPage = (int) ceil($total / $perPage);
+        $offset = ($page - 1) * $perPage;
+
+        $orderBy = $this->validateSortColumn($orderBy);
+        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        $sql = "SELECT *, (SELECT COUNT(*) FROM `order_items` WHERE `menu_id` = `{$this->table}`.`id`) AS `order_count` FROM `{$this->table}`{$where} ORDER BY `{$orderBy}` {$direction} LIMIT {$perPage} OFFSET {$offset}";
+
+        return [
+            'data' => $this->query($sql, $bindings),
+            'total' => $total,
+            'per_page' => $perPage,
+            'current_page' => $page,
+            'last_page' => $lastPage,
+        ];
     }
 }

@@ -7,13 +7,36 @@ class Order extends BaseModel {
     public function __construct() {
         parent::__construct();
         $this->table = 'orders';
-        $this->sortableColumns = ['id', 'customer_id', 'menu_id', 'event_date', 'quantity', 'total_price', 'status', 'payment_status', 'created_at'];
+        $this->sortableColumns = ['id', 'customer_id', 'event_id', 'event_date', 'total_price', 'status', 'payment_status', 'created_at', 'customer_name', 'items_count'];
+    }
+
+    public function find(int $id): ?array {
+        $sql = "SELECT o.*, c.`name` AS customer_name, c.`phone` AS customer_phone
+FROM `{$this->table}` o
+INNER JOIN `customers` c ON c.`id` = o.`customer_id`
+WHERE o.`id` = ? LIMIT 1";
+        $results = $this->query($sql, [$id]);
+        return $results[0] ?? null;
+    }
+
+    public function getItemsByOrderId(int $orderId): array {
+        $sql = "SELECT oi.*, m.`name` AS menu_name, m.`image` AS menu_image
+FROM `order_items` oi
+INNER JOIN `menus` m ON m.`id` = oi.`menu_id`
+WHERE oi.`order_id` = ?
+ORDER BY oi.`id` ASC";
+        return $this->query($sql, [$orderId]);
+    }
+
+    public function rawInsertOrderItem(int $orderId, array $item): void {
+        $sql = "INSERT INTO `order_items` (`order_id`, `menu_id`, `quantity`, `price_at_time`, `subtotal`) VALUES (?, ?, ?, ?, ?)";
+        $this->execute($sql, [$orderId, $item['menu_id'], $item['quantity'], $item['price_at_time'], $item['subtotal']]);
     }
 
     public function countByMenuIds(array $menuIds): array {
         if (empty($menuIds)) return [];
         $placeholders = implode(',', array_fill(0, count($menuIds), '?'));
-        $sql = "SELECT menu_id, COUNT(*) as cnt FROM `orders` WHERE menu_id IN ($placeholders) GROUP BY menu_id";
+        $sql = "SELECT oi.menu_id, COUNT(*) as cnt FROM `order_items` oi WHERE oi.menu_id IN ($placeholders) GROUP BY oi.menu_id";
         $stmt = $this->db()->prepare($sql);
         $stmt->execute(array_map('intval', $menuIds));
         $result = [];
@@ -53,9 +76,7 @@ class Order extends BaseModel {
                 'CAST(o.`id` AS CHAR) LIKE ?',
                 'CAST(o.`customer_id` AS CHAR) LIKE ?',
                 'CAST(o.`event_id` AS CHAR) LIKE ?',
-                'CAST(o.`menu_id` AS CHAR) LIKE ?',
                 'o.`event_date` LIKE ?',
-                'CAST(o.`quantity` AS CHAR) LIKE ?',
                 'CAST(o.`total_price` AS CHAR) LIKE ?',
                 'o.`status` LIKE ?',
                 'o.`payment_status` LIKE ?',
@@ -68,16 +89,12 @@ class Order extends BaseModel {
                 'c.`email` LIKE ?',
                 'c.`address` LIKE ?',
                 'c.`notes` LIKE ?',
-                'm.`name` LIKE ?',
-                'm.`description` LIKE ?',
-                'CAST(m.`price` AS CHAR) LIKE ?',
-                'CAST(m.`minimum_portions` AS CHAR) LIKE ?',
-                'm.`status` LIKE ?',
-                'm.`image` LIKE ?',
+                'EXISTS (SELECT 1 FROM `order_items` oi2 INNER JOIN `menus` m2 ON m2.`id` = oi2.`menu_id` WHERE oi2.`order_id` = o.`id` AND m2.`name` LIKE ?)',
             ]) . ')';
-            for ($i = 0; $i < 24; $i++) {
+            for ($i = 0; $i < 16; $i++) {
                 $bindings[] = $searchLike;
             }
+            $bindings[] = $searchLike;
         }
 
         $where = '';
@@ -86,8 +103,7 @@ class Order extends BaseModel {
         }
 
         $from = ' FROM `orders` o
-            INNER JOIN `customers` c ON c.`id` = o.`customer_id`
-            INNER JOIN `menus` m ON m.`id` = o.`menu_id`';
+            INNER JOIN `customers` c ON c.`id` = o.`customer_id`';
 
         $countSql = 'SELECT COUNT(*)' . $from . $where;
         $stmt = $this->db()->prepare($countSql);
@@ -102,8 +118,21 @@ class Order extends BaseModel {
         }
         $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
 
-        $sql = 'SELECT o.*' . $from . $where
-            . " ORDER BY o.`{$orderBy}` {$direction} LIMIT {$perPage} OFFSET {$offset}";
+        $sortMap = [
+            'customer_name' => 'c.`name`',
+            'items_count'   => 'item_cnt',
+        ];
+
+        if (isset($sortMap[$orderBy])) {
+            $orderCol = $sortMap[$orderBy];
+        } else {
+            $orderCol = "o.`{$orderBy}`";
+        }
+
+        $sql = 'SELECT o.*, c.`name` AS customer_name, c.`phone` AS customer_phone'
+            . ', (SELECT COUNT(*) FROM `order_items` oi3 WHERE oi3.`order_id` = o.`id`) AS item_cnt'
+            . $from . $where
+            . " ORDER BY {$orderCol} {$direction} LIMIT {$perPage} OFFSET {$offset}";
 
         return [
             'data' => $this->query($sql, $bindings),

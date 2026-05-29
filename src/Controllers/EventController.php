@@ -9,12 +9,10 @@ use App\Core\Session;
 use App\Core\Validator;
 use App\Exceptions\NotFoundException;
 use App\Services\EventService;
-use App\Services\MenuService;
 
 class EventController extends BaseController {
     public function __construct(
-        private EventService $eventService,
-        private MenuService $menuService
+        private EventService $eventService
     ) {
         parent::__construct();
     }
@@ -29,13 +27,9 @@ class EventController extends BaseController {
         ];
         $result = $this->eventService->paginate($page, 10, $search, $filters, $orderBy, $direction);
 
-        $eventIds = array_column($result['data'], 'id');
-        $menuCounts = $this->menuService->countByEventIds($eventIds);
-        $events = array_map(fn($e) => [...$e, 'menu_count' => $menuCounts[$e['id']] ?? 0], $result['data']);
-        
         $this->render('event/index', [
             'title' => 'Events',
-            'events' => $events,
+            'events' => $result['data'],
             'pagination' => $result,
             'search' => $search,
             'filters' => $filters,

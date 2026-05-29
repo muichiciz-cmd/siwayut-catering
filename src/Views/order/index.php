@@ -62,18 +62,18 @@ $sortUrl = function($col) use ($s, $d) {
     return '?' . http_build_query(array_merge($_GET, ['sort_by' => $col, 'dir' => $next]));
 };
 $sortIcon = function($col) use ($s, $d) {
-    if ($s !== $col) return '';
-    return '<span class="ml-1 text-gold">' . ($d === 'asc' ? '↑' : '↓') . '</span>';
+    if ($s !== $col) return '<span class="opacity-0 group-hover:opacity-40 transition-opacity"><svg class="inline align-middle" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 10 4-4 4 4"/><path d="m8 14 4 4 4-4"/></svg></span>';
+    $arrow = $d === 'asc' ? 'm8 10 4-4 4 4' : 'm8 14 4 4 4-4';
+    return '<span class="text-gold"><svg class="inline align-middle" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' . $arrow . '"/></svg></span>';
 };
 ?>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('id') ?>" class="text-muted hover:text-gold transition-colors no-underline">ID<?= $sortIcon('id') ?></a></th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border">Customer</th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border">Menu</th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('event_date') ?>" class="text-muted hover:text-gold transition-colors no-underline">Event Date<?= $sortIcon('event_date') ?></a></th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('quantity') ?>" class="text-muted hover:text-gold transition-colors no-underline">Qty<?= $sortIcon('quantity') ?></a></th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('total_price') ?>" class="text-muted hover:text-gold transition-colors no-underline">Total Price<?= $sortIcon('total_price') ?></a></th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('status') ?>" class="text-muted hover:text-gold transition-colors no-underline">Status<?= $sortIcon('status') ?></a></th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('payment_status') ?>" class="text-muted hover:text-gold transition-colors no-underline">Payment<?= $sortIcon('payment_status') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('id') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">ID<?= $sortIcon('id') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('customer_name') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">Customer<?= $sortIcon('customer_name') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('items_count') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">Items<?= $sortIcon('items_count') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('event_date') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">Event Date<?= $sortIcon('event_date') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('total_price') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">Total Price<?= $sortIcon('total_price') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('status') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">Status<?= $sortIcon('status') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('payment_status') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline">Payment<?= $sortIcon('payment_status') ?></a></th>
                 </tr>
             </thead>
             <tbody>
@@ -81,12 +81,11 @@ $sortIcon = function($col) use ($s, $d) {
                 <tr class="cursor-pointer hover:bg-white/[0.03]" onclick="location.href='/orders/<?= (int)$order['id'] ?>'">
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text"><?= $order['id'] ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
-                        <div class="font-medium"><?= htmlspecialchars($customerMap[$order['customer_id']]['name'] ?? 'Unknown') ?></div>
-                        <div class="text-[0.8125rem] text-muted"><?= htmlspecialchars($customerMap[$order['customer_id']]['phone'] ?? '-') ?></div>
+                        <div class="font-medium"><?= e($order['customer_name'] ?? 'Unknown') ?></div>
+                        <div class="text-[0.8125rem] text-muted"><?= e($order['customer_phone'] ?? '-') ?></div>
                     </td>
-                    <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text"><?= htmlspecialchars($menuMap[$order['menu_id']] ?? 'Unknown') ?></td>
+                    <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text"><?= (int)($order['item_cnt'] ?? 0) ?> item<?= ((int)($order['item_cnt'] ?? 0) !== 1) ? 's' : '' ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text"><?= date('d M Y H:i', strtotime($order['event_date'])) ?></td>
-                    <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text"><?= number_format((float)$order['quantity'], 0, ',', '.') ?> portions</td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text font-medium text-success">Rp <?= number_format((float)$order['total_price'], 0, ',', '.') ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
                         <?php
@@ -157,17 +156,112 @@ component('form/input', ['name' => 'customer_name', 'label' => 'Customer Name', 
 echo '</div>';
 component('form/input', ['name' => 'delivery_address', 'label' => 'Delivery Address', 'required' => true]);
 component('form/select', ['name' => 'event_id', 'label' => 'Event', 'options' => array_column($events ?? [], 'name', 'id'), 'required' => true]);
-echo '<h4 class="mt-6 mb-4 pb-2 border-b border-border font-display font-semibold text-text" style="color:var(--color-text)">Order Details</h4>';
-echo '<div class="grid grid-cols-[2fr_1fr] gap-4">';
-$menuOpts = [];
+echo '<h4 class="mt-6 mb-4 pb-2 border-b border-border font-display font-semibold text-text" style="color:var(--color-text)">Menu Items</h4>';
+echo '<div id="menu-items-container" class="flex flex-col gap-3">';
+echo '    <div class="menu-item-row flex items-start gap-2" data-index="0">';
+echo '        <div class="flex-1">';
+$menuOpts = ['' => '-- Select Menu --'];
 foreach ($menus as $m) { $menuOpts[$m['id']] = $m['name'] . ' (Rp ' . number_format((float)$m['price'], 0, ',', '.') . ')'; }
-component('form/select', ['name' => 'menu_id', 'label' => 'Select Menu', 'options' => $menuOpts, 'placeholder' => '-- Choose Menu --', 'required' => true]);
-component('form/input', ['name' => 'quantity', 'label' => 'Quantity (Portions)', 'type' => 'number', 'value' => '1', 'min' => '1', 'required' => true]);
+component('form/select', ['name' => 'items[0][menu_id]', 'label' => 'Menu', 'options' => $menuOpts, 'required' => true]);
+echo '        </div>';
+echo '        <div class="w-28 shrink-0">';
+component('form/input', ['name' => 'items[0][quantity]', 'label' => 'Qty', 'type' => 'number', 'value' => '1', 'min' => '1', 'required' => true]);
+echo '        </div>';
+echo '        <button type="button" class="remove-menu-item mt-6 w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-all duration-150 cursor-pointer border-0 bg-transparent shrink-0 hidden" data-index="0" title="Remove">';
+echo '            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+echo '        </button>';
+echo '    </div>';
 echo '</div>';
-echo '<div class="grid grid-cols-2 gap-4">';
+echo '<button type="button" id="add-menu-item" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text mt-2">+ Add Another Menu</button>';
+echo '<div class="grid grid-cols-2 gap-4 mt-4">';
 component('form/input', ['name' => 'event_date', 'label' => 'Event Date & Time', 'type' => 'datetime-local', 'required' => true]);
 component('form/input', ['name' => 'notes', 'label' => 'Additional Notes', 'placeholder' => 'e.g. Less spicy']);
 echo '</div>';
 $createFormContent = ob_get_clean();
 require __DIR__ . '/../partials/create-modal.php';
 ?>
+<script>
+<?php $menuJson = json_encode(array_map(function($m) {
+    return ['id' => $m['id'], 'name' => $m['name'], 'price' => $m['price']];
+}, $menus)); ?>
+(function() {
+    'use strict';
+    var container = document.getElementById('menu-items-container');
+    var addBtn = document.getElementById('add-menu-item');
+    if (!container || !addBtn) return;
+
+    var menuList = <?= $menuJson ?>;
+
+    function buildSelect(index) {
+        var html = '<select name="items[' + index + '][menu_id]" required class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">';
+        html += '<option value="">-- Select Menu --</option>';
+        for (var i = 0; i < menuList.length; i++) {
+            var m = menuList[i];
+            var price = 'Rp ' + Number(m.price).toLocaleString('id-ID');
+            html += '<option value="' + m.id + '">' + m.name + ' (' + price + ')</option>';
+        }
+        html += '</select>';
+        return html;
+    }
+
+    function updateIndices() {
+        var rows = container.querySelectorAll('.menu-item-row');
+        rows.forEach(function(row, i) {
+            row.dataset.index = i;
+            var selects = row.querySelectorAll('select, input');
+            selects.forEach(function(el) {
+                el.name = el.name.replace(/\[\d+\]/, '[' + i + ']');
+            });
+            var removeBtn = row.querySelector('.remove-menu-item');
+            if (removeBtn) {
+                removeBtn.dataset.index = i;
+                removeBtn.classList.toggle('hidden', rows.length <= 1);
+            }
+        });
+    }
+
+    addBtn.addEventListener('click', function() {
+        var rows = container.querySelectorAll('.menu-item-row');
+        var newIndex = rows.length;
+        var div = document.createElement('div');
+        div.className = 'menu-item-row flex items-start gap-2';
+        div.dataset.index = newIndex;
+        div.innerHTML =
+            '<div class="flex-1"><label class="block text-sm font-medium text-text mb-1.5">Menu <span class="text-danger">*</span></label>' +
+            buildSelect(newIndex) +
+            '</div>' +
+            '<div class="w-28 shrink-0"><label class="block text-sm font-medium text-text mb-1.5">Qty <span class="text-danger">*</span></label>' +
+            '<input type="number" name="items[' + newIndex + '][quantity]" value="1" min="1" required class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">' +
+            '</div>' +
+            '<button type="button" class="remove-menu-item mt-6 w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-all duration-150 cursor-pointer border-0 bg-transparent shrink-0" data-index="' + newIndex + '" title="Remove">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>';
+        container.appendChild(div);
+        updateIndices();
+    });
+
+    container.addEventListener('click', function(e) {
+        var btn = e.target.closest('.remove-menu-item');
+        if (!btn) return;
+        var row = btn.closest('.menu-item-row');
+        if (row) {
+            row.remove();
+            updateIndices();
+        }
+    });
+
+    // Patch resetModal to also reset menu items to single row
+    var origReset = window.resetModal;
+    if (typeof origReset === 'function') {
+        window.resetModal = function(modalId) {
+            origReset(modalId);
+            // Reset menu items back to a single row
+            var rows = container.querySelectorAll('.menu-item-row');
+            while (rows.length > 1) {
+                rows[rows.length - 1].remove();
+                rows = container.querySelectorAll('.menu-item-row');
+            }
+            updateIndices();
+        };
+    }
+})();
+</script>

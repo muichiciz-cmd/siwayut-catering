@@ -45,18 +45,33 @@
                 </div>
 
                 <div class="mb-5">
-                    <label for="menu" class="block text-sm font-medium mb-1 text-muted">Menu</label>
-                    <select id="menu" name="menu"
-                        class="w-full px-4 py-3 bg-[#1a1a1e] text-[#f4f4f5] border border-border rounded-xl text-[0.95rem] outline-none transition-all duration-300 focus:border-gold focus:ring-[3px] focus:ring-gold/20"
-                        required>
-                        <option value="">— Select Menu —</option>
-                        <?php foreach ($menus as $m): ?>
-                            <option value="<?= \App\Core\View::e($m['name']) ?>" <?= old('menu') === $m['name'] ? 'selected' : '' ?>>
-                                <?= \App\Core\View::e($m['name']) ?> — Rp
-                                <?= number_format((float) $m['price'], 0, ',', '.') ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label class="block text-sm font-medium mb-1 text-muted">Menu Items</label>
+                    <div id="menu-items-container">
+                        <div class="menu-item-row flex items-start gap-2" data-index="0">
+                            <div class="flex-1">
+                                <select name="items[0][menu_id]" required
+                                    class="w-full px-4 py-3 bg-[#1a1a1e] text-[#f4f4f5] border border-border rounded-xl text-[0.95rem] outline-none transition-all duration-300 focus:border-gold focus:ring-[3px] focus:ring-gold/20">
+                                    <option value="">-- Select Menu --</option>
+                                    <?php foreach ($menus as $m): ?>
+                                        <option value="<?= (int) $m['id'] ?>">
+                                            <?= \App\Core\View::e($m['name']) ?> &mdash; Rp
+                                            <?= number_format((float) $m['price'], 0, ',', '.') ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="w-28 shrink-0">
+                                <input type="number" name="items[0][quantity]" value="1" min="1" required
+                                    class="w-full px-4 py-3 bg-white/5 border border-border rounded-xl text-text text-[0.95rem] outline-none transition-all duration-300 placeholder:text-white/20 focus:border-gold focus:ring-[3px] focus:ring-gold/20"
+                                    placeholder="Qty">
+                            </div>
+                            <button type="button" class="remove-menu-item mt-1 w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-all duration-150 cursor-pointer border-0 bg-transparent shrink-0 hidden" data-index="0" title="Remove">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-menu-item"
+                        class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text mt-2">+ Add Another Menu</button>
                 </div>
 
                 <div class="mb-5">
@@ -64,14 +79,6 @@
                     <input type="datetime-local" id="event_date" name="event_date"
                         class="w-full px-4 py-3 bg-white/5 border border-border rounded-xl text-text text-[0.95rem] outline-none transition-all duration-300 placeholder:text-white/20 focus:border-gold focus:ring-[3px] focus:ring-gold/20"
                         value="<?= \App\Core\View::e(old('event_date')) ?>" required>
-                </div>
-
-                <div class="mb-5">
-                    <label for="quantity" class="block text-sm font-medium mb-1 text-muted">Portions</label>
-                    <input type="number" id="quantity" name="quantity"
-                        class="w-full px-4 py-3 bg-white/5 border border-border rounded-xl text-text text-[0.95rem] outline-none transition-all duration-300 placeholder:text-white/20 focus:border-gold focus:ring-[3px] focus:ring-gold/20"
-                        placeholder="E.g. 50" min="1"
-                        value="<?= \App\Core\View::e(old('quantity')) ?>" required>
                 </div>
 
                 <div class="mb-5">
@@ -125,6 +132,78 @@
     <script src="/assets/js/modules/ai-description.js"></script>
     <?php component('toast', ['flashes' => $pageFlashes]) ?>
     <script src="/assets/js/app.js"></script>
+    <script>
+<?php $menuJson = json_encode(array_map(function($m) {
+    return ['id' => $m['id'], 'name' => $m['name'], 'price' => $m['price']];
+}, $menus)); ?>
+    (function() {
+        'use strict';
+        var container = document.getElementById('menu-items-container');
+        var addBtn = document.getElementById('add-menu-item');
+        if (!container || !addBtn) return;
+
+        var menuList = <?= $menuJson ?>;
+
+        function buildSelect(index) {
+            var html = '<select name="items[' + index + '][menu_id]" required class="w-full px-4 py-3 bg-[#1a1a1e] text-[#f4f4f5] border border-border rounded-xl text-[0.95rem] outline-none transition-all duration-300 focus:border-gold focus:ring-[3px] focus:ring-gold/20">';
+            html += '<option value="">-- Select Menu --</option>';
+            for (var i = 0; i < menuList.length; i++) {
+                var m = menuList[i];
+                var price = 'Rp ' + Number(m.price).toLocaleString('id-ID');
+                html += '<option value="' + m.id + '">' + m.name + ' \u2014 ' + price + '</option>';
+            }
+            html += '</select>';
+            return html;
+        }
+
+        function updateIndices() {
+            var rows = container.querySelectorAll('.menu-item-row');
+            rows.forEach(function(row, idx) {
+                row.dataset.index = idx;
+                var sel = row.querySelector('select');
+                if (sel) sel.name = 'items[' + idx + '][menu_id]';
+                var qty = row.querySelector('input[type="number"]');
+                if (qty) qty.name = 'items[' + idx + '][quantity]';
+                var removeBtn = row.querySelector('.remove-menu-item');
+                if (removeBtn) {
+                    removeBtn.dataset.index = idx;
+                    removeBtn.classList.toggle('hidden', idx === 0);
+                }
+            });
+        }
+
+        addBtn.addEventListener('click', function() {
+            var rows = container.querySelectorAll('.menu-item-row');
+            var newIndex = rows.length;
+            var div = document.createElement('div');
+            div.className = 'menu-item-row flex items-start gap-2';
+            div.dataset.index = newIndex;
+            div.innerHTML =
+                '<div class="flex-1">' +
+                buildSelect(newIndex) +
+                '</div>' +
+                '<div class="w-28 shrink-0">' +
+                '<input type="number" name="items[' + newIndex + '][quantity]" value="1" min="1" required class="w-full px-4 py-3 bg-white/5 border border-border rounded-xl text-text text-[0.95rem] outline-none transition-all duration-300 placeholder:text-white/20 focus:border-gold focus:ring-[3px] focus:ring-gold/20" placeholder="Qty">' +
+                '</div>' +
+                '<button type="button" class="remove-menu-item mt-1 w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-all duration-150 cursor-pointer border-0 bg-transparent shrink-0" data-index="' + newIndex + '" title="Remove">' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>';
+            container.appendChild(div);
+            updateIndices();
+        });
+
+        container.addEventListener('click', function(e) {
+            var btn = e.target.closest('.remove-menu-item');
+            if (!btn) return;
+            var row = btn.closest('.menu-item-row');
+            if (row) {
+                row.remove();
+                updateIndices();
+            }
+        });
+
+        updateIndices();
+    })();
+    </script>
 </body>
 
 </html>

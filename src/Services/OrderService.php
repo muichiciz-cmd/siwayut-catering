@@ -22,11 +22,16 @@ class OrderService {
         return $this->order->find($id);
     }
 
+    public function getItems(int $orderId): array {
+        return $this->order->getItemsByOrderId($orderId);
+    }
+
     /**
-     * Create order. Implements "Member via Phone Number" logic.
+     * Create order with multiple menu items.
+     * $data = ['phone', 'customer_name', 'delivery_address', 'event_id', 'event_date', 'notes']
+     * $items = [['menu_id' => int, 'quantity' => int], ...]
      */
-    public function createOrder(array $data): int {
-        // 1. Handle Customer (Member by Phone)
+    public function createOrder(array $data, array $items): int {
         $phone = preg_replace('/[^0-9]/', '', $data['phone']);
         $customerRow = $this->customer->findByPhone($phone);
 
@@ -48,26 +53,36 @@ class OrderService {
             ]);
         }
 
-        // 2. Fetch Menu to calculate total price
-        $menuItem = $this->menu->find((int)$data['menu_id']);
-        if (!$menuItem) {
-            throw new \Exception("Menu not found.");
+        // Calculate total price & validate items
+        $totalPrice = 0;
+        $orderItems = [];
+        foreach ($items as $item) {
+            $menuItem = $this->menu->find((int)$item['menu_id']);
+            if (!$menuItem) {
+                throw new \Exception("Menu #{$item['menu_id']} not found.");
+            }
+
+            $quantity = (int)$item['quantity'];
+            if ($quantity < (int)$menuItem['minimum_portions']) {
+                throw new \Exception("{$menuItem['name']}: quantity is less than minimum ({$menuItem['minimum_portions']} portions).");
+            }
+
+            $subtotal = $quantity * (float)$menuItem['price'];
+            $totalPrice += $subtotal;
+
+            $orderItems[] = [
+                'menu_id' => $menuItem['id'],
+                'quantity' => $quantity,
+                'price_at_time' => $menuItem['price'],
+                'subtotal' => $subtotal,
+            ];
         }
 
-        $quantity = (int)$data['quantity'];
-        if ($quantity < (int)$menuItem['minimum_portions']) {
-            throw new \Exception("Quantity is less than the minimum limit ({$menuItem['minimum_portions']} portions).");
-        }
-
-        $totalPrice = $quantity * (float)$menuItem['price'];
-
-        // 3. Create Order
-        return $this->order->create([
+        // Create order
+        $orderId = $this->order->create([
             'customer_id' => $customerId,
             'event_id' => $data['event_id'],
-            'menu_id' => $menuItem['id'],
             'event_date' => $data['event_date'],
-            'quantity' => $quantity,
             'total_price' => $totalPrice,
             'delivery_address' => $data['delivery_address'],
             'notes' => $data['notes'] ?? '',
@@ -76,6 +91,13 @@ class OrderService {
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
+
+        // Insert order items
+        foreach ($orderItems as $item) {
+            $this->order->rawInsertOrderItem($orderId, $item);
+        }
+
+        return $orderId;
     }
 
     public function countByMenuIds(array $menuIds): array {

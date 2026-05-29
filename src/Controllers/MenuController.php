@@ -12,15 +12,13 @@ use App\Services\MenuService;
 use App\Services\CategoryService;
 use App\Services\EventService;
 use App\Services\AiService;
-use App\Services\OrderService;
 
 class MenuController extends BaseController {
     public function __construct(
         private MenuService $menuService,
         private CategoryService $categoryService,
         private EventService $eventService,
-        private AiService $aiService,
-        private OrderService $orderService
+        private AiService $aiService
     ) {
         parent::__construct();
     }
@@ -38,10 +36,7 @@ class MenuController extends BaseController {
         if ($status !== '') $conditions['status'] = $status;
         if ($eventId !== '') $conditions['event_id'] = $eventId;
         $result = $this->menuService->paginate($page, 15, $conditions, $search, ['name'], $orderBy, $direction);
-
-        $menuIds = array_column($result['data'], 'id');
-        $orderCounts = $this->orderService->countByMenuIds($menuIds);
-        $menus = array_map(fn($m) => [...$m, 'order_count' => $orderCounts[$m['id']] ?? 0], $result['data']);
+        $menus = $result['data'];
 
         $categories = $this->categoryService->all();
         $katMap = [];
