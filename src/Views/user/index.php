@@ -85,7 +85,7 @@ $sortIcon = function($col) use ($s, $d) {
                             <?php if (($currentUser['id'] ?? 0) !== (int)$user['id']): ?>
                             <form method="POST" action="/users/<?= (int)$user['id'] ?>/delete" class="inline">
                                 <?= \App\Core\Csrf::field() ?>
-                                <button type="submit" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-danger text-white border-danger hover:bg-danger-hover hover:border-danger-hover hover:text-white" data-confirm="Are you sure you want to delete this user?">Delete</button>
+                                <button type="submit" data-modal-confirm="Are you sure you want to delete this user?" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-danger text-white border-danger hover:bg-danger-hover hover:border-danger-hover hover:text-white">Delete</button>
                             </form>
                             <?php endif; ?>
                         </div>

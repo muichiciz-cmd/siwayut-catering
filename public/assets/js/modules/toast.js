@@ -121,15 +121,4 @@
 
     window.AppModules = window.AppModules || {};
     window.AppModules.toast = Toast;
-
-    window.handleDeleteMenu = function (event, orderCount) {
-        if (orderCount > 0) {
-            Toast.show('Menu has ' + orderCount + ' order(s), cannot delete');
-            event.preventDefault();
-            return;
-        }
-        if (confirm('Are you sure you want to delete this menu?')) {
-            event.target.closest('form').submit();
-        }
-    };
 })();

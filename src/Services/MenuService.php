@@ -76,4 +76,12 @@ class MenuService {
         }
         return $this->menu->delete($id);
     }
+
+    public function countByCategoryIds(array $ids): array {
+        return $this->menu->countByCategoryIds($ids);
+    }
+
+    public function countByEventIds(array $ids): array {
+        return $this->menu->countByEventIds($ids);
+    }
 }

@@ -8,9 +8,13 @@ use App\Core\Session;
 use App\Core\Validator;
 use App\Exceptions\NotFoundException;
 use App\Services\CategoryService;
+use App\Services\MenuService;
 
 class CategoryController extends BaseController {
-    public function __construct(private CategoryService $categoryService) {
+    public function __construct(
+        private CategoryService $categoryService,
+        private MenuService $menuService
+    ) {
         parent::__construct();
     }
 
@@ -21,9 +25,13 @@ class CategoryController extends BaseController {
         $direction = $request->input('dir', 'DESC');
         $result = $this->categoryService->paginate($page, 15, $search, $orderBy, $direction);
 
+        $catIds = array_column($result['data'], 'id');
+        $menuCounts = $this->menuService->countByCategoryIds($catIds);
+        $categories = array_map(fn($c) => [...$c, 'menu_count' => $menuCounts[$c['id']] ?? 0], $result['data']);
+
         $this->render('category/index', [
             'title' => 'Menu Categories',
-            'categories' => $result['data'],
+            'categories' => $categories,
             'pagination' => $result,
             'search' => $search,
             'sort_by' => $orderBy,

@@ -33,8 +33,10 @@ class MenuController extends BaseController {
         $conditions = [];
         $catId = $request->input('category_id', '');
         $status = $request->input('status', '');
+        $eventId = $request->input('event_id', '');
         if ($catId !== '') $conditions['category_id'] = $catId;
         if ($status !== '') $conditions['status'] = $status;
+        if ($eventId !== '') $conditions['event_id'] = $eventId;
         $result = $this->menuService->paginate($page, 15, $conditions, $search, ['name'], $orderBy, $direction);
 
         $menuIds = array_column($result['data'], 'id');
@@ -47,14 +49,22 @@ class MenuController extends BaseController {
             $katMap[$k['id']] = $k['name'];
         }
 
+        $events = $this->eventService->getActive();
+        $eventMap = [];
+        foreach ($events as $ev) {
+            $eventMap[$ev['id']] = $ev['name'];
+        }
+
         $this->render('menu/index', [
             'title' => 'Catering Menu List',
             'menus' => $menus,
             'pagination' => $result,
             'katMap' => $katMap,
+            'eventMap' => $eventMap,
             'search' => $search,
             'filterCategory' => $catId,
             'filterStatus' => $status,
+            'filterEvent' => $eventId,
             'sort_by' => $orderBy,
             'dir' => $direction,
         ]);
@@ -200,13 +210,17 @@ class MenuController extends BaseController {
         $id = (int) $request->param('id');
         
         try {
-            $this->menuService->delete($id);
-            $this->redirectWithFlash('/menus', 'success', 'Menu successfully deleted.');
+            if ($this->menuService->delete($id)) {
+                $this->redirectWithFlash('/menus', 'success', 'Menu successfully deleted.');
+            } else {
+                $this->redirectWithFlash('/menus', 'error', 'Failed to delete menu.');
+            }
         } catch (\PDOException $e) {
             if ($e->getCode() == 23000) {
-                $this->redirectWithFlash('/menus', 'error', 'Cannot delete menu because it is still used by orders.');
+                $this->redirectWithFlash('/menus', 'error', 'This menu has existing orders and cannot be deleted.');
+            } else {
+                $this->redirectWithFlash('/menus', 'error', 'Database error: ' . $e->getMessage());
             }
-            throw $e;
         }
     }
 }

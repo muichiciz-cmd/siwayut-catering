@@ -26,7 +26,9 @@
     <script src="/assets/js/modules/file-upload.js"></script>
     <script src="/assets/js/modules/progressive-image.js"></script>
     <script src="/assets/js/modules/load-more-menu.js"></script>
+    <script src="/assets/js/modules/modal.js"></script>
     <script src="/assets/js/modules/ai-description.js"></script>
+    <?php component('modal') ?>
     <?php component('toast') ?>
     <script src="/assets/js/app.js"></script>
 </body>

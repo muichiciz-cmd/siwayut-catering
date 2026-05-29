@@ -36,11 +36,21 @@
                 if (result.description) {
                     textarea.value = result.description;
                 } else {
-                    alert(result.message || result.error || 'Failed to generate description.');
+                    var msg = result.message || result.error || 'Failed to generate description.';
+                    if (window.AppModules && window.AppModules.modal) {
+                        AppModules.modal.alert({ title: 'Error', message: msg, type: 'danger' });
+                    } else {
+                        alert(msg);
+                    }
                 }
             })
             .catch(function (err) {
-                alert('Error: ' + err.message);
+                var msg = 'Error: ' + err.message;
+                if (window.AppModules && window.AppModules.modal) {
+                    AppModules.modal.alert({ title: 'Error', message: msg, type: 'danger' });
+                } else {
+                    alert(msg);
+                }
             })
             .finally(function () {
                 btn.disabled = false;
