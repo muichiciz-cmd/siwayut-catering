@@ -1,4 +1,4 @@
-<?php $headerTitle = 'Menu Categories'; $createUrl = '/categories/create'; ?>
+<?php $headerTitle = 'Menu Categories'; $createUrl = '/categories/create'; $createModal = 'createCategoryModal'; ?>
 <?php require __DIR__ . '/../partials/table-header.php' ?>
 <?php $searchPlaceholder = 'Search category name or slug...'; $showFilter = false; $search = $search ?? ''; ?>
 <?php require __DIR__ . '/../partials/table-search.php' ?>
@@ -44,3 +44,13 @@
     <?php $totalLabel = 'categories'; require __DIR__ . '/../partials/table-pagination.php' ?>
     <?php endif; ?>
 </div>
+<?php
+$createModalId = 'createCategoryModal';
+$createTitle = 'Add Category';
+$createAction = '/categories';
+$createSubmitText = 'Save Category';
+ob_start();
+component('form/input', ['name' => 'name', 'label' => 'Category Name', 'required' => true]);
+$createFormContent = ob_get_clean();
+require __DIR__ . '/../partials/create-modal.php';
+?>

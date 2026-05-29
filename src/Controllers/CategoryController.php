@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Request;
+use App\Core\Response;
 use App\Core\Session;
 use App\Core\Validator;
 use App\Exceptions\NotFoundException;
@@ -54,13 +55,28 @@ class CategoryController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) {
+                Response::jsonError('Validation failed.', $validator->errors());
+            }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/categories/create');
         }
 
-        $this->categoryService->create($data);
-        $this->redirectWithFlash('/categories', 'success', 'Category successfully added.');
+        try {
+            $this->categoryService->create($data);
+            if ($request->isAjax()) {
+                Response::jsonSuccess(null, 'Category successfully added.');
+            }
+            $this->redirectWithFlash('/categories', 'success', 'Category successfully added.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) {
+                Response::jsonError('Failed to add category: ' . $e->getMessage());
+            }
+            $this->withOldInput($data);
+            Session::flash('error', 'Failed to add category: ' . $e->getMessage());
+            $this->redirect('/categories/create');
+        }
     }
 
     public function edit(Request $request): void {

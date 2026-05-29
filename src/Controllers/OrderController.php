@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\{Request, Session, Validator, Database, Turnstile};
+use App\Core\{Request, Response, Session, Validator, Database, Turnstile};
 use App\Exceptions\NotFoundException;
 use App\Services\OrderService;
 use App\Services\MenuService;
@@ -172,12 +172,16 @@ class OrderController extends BaseController {
             'phone' => $c['phone']
         ];
 
+        $events = $this->eventService->getActive();
+
         $this->render('order/index', [
             'title' => 'Order List',
             'orders' => $result['data'],
             'pagination' => $result,
             'menuMap' => $menuMap,
             'customerMap' => $customerMap,
+            'menus' => $menus,
+            'events' => $events,
             'search' => $search,
             'filters' => $filters,
             'sort_by' => $orderBy,
@@ -211,6 +215,9 @@ class OrderController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) {
+                Response::jsonError('Validation failed.', $validator->errors());
+            }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/orders/create');
@@ -218,8 +225,14 @@ class OrderController extends BaseController {
 
         try {
             $this->orderService->createOrder($data);
+            if ($request->isAjax()) {
+                Response::jsonSuccess(null, 'Order successfully created.');
+            }
             $this->redirectWithFlash('/orders', 'success', 'Order successfully created.');
         } catch (\Exception $e) {
+            if ($request->isAjax()) {
+                Response::jsonError($e->getMessage());
+            }
             $this->withOldInput($data);
             Session::flash('error', $e->getMessage());
             $this->redirect('/orders/create');

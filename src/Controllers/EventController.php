@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Request;
+use App\Core\Response;
 use App\Core\Session;
 use App\Core\Validator;
 use App\Exceptions\NotFoundException;
@@ -61,13 +62,28 @@ class EventController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) {
+                Response::jsonError('Validation failed.', $validator->errors());
+            }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/events/create');
         }
 
-        $this->eventService->create($data);
-        $this->redirectWithFlash('/events', 'success', 'Event successfully added.');
+        try {
+            $this->eventService->create($data);
+            if ($request->isAjax()) {
+                Response::jsonSuccess(null, 'Event successfully added.');
+            }
+            $this->redirectWithFlash('/events', 'success', 'Event successfully added.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) {
+                Response::jsonError('Failed to add event: ' . $e->getMessage());
+            }
+            $this->withOldInput($data);
+            Session::flash('error', 'Failed to add event: ' . $e->getMessage());
+            $this->redirect('/events/create');
+        }
     }
 
     public function edit(Request $request): void {

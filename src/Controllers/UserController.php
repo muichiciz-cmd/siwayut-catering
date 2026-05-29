@@ -3,7 +3,7 @@ declare(strict_types=1);
 // File: src/Controllers/UserController.php
 
 namespace App\Controllers;
-use App\Core\{Request, Session, Validator, Database};
+use App\Core\{Request, Response, Session, Validator, Database};
 use App\Services\UserService;
 
 class UserController extends BaseController {
@@ -54,13 +54,28 @@ class UserController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) {
+                Response::jsonError('Validation failed.', $validator->errors());
+            }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/users/create');
         }
 
-        $this->userService->create($data);
-        $this->redirectWithFlash('/users', 'success', 'User created successfully.');
+        try {
+            $this->userService->create($data);
+            if ($request->isAjax()) {
+                Response::jsonSuccess(null, 'User created successfully.');
+            }
+            $this->redirectWithFlash('/users', 'success', 'User created successfully.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) {
+                Response::jsonError('Failed to create user: ' . $e->getMessage());
+            }
+            $this->withOldInput($data);
+            Session::flash('error', 'Failed to create user: ' . $e->getMessage());
+            $this->redirect('/users/create');
+        }
     }
 
     public function edit(Request $request): void {

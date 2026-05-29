@@ -1,4 +1,4 @@
-<?php $headerTitle = 'Catering Menu Management'; $createUrl = '/menus/create'; ?>
+<?php $headerTitle = 'Catering Menu Management'; $createUrl = '/menus/create'; $createModal = 'createMenuModal'; ?>
 <?php require __DIR__ . '/../partials/table-header.php' ?>
 <?php
 $searchPlaceholder = 'Search menu name or description...';
@@ -82,3 +82,28 @@ $filters = [
     <?php $totalLabel = 'menus'; require __DIR__ . '/../partials/table-pagination.php' ?>
     <?php endif; ?>
 </div>
+<?php
+$createModalId = 'createMenuModal';
+$createTitle = 'Add Catering Menu';
+$createAction = '/menus';
+$createSubmitText = 'Save Menu';
+$createEnctype = 'multipart/form-data';
+ob_start();
+component('form/input', ['name' => 'name', 'label' => 'Menu Name', 'required' => true]);
+component('form/textarea', ['name' => 'description', 'label' => 'Description', 'rows' => 4]);
+echo '<button type="button" onclick="generateDescription(this)" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text -mt-3 mb-5">Generate with AI</button>';
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/select', ['name' => 'category_id', 'label' => 'Category', 'options' => $katMap ?? [], 'placeholder' => '-- Select Category --', 'required' => true]);
+component('form/select', ['name' => 'event_id', 'label' => 'Event', 'options' => $eventMap ?? [], 'placeholder' => '-- Select Event --', 'required' => true]);
+echo '</div>';
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/select', ['name' => 'status', 'label' => 'Status', 'options' => ['active' => 'Active', 'inactive' => 'Inactive'], 'required' => true]);
+echo '</div>';
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/input', ['name' => 'price', 'label' => 'Price (Rp)', 'type' => 'number', 'required' => true]);
+component('form/input', ['name' => 'minimum_portions', 'label' => 'Minimum Portions', 'type' => 'number', 'value' => '1', 'min' => '1', 'required' => true]);
+echo '</div>';
+component('form/input', ['name' => 'image', 'label' => 'Menu Image (Optional)', 'type' => 'file', 'accept' => 'image/jpeg,image/png,image/webp']);
+$createFormContent = ob_get_clean();
+require __DIR__ . '/../partials/create-modal.php';
+?>

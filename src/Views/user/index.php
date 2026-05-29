@@ -1,4 +1,4 @@
-<?php $headerTitle = 'Users'; $createUrl = '/users/create'; ?>
+<?php $headerTitle = 'Users'; $createUrl = '/users/create'; $createModal = 'createUserModal'; ?>
 <?php require __DIR__ . '/../partials/table-header.php' ?>
 <?php
 $searchPlaceholder = 'Search name, email, or role...';
@@ -66,3 +66,16 @@ $filters = [
     <?php $totalLabel = 'users'; require __DIR__ . '/../partials/table-pagination.php' ?>
     <?php endif; ?>
 </div>
+<?php
+$createModalId = 'createUserModal';
+$createTitle = 'Create User';
+$createAction = '/users';
+$createSubmitText = 'Create User';
+ob_start();
+component('form/input', ['name' => 'name', 'label' => 'Full Name', 'placeholder' => 'John Doe', 'required' => true]);
+component('form/input', ['name' => 'email', 'label' => 'Email Address', 'type' => 'email', 'placeholder' => 'user@example.com', 'required' => true]);
+component('form/input', ['name' => 'password', 'label' => 'Password', 'type' => 'password', 'placeholder' => 'Min. 6 characters', 'required' => true]);
+component('form/select', ['name' => 'role', 'label' => 'Role', 'options' => ['user' => 'User', 'admin' => 'Admin']]);
+$createFormContent = ob_get_clean();
+require __DIR__ . '/../partials/create-modal.php';
+?>

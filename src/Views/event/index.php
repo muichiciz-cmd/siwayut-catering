@@ -1,4 +1,4 @@
-<?php $headerTitle = 'Events'; $createUrl = '/events/create'; ?>
+<?php $headerTitle = 'Events'; $createUrl = '/events/create'; $createModal = 'createEventModal'; ?>
 <?php require __DIR__ . '/../partials/table-header.php' ?>
 <?php
 $searchPlaceholder = 'Search event name or date...';
@@ -66,3 +66,18 @@ $filters = [
         <?php $paginationCompact = true; require __DIR__ . '/../partials/table-pagination.php' ?>
     </div>
 </div>
+<?php
+$createModalId = 'createEventModal';
+$createTitle = 'Add Event';
+$createAction = '/events';
+$createSubmitText = 'Save Event';
+ob_start();
+component('form/input', ['name' => 'name', 'label' => 'Event Name (e.g., Idul Fitri 2026)', 'required' => true]);
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/input', ['name' => 'start_date', 'label' => 'Start Date', 'type' => 'date', 'required' => true]);
+component('form/input', ['name' => 'end_date', 'label' => 'End Date', 'type' => 'date', 'required' => true]);
+echo '</div>';
+component('form/select', ['name' => 'status', 'label' => 'Status', 'options' => ['active' => 'Active', 'inactive' => 'Inactive'], 'required' => true]);
+$createFormContent = ob_get_clean();
+require __DIR__ . '/../partials/create-modal.php';
+?>

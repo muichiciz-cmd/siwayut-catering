@@ -30,14 +30,12 @@ return function (Router $router): void {
         $r->group(['middleware' => ['role:admin']], function (Router $r): void {
             // Users
             $r->get('/users',              [UserController::class, 'index']);
-            $r->get('/users/create',       [UserController::class, 'create']);
             $r->post('/users',             [UserController::class, 'store']);
             $r->get('/users/{id}/edit',    [UserController::class, 'edit']);
             $r->post('/users/{id}',        [UserController::class, 'update']);
             $r->post('/users/{id}/delete', [UserController::class, 'destroy']);
             // Events
             $r->get('/events',              [EventController::class, 'index']);
-            $r->get('/events/create',       [EventController::class, 'create']);
             $r->post('/events',             [EventController::class, 'store']);
             $r->get('/events/{id}/edit',    [EventController::class, 'edit']);
             $r->post('/events/{id}',        [EventController::class, 'update']);
@@ -45,7 +43,6 @@ return function (Router $router): void {
 
             // Categories
             $r->get('/categories',              [CategoryController::class, 'index']);
-            $r->get('/categories/create',       [CategoryController::class, 'create']);
             $r->post('/categories',             [CategoryController::class, 'store']);
             $r->get('/categories/{id}/edit',    [CategoryController::class, 'edit']);
             $r->post('/categories/{id}',        [CategoryController::class, 'update']);
@@ -53,7 +50,6 @@ return function (Router $router): void {
 
             // Menus
             $r->get('/menus',                           [MenuController::class, 'index']);
-            $r->get('/menus/create',                    [MenuController::class, 'create']);
             $r->post('/menus',                          [MenuController::class, 'store']);
             $r->post('/menus/generate-description',     [MenuController::class, 'generateDescription']);
             $r->get('/menus/{id}/edit',                 [MenuController::class, 'edit']);
@@ -62,7 +58,6 @@ return function (Router $router): void {
 
             // Orders
             $r->get('/orders',              [OrderController::class, 'index']);
-            $r->get('/orders/create',       [OrderController::class, 'create']);
             $r->post('/orders',             [OrderController::class, 'store']);
             $r->get('/orders/{id}/edit',    [OrderController::class, 'edit']);
             $r->post('/orders/{id}',        [OrderController::class, 'update']);

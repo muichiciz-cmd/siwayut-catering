@@ -93,6 +93,9 @@ class MenuController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) {
+                Response::jsonError('Validation failed.', $validator->errors());
+            }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/menus/create');
@@ -104,11 +107,17 @@ class MenuController extends BaseController {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
             $mime = $finfo->file($gambar['tmp_name']);
             if (!in_array($mime, $allowedMimes, true)) {
+                if ($request->isAjax()) {
+                    Response::jsonError('Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                }
                 $this->withOldInput($data);
                 Session::flash('error', 'Invalid file type. Only JPG, PNG, WEBP files are allowed.');
                 $this->redirect('/menus/create');
             }
             if ($gambar['size'] > $maxSize) {
+                if ($request->isAjax()) {
+                    Response::jsonError('File too large. Maximum size is 5 MB.');
+                }
                 $this->withOldInput($data);
                 Session::flash('error', 'File too large. Maximum size is 5 MB.');
                 $this->redirect('/menus/create');
@@ -117,8 +126,14 @@ class MenuController extends BaseController {
 
         try {
             $this->menuService->create($data, $gambar);
+            if ($request->isAjax()) {
+                Response::jsonSuccess(null, 'Menu successfully added.');
+            }
             $this->redirectWithFlash('/menus', 'success', 'Menu successfully added.');
         } catch (\Exception $e) {
+            if ($request->isAjax()) {
+                Response::jsonError('Failed to add menu: ' . $e->getMessage());
+            }
             $this->withOldInput($data);
             Session::flash('error', 'Failed to add menu: ' . $e->getMessage());
             $this->redirect('/menus/create');

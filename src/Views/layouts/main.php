@@ -33,6 +33,7 @@
     <script src="/assets/js/modules/load-more-menu.js"></script>
     <script src="/assets/js/modules/modal.js"></script>
     <script src="/assets/js/modules/ai-description.js"></script>
+    <script src="/assets/js/modules/create-modal.js"></script>
     <?php component('modal') ?>
     <?php component('toast') ?>
     <script src="/assets/js/app.js"></script>
@@ -40,6 +41,8 @@
     (function() {
         var container = document.getElementById('table-container');
         if (!container) return;
+
+        window.reloadTable = function (url) { load(url || window.location.href); };
 
         function load(url) {
             history.replaceState({ url: url }, '', url);
