@@ -74,12 +74,11 @@ $sortIcon = function($col) use ($s, $d) {
                     <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('total_price') ?>" class="text-muted hover:text-gold transition-colors no-underline">Total Price<?= $sortIcon('total_price') ?></a></th>
                     <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('status') ?>" class="text-muted hover:text-gold transition-colors no-underline">Status<?= $sortIcon('status') ?></a></th>
                     <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('payment_status') ?>" class="text-muted hover:text-gold transition-colors no-underline">Payment<?= $sortIcon('payment_status') ?></a></th>
-                    <th class="bg-black/30 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($orders as $order): ?>
-                <tr>
+                <tr class="cursor-pointer hover:bg-white/[0.03]" onclick="location.href='/orders/<?= (int)$order['id'] ?>'">
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text"><?= $order['id'] ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
                         <div class="font-medium"><?= htmlspecialchars($customerMap[$order['customer_id']]['name'] ?? 'Unknown') ?></div>
@@ -122,11 +121,7 @@ $sortIcon = function($col) use ($s, $d) {
                             <?= htmlspecialchars($paymentLabels[$order['payment_status']] ?? $order['payment_status']) ?>
                         </span>
                     </td>
-                    <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
-                        <div class="flex items-center gap-2">
-                            <a href="/orders/<?= $order['id'] ?>/edit" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text">Update Status</a>
-                        </div>
-                    </td>
+
                 </tr>
                 <?php endforeach; ?>
             </tbody>

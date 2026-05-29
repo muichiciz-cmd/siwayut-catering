@@ -31,35 +31,35 @@ return function (Router $router): void {
             // Users
             $r->get('/users',              [UserController::class, 'index']);
             $r->post('/users',             [UserController::class, 'store']);
-            $r->get('/users/{id}/edit',    [UserController::class, 'edit']);
             $r->post('/users/{id}',        [UserController::class, 'update']);
             $r->post('/users/{id}/delete', [UserController::class, 'destroy']);
+            $r->get('/api/users/{id}',     [UserController::class, 'apiShow']);
             // Events
             $r->get('/events',              [EventController::class, 'index']);
             $r->post('/events',             [EventController::class, 'store']);
-            $r->get('/events/{id}/edit',    [EventController::class, 'edit']);
             $r->post('/events/{id}',        [EventController::class, 'update']);
             $r->post('/events/{id}/delete', [EventController::class, 'destroy']);
+            $r->get('/api/events/{id}',     [EventController::class, 'apiShow']);
 
             // Categories
             $r->get('/categories',              [CategoryController::class, 'index']);
             $r->post('/categories',             [CategoryController::class, 'store']);
-            $r->get('/categories/{id}/edit',    [CategoryController::class, 'edit']);
             $r->post('/categories/{id}',        [CategoryController::class, 'update']);
             $r->post('/categories/{id}/delete', [CategoryController::class, 'destroy']);
+            $r->get('/api/categories/{id}',     [CategoryController::class, 'apiShow']);
 
             // Menus
             $r->get('/menus',                           [MenuController::class, 'index']);
             $r->post('/menus',                          [MenuController::class, 'store']);
             $r->post('/menus/generate-description',     [MenuController::class, 'generateDescription']);
-            $r->get('/menus/{id}/edit',                 [MenuController::class, 'edit']);
             $r->post('/menus/{id}',                     [MenuController::class, 'update']);
             $r->post('/menus/{id}/delete',              [MenuController::class, 'destroy']);
+            $r->get('/api/menus/{id}',                  [MenuController::class, 'apiShow']);
 
             // Orders
             $r->get('/orders',              [OrderController::class, 'index']);
             $r->post('/orders',             [OrderController::class, 'store']);
-            $r->get('/orders/{id}/edit',    [OrderController::class, 'edit']);
+            $r->get('/orders/{id}',         [OrderController::class, 'show']);
             $r->post('/orders/{id}',        [OrderController::class, 'update']);
         });
     });

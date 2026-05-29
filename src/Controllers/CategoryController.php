@@ -79,18 +79,11 @@ class CategoryController extends BaseController {
         }
     }
 
-    public function edit(Request $request): void {
+    public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $category = $this->categoryService->find($id);
-
-        if (!$category) {
-            throw new NotFoundException('Category not found.');
-        }
-
-        $this->render('category/edit', [
-            'title' => 'Edit Category',
-            'category' => $category,
-        ]);
+        if (!$category) Response::jsonError('Not found', [], 404);
+        Response::jsonSuccess($category);
     }
 
     public function update(Request $request): void {
@@ -103,13 +96,22 @@ class CategoryController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/categories/{$id}/edit");
         }
 
-        $this->categoryService->update($id, $data);
-        $this->redirectWithFlash('/categories', 'success', 'Category successfully updated.');
+        try {
+            $this->categoryService->update($id, $data);
+            if ($request->isAjax()) Response::jsonSuccess(null, 'Category successfully updated.');
+            $this->redirectWithFlash('/categories', 'success', 'Category successfully updated.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            $this->withOldInput($data);
+            Session::flash('error', 'Failed to update category: ' . $e->getMessage());
+            $this->redirect("/categories/{$id}/edit");
+        }
     }
 
     public function destroy(Request $request): void {

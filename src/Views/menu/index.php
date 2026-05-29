@@ -1,4 +1,4 @@
-<?php $headerTitle = 'Catering Menu Management'; $createUrl = '/menus/create'; $createModal = 'createMenuModal'; ?>
+<?php $headerTitle = 'Catering Menu Management'; $createModal = 'createMenuModal'; ?>
 <?php require __DIR__ . '/../partials/table-header.php' ?>
 <?php
 $searchPlaceholder = 'Search menu name or description...';
@@ -67,7 +67,7 @@ $filters = [
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text text-center"><?= (int)$menu['order_count'] ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
                         <div class="flex items-center gap-2">
-                            <a href="/menus/<?= e($menu['id']) ?>/edit" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 px-3 py-1.5 text-[0.8125rem] bg-white/6 text-text border-border hover:bg-white/10 hover:text-text">Edit</a>
+                            <a href="#" data-edit="menus" data-id="<?= e($menu['id']) ?>" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 px-3 py-1.5 text-[0.8125rem] bg-white/6 text-text border-border hover:bg-white/10 hover:text-text">Edit</a>
                             <form action="/menus/<?= e($menu['id']) ?>/delete" method="POST" class="inline">
                                 <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" data-modal-confirm="Yakin ingin menghapus menu ini?" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 px-3 py-1.5 text-[0.8125rem] bg-danger text-white border-danger hover:bg-danger-hover hover:border-danger-hover hover:text-white">Delete</button>
@@ -103,6 +103,7 @@ echo '<div class="grid grid-cols-2 gap-4">';
 component('form/input', ['name' => 'price', 'label' => 'Price (Rp)', 'type' => 'number', 'required' => true]);
 component('form/input', ['name' => 'minimum_portions', 'label' => 'Minimum Portions', 'type' => 'number', 'value' => '1', 'min' => '1', 'required' => true]);
 echo '</div>';
+echo '<div data-image-preview="image" data-image-dir="menus" class="hidden mb-2"></div>';
 component('form/input', ['name' => 'image', 'label' => 'Menu Image (Optional)', 'type' => 'file', 'accept' => 'image/jpeg,image/png,image/webp']);
 $createFormContent = ob_get_clean();
 require __DIR__ . '/../partials/create-modal.php';

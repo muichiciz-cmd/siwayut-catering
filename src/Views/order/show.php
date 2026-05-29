@@ -1,12 +1,12 @@
 <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold font-display text-text"><?= htmlspecialchars($title ?? 'Update Order Status') ?></h1>
+    <h1 class="text-2xl font-bold font-display text-text"><?= htmlspecialchars($title ?? 'Order Detail') ?></h1>
     <a href="/orders" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text">&larr; Back to Orders</a>
 </div>
 
 <div class="grid grid-cols-2 gap-6">
     <div class="bg-[#18181b] border border-border rounded-xl overflow-hidden">
         <div class="p-6">
-            <h4 class="mb-4 pb-2 border-b border-border font-display font-semibold text-text">Order Details <?= $order['id'] ?></h4>
+            <h4 class="mb-4 pb-2 border-b border-border font-display font-semibold text-text">Order Details #<?= $order['id'] ?></h4>
             <div class="grid grid-cols-[150px_1fr] gap-2 text-sm">
                 <div class="font-medium">Customer Name</div>
                 <div><?= htmlspecialchars($customer['name'] ?? '-') ?></div>
@@ -42,13 +42,13 @@
             </div>
         </div>
     </div>
-    
+
     <div class="bg-[#18181b] border border-border rounded-xl overflow-hidden">
         <div class="p-6">
             <h4 class="mb-4 pb-2 border-b border-border font-display font-semibold text-text">Update Status</h4>
             <form action="/orders/<?= $order['id'] ?>" method="POST">
                 <?= \App\Core\Csrf::field() ?>
-                
+
                 <?php component('form/select', [
                     'name' => 'status',
                     'label' => 'Order Status',

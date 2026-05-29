@@ -239,7 +239,7 @@ class OrderController extends BaseController {
         }
     }
 
-    public function edit(Request $request): void {
+    public function show(Request $request): void {
         $id = (int) $request->param('id');
         $order = $this->orderService->find($id);
 
@@ -247,14 +247,14 @@ class OrderController extends BaseController {
             throw new NotFoundException('Order not found.');
         }
 
-        $customerRow = $this->customer->find((int)$order['customer_id']);
-        $menuRow = $this->menuService->find((int)$order['menu_id']);
+        $customer = $this->customer->find((int)$order['customer_id']);
+        $menu = $this->menuService->find((int)$order['menu_id']);
 
-        $this->render('order/edit', [
-            'title' => 'Update Order Status',
+        $this->render('order/show', [
+            'title' => 'Order #' . $id,
             'order' => $order,
-            'customer' => $customerRow,
-            'menu' => $menuRow,
+            'customer' => $customer,
+            'menu' => $menu,
         ]);
     }
 
@@ -269,11 +269,19 @@ class OrderController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
             Session::flash('errors', json_encode($validator->errors()));
-            $this->redirect("/orders/{$id}/edit");
+            $this->redirect("/orders/{$id}");
         }
 
-        $this->orderService->updateStatus($id, $data['status'], $data['payment_status']);
-        $this->redirectWithFlash('/orders', 'success', 'Order status successfully updated.');
+        try {
+            $this->orderService->updateStatus($id, $data['status'], $data['payment_status']);
+            if ($request->isAjax()) Response::jsonSuccess(null, 'Order status updated.');
+            $this->redirectWithFlash('/orders', 'success', 'Order status successfully updated.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            Session::flash('error', 'Failed to update order: ' . $e->getMessage());
+            $this->redirect("/orders/{$id}");
+        }
     }
 }

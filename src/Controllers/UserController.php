@@ -78,15 +78,12 @@ class UserController extends BaseController {
         }
     }
 
-    public function edit(Request $request): void {
+    public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $user = $this->userService->getById($id);
-        $this->render('user/edit', [
-            'title' => 'Edit User',
-            'user' => $user,
-            'errors' => Session::getFlash('errors') ? json_decode(Session::getFlash('errors'), true) : [],
-            'currentUser' => $this->currentUser(),
-        ]);
+        if (!$user) Response::jsonError('Not found', [], 404);
+        unset($user['password']);
+        Response::jsonSuccess($user);
     }
 
     public function update(Request $request): void {
@@ -101,13 +98,22 @@ class UserController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/users/{$id}/edit");
         }
 
-        $this->userService->update($id, $data);
-        $this->redirectWithFlash('/users', 'success', 'User updated successfully.');
+        try {
+            $this->userService->update($id, $data);
+            if ($request->isAjax()) Response::jsonSuccess(null, 'User updated successfully.');
+            $this->redirectWithFlash('/users', 'success', 'User updated successfully.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            $this->withOldInput($data);
+            Session::flash('error', 'Failed to update user: ' . $e->getMessage());
+            $this->redirect("/users/{$id}/edit");
+        }
     }
 
     public function destroy(Request $request): void {

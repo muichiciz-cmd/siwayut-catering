@@ -86,18 +86,11 @@ class EventController extends BaseController {
         }
     }
 
-    public function edit(Request $request): void {
+    public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $event = $this->eventService->find($id);
-
-        if (!$event) {
-            throw new NotFoundException('Event not found.');
-        }
-
-        $this->render('event/edit', [
-            'title' => 'Edit Event',
-            'event' => $event,
-        ]);
+        if (!$event) Response::jsonError('Not found', [], 404);
+        Response::jsonSuccess($event);
     }
 
     public function update(Request $request): void {
@@ -113,13 +106,22 @@ class EventController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/events/{$id}/edit");
         }
 
-        $this->eventService->update($id, $data);
-        $this->redirectWithFlash('/events', 'success', 'Event successfully updated.');
+        try {
+            $this->eventService->update($id, $data);
+            if ($request->isAjax()) Response::jsonSuccess(null, 'Event successfully updated.');
+            $this->redirectWithFlash('/events', 'success', 'Event successfully updated.');
+        } catch (\Exception $e) {
+            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            $this->withOldInput($data);
+            Session::flash('error', 'Failed to update event: ' . $e->getMessage());
+            $this->redirect("/events/{$id}/edit");
+        }
     }
 
     public function destroy(Request $request): void {

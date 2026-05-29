@@ -140,20 +140,12 @@ class MenuController extends BaseController {
         }
     }
 
-    public function edit(Request $request): void {
+    public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $menu = $this->menuService->find($id);
-
-        if (!$menu) {
-            throw new NotFoundException('Menu not found.');
-        }
-
-        $this->render('menu/edit', [
-            'title' => 'Edit Menu',
-            'menu' => $menu,
-            'categories' => $this->categoryService->all(),
-            'events' => $this->eventService->getActive(),
-        ]);
+        if (!$menu) Response::jsonError('Not found', [], 404);
+        $menu['image_url'] = $menu['image'] ? '/uploads/menus/' . $menu['image'] : null;
+        Response::jsonSuccess($menu);
     }
 
     public function update(Request $request): void {
@@ -172,6 +164,7 @@ class MenuController extends BaseController {
         ]);
 
         if ($validator->fails()) {
+            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/menus/{$id}/edit");
@@ -183,11 +176,13 @@ class MenuController extends BaseController {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
             $mime = $finfo->file($gambar['tmp_name']);
             if (!in_array($mime, $allowedMimes, true)) {
+                if ($request->isAjax()) Response::jsonError('Invalid file type. Only JPG, PNG, WEBP files are allowed.');
                 $this->withOldInput($data);
                 Session::flash('error', 'Invalid file type. Only JPG, PNG, WEBP files are allowed.');
                 $this->redirect("/menus/{$id}/edit");
             }
             if ($gambar['size'] > $maxSize) {
+                if ($request->isAjax()) Response::jsonError('File too large. Maximum size is 5 MB.');
                 $this->withOldInput($data);
                 Session::flash('error', 'File too large. Maximum size is 5 MB.');
                 $this->redirect("/menus/{$id}/edit");
@@ -196,8 +191,10 @@ class MenuController extends BaseController {
 
         try {
             $this->menuService->update($id, $data, $gambar);
+            if ($request->isAjax()) Response::jsonSuccess(null, 'Menu successfully updated.');
             $this->redirectWithFlash('/menus', 'success', 'Menu successfully updated.');
         } catch (\Exception $e) {
+            if ($request->isAjax()) Response::jsonError('Failed to update menu: ' . $e->getMessage());
             $this->withOldInput($data);
             Session::flash('error', 'Failed to update menu: ' . $e->getMessage());
             $this->redirect("/menus/{$id}/edit");
