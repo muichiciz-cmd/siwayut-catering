@@ -103,14 +103,14 @@
                 <form id="status-form" action="/orders/<?= (int)$order['id'] ?>" method="POST" class="hidden mt-4 pt-4 border-t border-border">
                     <?= csrf_field() ?>
                     <div class="flex flex-col gap-3">
-                        <select name="status" class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                        <select name="status" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
                             <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
                             <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>>Processing</option>
                             <option value="delivering" <?= $order['status'] === 'delivering' ? 'selected' : '' ?>>Delivering</option>
                             <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
                             <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
                         </select>
-                        <select name="payment_status" class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                        <select name="payment_status" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
                             <option value="unpaid" <?= $order['payment_status'] === 'unpaid' ? 'selected' : '' ?>>Unpaid</option>
                             <option value="paid" <?= $order['payment_status'] === 'paid' ? 'selected' : '' ?>>Paid</option>
                             <option value="refunded" <?= $order['payment_status'] === 'refunded' ? 'selected' : '' ?>>Refunded</option>

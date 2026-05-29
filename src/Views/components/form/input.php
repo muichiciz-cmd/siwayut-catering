@@ -58,10 +58,10 @@ if ($type === 'file' && !$help_text) {
     </div>
 
     <?php elseif ($type === 'number'): ?>
-    <input type="<?= e($type) ?>" id="<?= e($name) ?>" name="<?= e($name) ?>" class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light<?= $isInvalid ?>" value="<?= e($value) ?>" placeholder="<?= e($placeholder) ?>" <?= $required ? 'required' : '' ?> <?= isset($min) ? 'min="'.e($min).'"' : '' ?> <?= isset($step) ? 'step="'.e($step).'"' : '' ?>>
+    <input type="<?= e($type) ?>" id="<?= e($name) ?>" name="<?= e($name) ?>" class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light<?= $isInvalid ?>" value="<?= e($value) ?>" placeholder="<?= e($placeholder) ?>" <?= $required ? 'required' : '' ?> <?= isset($min) ? 'min="'.e($min).'"' : '' ?> <?= isset($step) ? 'step="'.e($step).'"' : '' ?>>
 
     <?php else: ?>
-    <input type="<?= e($type) ?>" id="<?= e($name) ?>" name="<?= e($name) ?>" class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light<?= $isInvalid ?>" value="<?= e($value) ?>" placeholder="<?= e($placeholder) ?>" <?= $required ? 'required' : '' ?>>
+    <input type="<?= e($type) ?>" id="<?= e($name) ?>" name="<?= e($name) ?>" class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light<?= $isInvalid ?>" value="<?= e($value) ?>" placeholder="<?= e($placeholder) ?>" <?= $required ? 'required' : '' ?>>
     <?php endif; ?>
 
     <?php if ($help_text && $type !== 'file'): ?>

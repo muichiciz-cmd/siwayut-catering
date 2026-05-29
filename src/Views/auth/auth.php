@@ -46,14 +46,14 @@
                     <div class="mb-5">
                         <label for="login-email" class="block text-sm font-medium text-text mb-1.5">Email Address</label>
                         <input type="email" id="login-email" name="email"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('email')) ?>" placeholder="admin@example.com" required autofocus>
                     </div>
 
                     <div class="mb-5">
                         <label for="login-password" class="block text-sm font-medium text-text mb-1.5">Password</label>
                         <input type="password" id="login-password" name="password"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             placeholder="••••••••" required>
                     </div>
 
@@ -77,35 +77,35 @@
                     <div class="mb-5">
                         <label for="register-name" class="block text-sm font-medium text-text mb-1.5">Full Name</label>
                         <input type="text" id="register-name" name="name"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('name')) ?>" placeholder="Full name" required>
                     </div>
 
                     <div class="mb-5">
                         <label for="register-email" class="block text-sm font-medium text-text mb-1.5">Email Address</label>
                         <input type="email" id="register-email" name="email"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('email')) ?>" placeholder="user@example.com" required>
                     </div>
 
                     <div class="mb-5">
                         <label for="register-phone" class="block text-sm font-medium text-text mb-1.5">Phone Number</label>
                         <input type="tel" id="register-phone" name="phone"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('phone')) ?>" placeholder="08xxxxxxxxxx" required>
                     </div>
 
                     <div class="mb-5">
                         <label for="register-password" class="block text-sm font-medium text-text mb-1.5">Password</label>
                         <input type="password" id="register-password" name="password"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             placeholder="Minimum 6 characters" required>
                     </div>
 
                     <div class="mb-5">
                         <label for="register-password-confirmation" class="block text-sm font-medium text-text mb-1.5">Confirm Password</label>
                         <input type="password" id="register-password-confirmation" name="password_confirmation"
-                            class="w-full px-3 py-2 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
+                            class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             placeholder="Repeat password" required>
                     </div>
 
