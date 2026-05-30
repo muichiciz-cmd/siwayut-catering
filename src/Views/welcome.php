@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 
-<body class="bg-bg text-text min-h-screen leading-relaxed overflow-x-hidden bg-fixed bg-[radial-gradient(circle_at_15%_25%,rgba(229,142,38,0.12)_0%,transparent_45%),radial-gradient(circle_at_85%_75%,rgba(234,32,39,0.08)_0%,transparent_45%)]">
+<body
+    class="bg-bg text-text min-h-screen leading-relaxed overflow-x-hidden bg-fixed bg-[radial-gradient(circle_at_15%_25%,rgba(229,142,38,0.12)_0%,transparent_45%),radial-gradient(circle_at_85%_75%,rgba(234,32,39,0.08)_0%,transparent_45%)]">
 
     <div class="parallax-orbs">
         <div class="orb orb-1"></div>
@@ -28,22 +29,28 @@
             <div class="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
                 <a href="/" class="flex items-center gap-2 no-underline text-text">
                     <span class="text-[1.8rem] drop-shadow-[0_0_8px_var(--accent-gold-glow)]">🍲</span>
-                    <span class="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">Siwayut Catering</span>
+                    <span
+                        class="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">Siwayut
+                        Catering</span>
                 </a>
                 <div class="flex items-center gap-3">
                     <?php component('lang-switcher') ?>
                     <?php if ($navUser): ?>
                         <?php if ($navUser['role'] === 'admin'): ?>
-                        <a href="/orders" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('dashboard') ?></a>
+                            <a href="/orders"
+                                class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('dashboard') ?></a>
                         <?php else: ?>
-                        <a href="/my-orders" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('my_orders') ?></a>
-                        <form method="POST" action="/logout" class="m-0 p-0 inline">
-                            <?= \App\Core\Csrf::field() ?>
-                            <button type="submit" class="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium no-underline bg-transparent border border-transparent text-muted hover:text-danger hover:border-danger/30 hover:bg-danger/10 transition-all duration-300 cursor-pointer"><?= __('logout') ?></button>
-                        </form>
+                            <a href="/my-orders"
+                                class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('my_orders') ?></a>
+                            <form method="POST" action="/logout" class="m-0 p-0 inline">
+                                <?= \App\Core\Csrf::field() ?>
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium no-underline bg-transparent border border-transparent text-muted hover:text-danger hover:border-danger/30 hover:bg-danger/10 transition-all duration-300 cursor-pointer"><?= __('logout') ?></button>
+                            </form>
                         <?php endif; ?>
                     <?php else: ?>
-                        <a href="/auth" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('login') ?></a>
+                        <a href="/auth"
+                            class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('login') ?></a>
                     <?php endif; ?>
                 </div>
         </header>
@@ -57,7 +64,8 @@
                         <?= __('premium_holiday_catering') ?></span>
                     <h1
                         class="text-[clamp(2.3rem,5vw,3.5rem)] font-extrabold leading-[1.15] tracking-tight mb-6 bg-gradient-to-r from-white via-zinc-100 to-gold bg-clip-text text-transparent">
-                        <?= __('exquisite_taste') ?></h1>
+                        <?= __('exquisite_taste') ?>
+                    </h1>
                     <p class="text-lg text-muted max-w-[700px] mx-auto mb-10 leading-relaxed"><?= __('hero_desc') ?></p>
                     <div class="flex items-center justify-center gap-5 flex-wrap">
                         <a href="/order-form"
@@ -128,7 +136,8 @@
                     <div class="flex flex-wrap gap-2 mb-6" id="category-filters">
                         <button class="filter-tab active" data-category=""><?= __('all_categories') ?></button>
                         <?php foreach ($categories as $cat): ?>
-                        <button class="filter-tab" data-category="<?= e((string)$cat['id']) ?>"><?= e($cat['name']) ?></button>
+                            <button class="filter-tab"
+                                data-category="<?= e((string) $cat['id']) ?>"><?= e($cat['name']) ?></button>
                         <?php endforeach; ?>
                     </div>
                     <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 mb-20" id="menu-grid">
@@ -156,10 +165,13 @@
                                         <?php endif; ?>
                                     </div>
                                     <div class="p-5 flex flex-col flex-1">
-                                        <h3 class="text-lg font-bold mb-2 text-white font-display group-hover:text-gold transition-colors duration-200">
-                                            <?= \App\Core\View::e($menu['name']) ?></h3>
+                                        <h3
+                                            class="text-lg font-bold mb-2 text-white font-display group-hover:text-gold transition-colors duration-200">
+                                            <?= \App\Core\View::e($menu['name']) ?>
+                                        </h3>
                                         <p class="text-sm text-muted mb-5 flex-1 line-clamp-2">
-                                            <?= \App\Core\View::e($menu['description']) ?></p>
+                                            <?= \App\Core\View::e($menu['description']) ?>
+                                        </p>
                                         <div class="flex items-center justify-between border-t border-border pt-3 mt-auto">
                                             <span class="font-display text-xl font-bold text-gold">Rp
                                                 <?= number_format((float) $menu['price'], 0, ',', '.') ?></span>
@@ -195,7 +207,7 @@
                         <div class="rounded-xl overflow-hidden border border-border bg-card-bg relative">
                             <div class="absolute inset-0 z-[1] bg-bg/35 pointer-events-none"></div>
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11381.726282786856!2d110.8340308035105!3d-6.714749301936785!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70db1830041541%3A0x986aac86d66f3252!2sSiwayut%20Catering!5e1!3m2!1sen!2sid!4v1779931576706!5m2!1sen!2sid"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.450988611377!2d110.8339305!3d-6.7146883!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70db1830041541%3A0x986aac86d66f3252!2sSiwayut%20Catering!5e0!3m2!1sen!2sid!4v1780116984452!5m2!1sen!2sid"
                                 loading="lazy" referrerpolicy="no-referrer-when-downgrade"
                                 class="w-full h-[320px] max-md:h-[250px] block border-0 relative z-0"></iframe>
                         </div>
@@ -259,7 +271,7 @@
         'currentPage' => $currentPage,
         'lastPage' => $lastPage,
         'eventMap' => $eventMap,
-        'categories' => array_map(fn($c) => ['id' => (int)$c['id'], 'name' => $c['name']], $categories),
+        'categories' => array_map(fn($c) => ['id' => (int) $c['id'], 'name' => $c['name']], $categories),
     ], JSON_UNESCAPED_UNICODE) ?></script>
 
     <script src="/assets/js/modules/turnstile.js"></script>
