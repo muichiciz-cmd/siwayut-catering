@@ -64,11 +64,7 @@ class OrderController extends BaseController
         $data = $request->only(['name', 'event_date', 'address', 'notes']);
         $items = $request->input('items', []);
 
-        if (!Turnstile::verify($request->input('cf-turnstile-response', ''))) {
-            $this->withOldInput($data);
-            Session::flash('error', __('captcha_failed'));
-            $this->redirect('/order-form');
-        }
+
 
         $validator = new Validator();
         $validator->validate($data, [

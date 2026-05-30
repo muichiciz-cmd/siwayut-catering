@@ -11,9 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/app.css?v=3">
-    <?php if (\App\Core\Turnstile::enabled()): ?>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <?php endif; ?>
+
     <link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg">
 </head>
 
@@ -97,15 +95,9 @@
                         placeholder="<?= __('notes_placeholder') ?>"><?= \App\Core\View::e(old('notes')) ?></textarea>
                 </div>
 
-                <?php if (\App\Core\Turnstile::enabled()): ?>
-                    <div class="mt-6 flex justify-center">
-                        <?= \App\Core\Turnstile::widget() ?>
-                    </div>
-                <?php endif; ?>
+
 
                 <button type="submit" id="submit-btn"
-                    data-turnstile-submit="1"
-                    <?= \App\Core\Turnstile::enabled() ? 'disabled' : '' ?>
                     class="w-full py-[0.85rem] bg-gold border border-gold rounded-xl text-white text-base font-semibold cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_15px_var(--color-gold-glow)] hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-0.5 hover:shadow-[0_0_25px_var(--color-gold-glow)] font-body">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                         fill="currentColor">
@@ -123,7 +115,6 @@
     $pageFlashes = [];
     if ($flashError) $pageFlashes[] = ['type' => 'error', 'message' => $flashError];
     ?>
-    <script src="/assets/js/modules/turnstile.js"></script>
     <script src="/assets/js/modules/toast.js"></script>
     <script src="/assets/js/modules/file-upload.js"></script>
     <script src="/assets/js/modules/progressive-image.js"></script>
