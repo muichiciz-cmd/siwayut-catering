@@ -4,9 +4,11 @@ declare(strict_types=1);
 // File: config/routes.php
 
 use App\Core\Router;
-use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController, EventController};
+use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController, EventController, LangController};
 
 return function (Router $router): void {
+    // Language switcher
+    $router->get('/lang/{locale}', [LangController::class, 'switch']);
     $router->get('/', [WelcomeController::class, 'index']);
 
     $router->get('/auth',    [AuthController::class, 'index']);

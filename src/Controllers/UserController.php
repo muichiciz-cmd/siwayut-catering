@@ -21,7 +21,7 @@ class UserController extends BaseController {
         ];
         $result = $this->userService->getAll($page, 15, $search, $filters, $orderBy, $direction);
         $this->render('user/index', [
-            'title' => 'Users',
+            'title' => __('users'),
             'users' => $result['data'],
             'pagination' => $result,
             'success' => Session::getFlash('success'),
@@ -36,7 +36,7 @@ class UserController extends BaseController {
 
     public function create(Request $request): void {
         $this->render('user/create', [
-            'title' => 'Create User',
+            'title' => __('add_user'),
             'errors' => Session::getFlash('errors') ? json_decode(Session::getFlash('errors'), true) : [],
             'currentUser' => $this->currentUser(),
         ]);
@@ -55,7 +55,7 @@ class UserController extends BaseController {
 
         if ($validator->fails()) {
             if ($request->isAjax()) {
-                Response::jsonError('Validation failed.', $validator->errors());
+                Response::jsonError(__('validation_failed'), $validator->errors());
             }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
@@ -65,15 +65,15 @@ class UserController extends BaseController {
         try {
             $this->userService->create($data);
             if ($request->isAjax()) {
-                Response::jsonSuccess(null, 'User created successfully.');
+                Response::jsonSuccess(null, __('user_created'));
             }
-            $this->redirectWithFlash('/users', 'success', 'User created successfully.');
+            $this->redirectWithFlash('/users', 'success', __('user_created'));
         } catch (\Exception $e) {
             if ($request->isAjax()) {
-                Response::jsonError('Failed to create user: ' . $e->getMessage());
+                Response::jsonError(__('failed_create_user', ['error' => $e->getMessage()]));
             }
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to create user: ' . $e->getMessage());
+            Session::flash('error', __('failed_create_user', ['error' => $e->getMessage()]));
             $this->redirect('/users/create');
         }
     }
@@ -81,7 +81,7 @@ class UserController extends BaseController {
     public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $user = $this->userService->getById($id);
-        if (!$user) Response::jsonError('Not found', [], 404);
+        if (!$user) Response::jsonError(__('not_found_api'), [], 404);
         unset($user['password']);
         Response::jsonSuccess($user);
     }
@@ -105,7 +105,7 @@ class UserController extends BaseController {
         $validator->validate($data, $rules);
 
         if ($validator->fails()) {
-            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
+            if ($request->isAjax()) Response::jsonError(__('validation_failed'), $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/users/{$id}/edit");
@@ -113,12 +113,12 @@ class UserController extends BaseController {
 
         try {
             $this->userService->update($id, $data);
-            if ($request->isAjax()) Response::jsonSuccess(null, 'User updated successfully.');
-            $this->redirectWithFlash('/users', 'success', 'User updated successfully.');
+            if ($request->isAjax()) Response::jsonSuccess(null, __('user_updated'));
+            $this->redirectWithFlash('/users', 'success', __('user_updated'));
         } catch (\Exception $e) {
-            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            if ($request->isAjax()) Response::jsonError(__('failed_update_user', ['error' => $e->getMessage()]));
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to update user: ' . $e->getMessage());
+            Session::flash('error', __('failed_update_user', ['error' => $e->getMessage()]));
             $this->redirect("/users/{$id}/edit");
         }
     }
@@ -128,10 +128,10 @@ class UserController extends BaseController {
         $currentUser = $this->currentUser();
 
         if ($currentUser && (int) $currentUser['id'] === $id) {
-            $this->redirectWithFlash('/users', 'error', 'You cannot delete your own account.');
+            $this->redirectWithFlash('/users', 'error', __('cannot_delete_self'));
         }
 
         $this->userService->delete($id);
-        $this->redirectWithFlash('/users', 'success', 'User deleted successfully.');
+        $this->redirectWithFlash('/users', 'success', __('user_deleted'));
     }
 }

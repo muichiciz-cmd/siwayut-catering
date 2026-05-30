@@ -4,13 +4,13 @@
         <a href="/orders"
             class="inline-flex items-center gap-2 px-0 text-sm text-muted no-underline hover:text-gold transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
-            Back to Orders
+            <?= __('back_to_orders') ?>
         </a>
         <div class="flex items-center gap-3">
             <button type="button" id="toggle-edit-status"
                 class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/5 border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
-                Update Status
+                <?= __('update_status') ?>
             </button>
         </div>
     </div>
@@ -22,7 +22,7 @@
                 <svg class="w-full h-full" viewBox="0 0 1040 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 120 Q 260 40, 520 100 T 1040 80 L 1040 200 L 0 200 Z" fill="currentColor"/></svg>
             </div>
             <div class="text-center relative z-[1]">
-                <div class="text-xs text-muted/50 uppercase tracking-widest font-medium mb-1">Order</div>
+                <div class="text-xs text-muted/50 uppercase tracking-widest font-medium mb-1"><?= __('order') ?></div>
                 <div class="font-display text-4xl md:text-5xl font-bold text-white/10 tracking-tight select-none"><?= htmlspecialchars($order['order_number']) ?></div>
             </div>
         </div>
@@ -41,8 +41,8 @@
                                     $st = ['pending'=>'#f59e0b','processing'=>'#818cf8','delivering'=>'#818cf8','completed'=>'#10b981','cancelled'=>'#ef4444'];
                                     echo $st[$order['status']] ?? '#a1a1aa';
                                 ?>"
-                                data-status="<?= e($order['status']) ?>">
-                                <?= e(ucfirst($order['status'])) ?>
+                                 data-status="<?= e($order['status']) ?>">
+                                <?= __($order['status']) ?>
                             </span>
                             <span class="payment-status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-[0.7rem] font-semibold uppercase tracking-widest"
                                 style="background:<?php
@@ -52,16 +52,16 @@
                                     $pt = ['unpaid'=>'#f59e0b','paid'=>'#10b981','refunded'=>'#ef4444'];
                                     echo $pt[$order['payment_status']] ?? '#a1a1aa';
                                 ?>"
-                                data-payment="<?= e($order['payment_status']) ?>">
-                                <?= e(ucfirst($order['payment_status'])) ?>
+                                 data-payment="<?= e($order['payment_status']) ?>">
+                                <?= __($order['payment_status']) ?>
                             </span>
-                            <span class="text-[0.7rem] text-muted uppercase tracking-widest">Order</span>
+                            <span class="text-[0.7rem] text-muted uppercase tracking-widest"><?= __('order') ?></span>
                         </div>
-                        <h1 class="text-2xl md:text-3xl font-bold font-display text-text leading-tight">Order <span class="text-gold"><?= htmlspecialchars($order['order_number']) ?></span></h1>
+                        <h1 class="text-2xl md:text-3xl font-bold font-display text-text leading-tight"><?= __('order') ?> <span class="text-gold"><?= htmlspecialchars($order['order_number']) ?></span></h1>
                     </div>
                 </div>
                 <div class="text-right shrink-0">
-                    <div class="text-xs text-muted uppercase tracking-wider font-medium mb-1">Total</div>
+                    <div class="text-xs text-muted uppercase tracking-wider font-medium mb-1"><?= __('total') ?></div>
                     <div class="font-display text-2xl md:text-3xl font-bold text-gold" id="order-total">Rp <?= number_format((float)$order['total_price'], 0, ',', '.') ?></div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
     <div class="flex flex-wrap items-center gap-2.5 mb-10">
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/5 text-xs text-muted font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-            <?= e($customer['name'] ?? 'Unknown Customer') ?>
+            <?= e($customer['name'] ?? __('unknown_customer')) ?>
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/5 text-xs text-muted font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
@@ -83,35 +83,35 @@
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/5 text-xs text-muted font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-            Ordered <?= date('d M Y', strtotime($order['created_at'])) ?>
+            <?= __('ordered_on') ?> <?= date('d M Y', strtotime($order['created_at'])) ?>
         </span>
     </div>
 
     <!-- Status update form (hidden by default) -->
-    <form id="status-form" action="/orders/<?= (int)$order['id'] ?>" method="POST" class="hidden mb-8">
+    <form id="status-form" action="/orders/<?= e($order['order_number']) ?>" method="POST" class="hidden mb-8">
         <?= csrf_field() ?>
         <div class="bg-white/[0.03] border border-white/5 rounded-xl p-5 flex items-end gap-4 flex-wrap">
             <div class="flex-1 min-w-[160px]">
-                <label class="block text-xs text-muted font-medium mb-1.5">Status</label>
+                <label class="block text-xs text-muted font-medium mb-1.5"><?= __('status') ?></label>
                 <select name="status" class="w-full px-3 py-2.5 border border-white/10 rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-gold/50 focus:ring-[3px] focus:ring-gold/10 transition-all duration-200">
-                    <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
-                    <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>>Processing</option>
-                    <option value="delivering" <?= $order['status'] === 'delivering' ? 'selected' : '' ?>>Delivering</option>
-                    <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
-                    <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                    <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>><?= __('pending') ?></option>
+                    <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>><?= __('processing') ?></option>
+                    <option value="delivering" <?= $order['status'] === 'delivering' ? 'selected' : '' ?>><?= __('delivering') ?></option>
+                    <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>><?= __('completed') ?></option>
+                    <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>><?= __('cancelled') ?></option>
                 </select>
             </div>
             <div class="flex-1 min-w-[160px]">
-                <label class="block text-xs text-muted font-medium mb-1.5">Payment</label>
+                <label class="block text-xs text-muted font-medium mb-1.5"><?= __('payment') ?></label>
                 <select name="payment_status" class="w-full px-3 py-2.5 border border-white/10 rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-gold/50 focus:ring-[3px] focus:ring-gold/10 transition-all duration-200">
-                    <option value="unpaid" <?= $order['payment_status'] === 'unpaid' ? 'selected' : '' ?>>Unpaid</option>
-                    <option value="paid" <?= $order['payment_status'] === 'paid' ? 'selected' : '' ?>>Paid</option>
-                    <option value="refunded" <?= $order['payment_status'] === 'refunded' ? 'selected' : '' ?>>Refunded</option>
+                    <option value="unpaid" <?= $order['payment_status'] === 'unpaid' ? 'selected' : '' ?>><?= __('unpaid') ?></option>
+                    <option value="paid" <?= $order['payment_status'] === 'paid' ? 'selected' : '' ?>><?= __('paid') ?></option>
+                    <option value="refunded" <?= $order['payment_status'] === 'refunded' ? 'selected' : '' ?>><?= __('refunded') ?></option>
                 </select>
             </div>
             <button type="submit"
                 class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-gold border-gold text-white shadow-[0_0_12px_var(--color-gold-glow)] hover:shadow-[0_0_20px_var(--color-gold-glow)]">
-                Save Changes
+                <?= __('save_changes') ?>
             </button>
         </div>
     </form>
@@ -122,16 +122,16 @@
         <div>
             <h2 class="text-sm font-semibold text-muted uppercase tracking-widest mb-5 flex items-center gap-3">
                 <span class="w-6 h-px bg-gold/50"></span>
-                Order Progress
+                <?= __('order_progress') ?>
             </h2>
 
             <div class="flex flex-col gap-5" id="status-timeline">
                 <?php
                 $steps = [
-                    'pending' => ['label' => 'Order Received', 'desc' => 'Being reviewed'],
-                    'processing' => ['label' => 'Processing', 'desc' => 'Preparing your order'],
-                    'delivering' => ['label' => 'Delivering', 'desc' => 'On its way'],
-                    'completed' => ['label' => 'Completed', 'desc' => 'Order has arrived'],
+                    'pending' => ['label' => __('order_received'), 'desc' => __('being_reviewed')],
+                    'processing' => ['label' => __('processing'), 'desc' => __('preparing_order')],
+                    'delivering' => ['label' => __('delivering'), 'desc' => __('on_its_way')],
+                    'completed' => ['label' => __('completed'), 'desc' => __('order_arrived')],
                 ];
                 $orderStatus = $order['status'];
                 foreach ($steps as $key => $step):
@@ -162,8 +162,8 @@
                         <div class="w-3.5 h-3.5 rounded-full border-2 border-red-500 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]"></div>
                     </div>
                     <div>
-                        <div class="font-semibold text-sm text-[#ef4444]">Cancelled</div>
-                        <div class="text-xs text-muted/50">Order has been cancelled</div>
+                        <div class="font-semibold text-sm text-[#ef4444]"><?= __('cancelled') ?></div>
+                        <div class="text-xs text-muted/50"><?= __('order_cancelled') ?></div>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -176,13 +176,13 @@
             <div>
                 <h2 class="text-sm font-semibold text-muted uppercase tracking-widest mb-5 flex items-center gap-3">
                     <span class="w-6 h-px bg-gold/50"></span>
-                    Customer
+                    <?= __('customer') ?>
                 </h2>
                 <div class="bg-white/[0.03] border border-white/5 rounded-xl p-5">
                     <div class="grid grid-cols-[110px_1fr] max-md:grid-cols-1 gap-y-3 gap-x-3 text-sm">
-                        <div class="text-muted">Name</div>
+                        <div class="text-muted"><?= __('name') ?></div>
                         <div class="text-text font-medium"><?= e($customer['name'] ?? '-') ?></div>
-                        <div class="text-muted">Phone</div>
+                        <div class="text-muted"><?= __('phone') ?></div>
                         <div class="text-text">
                             <?php if ($customer['phone'] ?? null): ?>
                             <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $customer['phone']) ?>" target="_blank" class="text-gold hover:text-gold no-underline inline-flex items-center gap-1.5">
@@ -191,12 +191,12 @@
                             </a>
                             <?php else: ?><span class="text-muted">-</span><?php endif; ?>
                         </div>
-                        <div class="text-muted">Event Date</div>
+                        <div class="text-muted"><?= __('event_date') ?></div>
                         <div class="text-text"><?= date('d F Y, H:i', strtotime($order['event_date'])) ?></div>
-                        <div class="text-muted">Address</div>
+                        <div class="text-muted"><?= __('address') ?></div>
                         <div class="text-text"><?= nl2br(e($order['delivery_address'])) ?></div>
                         <?php if ($order['notes']): ?>
-                        <div class="text-muted">Notes</div>
+                        <div class="text-muted"><?= __('notes') ?></div>
                         <div class="text-text text-muted italic"><?= nl2br(e($order['notes'])) ?></div>
                         <?php endif; ?>
                     </div>
@@ -207,17 +207,17 @@
             <div>
                 <h2 class="text-sm font-semibold text-muted uppercase tracking-widest mb-5 flex items-center gap-3">
                     <span class="w-6 h-px bg-gold/50"></span>
-                    Menu Items
+                    <?= __('menu_items') ?>
                 </h2>
                 <div class="bg-white/[0.03] border border-white/5 rounded-xl overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse">
                             <thead>
                                 <tr>
-                                    <th class="text-left text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]">Menu</th>
-                                    <th class="text-right text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]">Qty</th>
-                                    <th class="text-right text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]">Price</th>
-                                    <th class="text-right text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]">Subtotal</th>
+                                    <th class="text-left text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]"><?= __('menu') ?></th>
+                                    <th class="text-right text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]"><?= __('qty') ?></th>
+                                    <th class="text-right text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]"><?= __('price') ?></th>
+                                    <th class="text-right text-xs font-semibold uppercase tracking-wider text-muted/60 px-5 py-3 border-b border-white/5 bg-white/[0.02]"><?= __('subtotal') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -232,7 +232,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="3" class="px-5 py-3.5 text-sm font-semibold text-text text-right">Total</td>
+                                    <td colspan="3" class="px-5 py-3.5 text-sm font-semibold text-text text-right"><?= __('total') ?></td>
                                     <td class="px-5 py-3.5 text-sm font-bold text-gold text-right" id="items-total">Rp <?= number_format($total, 0, ',', '.') ?></td>
                                 </tr>
                             </tfoot>
@@ -263,7 +263,7 @@
             var btn = form.querySelector('button[type="submit"]');
             var origText = btn.textContent;
             btn.disabled = true;
-            btn.innerHTML = '<span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span> Saving...';
+            btn.innerHTML = '<span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span> <?= __('saving') ?>';
 
             fetch(form.action, {
                 method: 'POST',
@@ -276,7 +276,7 @@
                     window.location.reload();
                 } else {
                     if (window.AppModules && window.AppModules.toast) {
-                        window.AppModules.toast.show(resp.error || 'Update failed.', 'error');
+                        window.AppModules.toast.show(resp.error || '<?= __('update_failed') ?>', 'error');
                     }
                     btn.disabled = false;
                     btn.textContent = origText;
@@ -284,7 +284,7 @@
             })
             .catch(function() {
                 if (window.AppModules && window.AppModules.toast) {
-                    window.AppModules.toast.show('Network error.', 'error');
+                    window.AppModules.toast.show('<?= __('network_error') ?>', 'error');
                 }
                 btn.disabled = false;
                 btn.textContent = origText;

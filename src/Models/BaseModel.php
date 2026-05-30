@@ -12,6 +12,7 @@ abstract class BaseModel {
     protected string $primaryKey = 'id';
     protected array $sortableColumns = ['id', 'created_at', 'updated_at'];
     protected array $searchableColumns = [];
+    protected array $fillable = [];
 
     public function __construct() {
         // DB connection deferred — initialized lazily on first query
@@ -75,6 +76,9 @@ abstract class BaseModel {
     }
 
     public function create(array $data): int {
+        if (!empty($this->fillable)) {
+            $data = array_intersect_key($data, array_flip($this->fillable));
+        }
         $columns = array_keys($data);
         $placeholders = array_fill(0, count($columns), '?');
         $sql = sprintf(

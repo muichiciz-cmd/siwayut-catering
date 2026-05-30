@@ -31,7 +31,7 @@ class CategoryController extends BaseController {
         $categories = array_map(fn($c) => [...$c, 'menu_count' => $menuCounts[$c['id']] ?? 0], $result['data']);
 
         $this->render('category/index', [
-            'title' => 'Menu Categories',
+            'title' => __('menu_categories'),
             'categories' => $categories,
             'pagination' => $result,
             'search' => $search,
@@ -42,7 +42,7 @@ class CategoryController extends BaseController {
 
     public function create(Request $request): void {
         $this->render('category/create', [
-            'title' => 'Add Category',
+            'title' => __('add_category'),
         ]);
     }
 
@@ -56,7 +56,7 @@ class CategoryController extends BaseController {
 
         if ($validator->fails()) {
             if ($request->isAjax()) {
-                Response::jsonError('Validation failed.', $validator->errors());
+                Response::jsonError(__('validation_failed'), $validator->errors());
             }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
@@ -66,15 +66,15 @@ class CategoryController extends BaseController {
         try {
             $this->categoryService->create($data);
             if ($request->isAjax()) {
-                Response::jsonSuccess(null, 'Category successfully added.');
+                Response::jsonSuccess(null, __('category_added'));
             }
-            $this->redirectWithFlash('/categories', 'success', 'Category successfully added.');
+            $this->redirectWithFlash('/categories', 'success', __('category_added'));
         } catch (\Exception $e) {
             if ($request->isAjax()) {
-                Response::jsonError('Failed to add category: ' . $e->getMessage());
+                Response::jsonError(__('failed_create_category', ['error' => $e->getMessage()]));
             }
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to add category: ' . $e->getMessage());
+            Session::flash('error', __('failed_create_category', ['error' => $e->getMessage()]));
             $this->redirect('/categories/create');
         }
     }
@@ -82,7 +82,7 @@ class CategoryController extends BaseController {
     public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $category = $this->categoryService->find($id);
-        if (!$category) Response::jsonError('Not found', [], 404);
+        if (!$category) Response::jsonError(__('not_found_api'), [], 404);
         Response::jsonSuccess($category);
     }
 
@@ -96,7 +96,7 @@ class CategoryController extends BaseController {
         ]);
 
         if ($validator->fails()) {
-            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
+            if ($request->isAjax()) Response::jsonError(__('validation_failed'), $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/categories/{$id}/edit");
@@ -104,12 +104,12 @@ class CategoryController extends BaseController {
 
         try {
             $this->categoryService->update($id, $data);
-            if ($request->isAjax()) Response::jsonSuccess(null, 'Category successfully updated.');
-            $this->redirectWithFlash('/categories', 'success', 'Category successfully updated.');
+            if ($request->isAjax()) Response::jsonSuccess(null, __('category_updated'));
+            $this->redirectWithFlash('/categories', 'success', __('category_updated'));
         } catch (\Exception $e) {
-            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            if ($request->isAjax()) Response::jsonError(__('failed_update_category', ['error' => $e->getMessage()]));
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to update category: ' . $e->getMessage());
+            Session::flash('error', __('failed_update_category', ['error' => $e->getMessage()]));
             $this->redirect("/categories/{$id}/edit");
         }
     }
@@ -119,15 +119,15 @@ class CategoryController extends BaseController {
         
         try {
             if ($this->categoryService->delete($id)) {
-                $this->redirectWithFlash('/categories', 'success', 'Category successfully deleted.');
+                $this->redirectWithFlash('/categories', 'success', __('category_deleted'));
             } else {
-                $this->redirectWithFlash('/categories', 'error', 'Failed to delete category.');
+                $this->redirectWithFlash('/categories', 'error', __('failed_delete_category'));
             }
         } catch (\PDOException $e) {
             if ($e->getCode() == 23000) {
-                $this->redirectWithFlash('/categories', 'error', 'Cannot delete category. It is still used by a menu.');
+                $this->redirectWithFlash('/categories', 'error', __('category_in_use'));
             } else {
-                $this->redirectWithFlash('/categories', 'error', 'Database error: ' . $e->getMessage());
+                $this->redirectWithFlash('/categories', 'error', __('db_error', ['error' => $e->getMessage()]));
             }
         }
     }

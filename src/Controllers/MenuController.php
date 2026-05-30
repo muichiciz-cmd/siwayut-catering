@@ -52,7 +52,7 @@ class MenuController extends BaseController {
         }
 
         $this->render('menu/index', [
-            'title' => 'Catering Menu List',
+            'title' => __('menus'),
             'menus' => $menus,
             'pagination' => $result,
             'katMap' => $katMap,
@@ -69,7 +69,7 @@ class MenuController extends BaseController {
     public function show(Request $request): void {
         $id = (int) $request->param('id');
         $menu = $this->menuService->find($id);
-        if (!$menu) throw new NotFoundException('Menu not found');
+        if (!$menu) throw new NotFoundException(__('menu_not_found'));
 
         $category = $this->categoryService->find((int)$menu['category_id']);
         $event = $this->eventService->find((int)$menu['event_id']);
@@ -78,7 +78,7 @@ class MenuController extends BaseController {
         $recentOrders = $orderModel->getOrdersByMenuId($id, 10);
 
         $this->render('menu/show', [
-            'title' => $menu['name'] . ' — Menu Detail',
+            'title' => $menu['name'] . ' — ' . __('menu_details'),
             'menu' => $menu,
             'category' => $category,
             'event' => $event,
@@ -88,7 +88,7 @@ class MenuController extends BaseController {
 
     public function create(Request $request): void {
         $this->render('menu/create', [
-            'title' => 'Add Menu',
+            'title' => __('add_menu'),
             'categories' => $this->categoryService->all(),
             'events' => $this->eventService->getActive(),
         ]);
@@ -110,7 +110,7 @@ class MenuController extends BaseController {
 
         if ($validator->fails()) {
             if ($request->isAjax()) {
-                Response::jsonError('Validation failed.', $validator->errors());
+                Response::jsonError(__('validation_failed'), $validator->errors());
             }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
@@ -124,18 +124,18 @@ class MenuController extends BaseController {
             $mime = $finfo->file($gambar['tmp_name']);
             if (!in_array($mime, $allowedMimes, true)) {
                 if ($request->isAjax()) {
-                    Response::jsonError('Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                    Response::jsonError(__('invalid_file_type'));
                 }
                 $this->withOldInput($data);
-                Session::flash('error', 'Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                Session::flash('error', __('invalid_file_type'));
                 $this->redirect('/menus/create');
             }
             if ($gambar['size'] > $maxSize) {
                 if ($request->isAjax()) {
-                    Response::jsonError('File too large. Maximum size is 5 MB.');
+                    Response::jsonError(__('file_too_large'));
                 }
                 $this->withOldInput($data);
-                Session::flash('error', 'File too large. Maximum size is 5 MB.');
+                Session::flash('error', __('file_too_large'));
                 $this->redirect('/menus/create');
             }
         }
@@ -143,15 +143,15 @@ class MenuController extends BaseController {
         try {
             $this->menuService->create($data, $gambar);
             if ($request->isAjax()) {
-                Response::jsonSuccess(null, 'Menu successfully added.');
+                Response::jsonSuccess(null, __('menu_added'));
             }
-            $this->redirectWithFlash('/menus', 'success', 'Menu successfully added.');
+            $this->redirectWithFlash('/menus', 'success', __('menu_added'));
         } catch (\Exception $e) {
             if ($request->isAjax()) {
-                Response::jsonError('Failed to add menu: ' . $e->getMessage());
+                Response::jsonError(__('failed_create_menu', ['error' => $e->getMessage()]));
             }
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to add menu: ' . $e->getMessage());
+            Session::flash('error', __('failed_create_menu', ['error' => $e->getMessage()]));
             $this->redirect('/menus/create');
         }
     }
@@ -159,7 +159,7 @@ class MenuController extends BaseController {
     public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $menu = $this->menuService->find($id);
-        if (!$menu) Response::jsonError('Not found', [], 404);
+        if (!$menu) Response::jsonError(__('not_found_api'), [], 404);
         $menu['image_url'] = $menu['image'] ? '/uploads/menus/' . $menu['image'] : null;
         Response::jsonSuccess($menu);
     }
@@ -180,7 +180,7 @@ class MenuController extends BaseController {
         ]);
 
         if ($validator->fails()) {
-            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
+            if ($request->isAjax()) Response::jsonError(__('validation_failed'), $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/menus/{$id}/edit");
@@ -192,27 +192,27 @@ class MenuController extends BaseController {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
             $mime = $finfo->file($gambar['tmp_name']);
             if (!in_array($mime, $allowedMimes, true)) {
-                if ($request->isAjax()) Response::jsonError('Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                if ($request->isAjax()) Response::jsonError(__('invalid_file_type'));
                 $this->withOldInput($data);
-                Session::flash('error', 'Invalid file type. Only JPG, PNG, WEBP files are allowed.');
+                Session::flash('error', __('invalid_file_type'));
                 $this->redirect("/menus/{$id}/edit");
             }
             if ($gambar['size'] > $maxSize) {
-                if ($request->isAjax()) Response::jsonError('File too large. Maximum size is 5 MB.');
+                if ($request->isAjax()) Response::jsonError(__('file_too_large'));
                 $this->withOldInput($data);
-                Session::flash('error', 'File too large. Maximum size is 5 MB.');
+                Session::flash('error', __('file_too_large'));
                 $this->redirect("/menus/{$id}/edit");
             }
         }
 
         try {
             $this->menuService->update($id, $data, $gambar);
-            if ($request->isAjax()) Response::jsonSuccess(null, 'Menu successfully updated.');
-            $this->redirectWithFlash('/menus', 'success', 'Menu successfully updated.');
+            if ($request->isAjax()) Response::jsonSuccess(null, __('menu_updated'));
+            $this->redirectWithFlash('/menus', 'success', __('menu_updated'));
         } catch (\Exception $e) {
-            if ($request->isAjax()) Response::jsonError('Failed to update menu: ' . $e->getMessage());
+            if ($request->isAjax()) Response::jsonError(__('failed_update_menu', ['error' => $e->getMessage()]));
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to update menu: ' . $e->getMessage());
+            Session::flash('error', __('failed_update_menu', ['error' => $e->getMessage()]));
             $this->redirect("/menus/{$id}/edit");
         }
     }
@@ -239,15 +239,15 @@ class MenuController extends BaseController {
         
         try {
             if ($this->menuService->delete($id)) {
-                $this->redirectWithFlash('/menus', 'success', 'Menu successfully deleted.');
+                $this->redirectWithFlash('/menus', 'success', __('menu_deleted'));
             } else {
-                $this->redirectWithFlash('/menus', 'error', 'Failed to delete menu.');
+                $this->redirectWithFlash('/menus', 'error', __('failed_delete_menu'));
             }
         } catch (\PDOException $e) {
             if ($e->getCode() == 23000) {
-                $this->redirectWithFlash('/menus', 'error', 'This menu has existing orders and cannot be deleted.');
+                $this->redirectWithFlash('/menus', 'error', __('menu_has_orders'));
             } else {
-                $this->redirectWithFlash('/menus', 'error', 'Database error: ' . $e->getMessage());
+                $this->redirectWithFlash('/menus', 'error', __('db_error', ['error' => $e->getMessage()]));
             }
         }
     }

@@ -49,14 +49,14 @@ class Validator {
         switch ($ruleName) {
             case 'required':
                 if ($value === null || $value === '') {
-                    $this->errors[$field] = "The {$label} field is required.";
+                    $this->errors[$field] = __('validation_required', ['field' => $label]);
                     return false;
                 }
                 return true;
 
             case 'email':
                 if ($value !== null && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                    $this->errors[$field] = "The {$label} field must be a valid email address.";
+                    $this->errors[$field] = __('validation_email', ['field' => $label]);
                     return false;
                 }
                 return true;
@@ -64,7 +64,7 @@ class Validator {
             case 'min':
                 $min = (int) $argument;
                 if (is_string($value) && mb_strlen($value) < $min) {
-                    $this->errors[$field] = "The {$label} field must be at least {$min} characters.";
+                    $this->errors[$field] = __('validation_min', ['field' => $label, 'min' => $min]);
                     return false;
                 }
                 return true;
@@ -72,7 +72,7 @@ class Validator {
             case 'max':
                 $max = (int) $argument;
                 if (is_string($value) && mb_strlen($value) > $max) {
-                    $this->errors[$field] = "The {$label} field must not exceed {$max} characters.";
+                    $this->errors[$field] = __('validation_max', ['field' => $label, 'max' => $max]);
                     return false;
                 }
                 return true;
@@ -80,7 +80,7 @@ class Validator {
             case 'confirmed':
                 $confirmField = $field . '_confirmation';
                 if (($data[$confirmField] ?? null) !== $value) {
-                    $this->errors[$field] = "The {$label} confirmation does not match.";
+                    $this->errors[$field] = __('validation_confirmed', ['field' => $label]);
                     return false;
                 }
                 return true;
@@ -102,7 +102,7 @@ class Validator {
                     $stmt = $this->db->prepare($sql);
                     $stmt->execute($params);
                     if ((int) $stmt->fetchColumn() > 0) {
-                        $this->errors[$field] = "The {$label} has already been taken.";
+                        $this->errors[$field] = __('validation_unique', ['field' => $label]);
                         return false;
                     }
                 }
@@ -112,7 +112,7 @@ class Validator {
                 if ($argument !== null) {
                     $allowed = explode(',', $argument);
                     if (!in_array((string) $value, $allowed, true)) {
-                        $this->errors[$field] = "The selected {$label} is invalid.";
+                        $this->errors[$field] = __('validation_in', ['field' => $label]);
                         return false;
                     }
                 }
@@ -120,14 +120,14 @@ class Validator {
 
             case 'numeric':
                 if ($value !== null && $value !== '' && !is_numeric($value)) {
-                    $this->errors[$field] = "The {$label} field must be a number.";
+                    $this->errors[$field] = __('validation_numeric', ['field' => $label]);
                     return false;
                 }
                 return true;
 
             case 'string':
                 if ($value !== null && !is_string($value)) {
-                    $this->errors[$field] = "The {$label} field must be a string.";
+                    $this->errors[$field] = __('validation_string', ['field' => $label]);
                     return false;
                 }
                 return true;

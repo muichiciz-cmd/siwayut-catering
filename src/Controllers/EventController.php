@@ -28,7 +28,7 @@ class EventController extends BaseController {
         $result = $this->eventService->paginate($page, 10, $search, $filters, $orderBy, $direction);
 
         $this->render('event/index', [
-            'title' => 'Events',
+            'title' => __('events'),
             'events' => $result['data'],
             'pagination' => $result,
             'search' => $search,
@@ -40,7 +40,7 @@ class EventController extends BaseController {
 
     public function create(Request $request): void {
         $this->render('event/create', [
-            'title' => 'Add Event',
+            'title' => __('add_event'),
         ]);
     }
 
@@ -57,7 +57,7 @@ class EventController extends BaseController {
 
         if ($validator->fails()) {
             if ($request->isAjax()) {
-                Response::jsonError('Validation failed.', $validator->errors());
+                Response::jsonError(__('validation_failed'), $validator->errors());
             }
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
@@ -67,15 +67,15 @@ class EventController extends BaseController {
         try {
             $this->eventService->create($data);
             if ($request->isAjax()) {
-                Response::jsonSuccess(null, 'Event successfully added.');
+                Response::jsonSuccess(null, __('event_added'));
             }
-            $this->redirectWithFlash('/events', 'success', 'Event successfully added.');
+            $this->redirectWithFlash('/events', 'success', __('event_added'));
         } catch (\Exception $e) {
             if ($request->isAjax()) {
-                Response::jsonError('Failed to add event: ' . $e->getMessage());
+                Response::jsonError(__('failed_create_event', ['error' => $e->getMessage()]));
             }
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to add event: ' . $e->getMessage());
+            Session::flash('error', __('failed_create_event', ['error' => $e->getMessage()]));
             $this->redirect('/events/create');
         }
     }
@@ -83,7 +83,7 @@ class EventController extends BaseController {
     public function apiShow(Request $request): void {
         $id = (int) $request->param('id');
         $event = $this->eventService->find($id);
-        if (!$event) Response::jsonError('Not found', [], 404);
+        if (!$event) Response::jsonError(__('not_found_api'), [], 404);
         Response::jsonSuccess($event);
     }
 
@@ -100,7 +100,7 @@ class EventController extends BaseController {
         ]);
 
         if ($validator->fails()) {
-            if ($request->isAjax()) Response::jsonError('Validation failed.', $validator->errors());
+            if ($request->isAjax()) Response::jsonError(__('validation_failed'), $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect("/events/{$id}/edit");
@@ -108,12 +108,12 @@ class EventController extends BaseController {
 
         try {
             $this->eventService->update($id, $data);
-            if ($request->isAjax()) Response::jsonSuccess(null, 'Event successfully updated.');
-            $this->redirectWithFlash('/events', 'success', 'Event successfully updated.');
+            if ($request->isAjax()) Response::jsonSuccess(null, __('event_updated'));
+            $this->redirectWithFlash('/events', 'success', __('event_updated'));
         } catch (\Exception $e) {
-            if ($request->isAjax()) Response::jsonError('Update failed: ' . $e->getMessage());
+            if ($request->isAjax()) Response::jsonError(__('failed_update_event', ['error' => $e->getMessage()]));
             $this->withOldInput($data);
-            Session::flash('error', 'Failed to update event: ' . $e->getMessage());
+            Session::flash('error', __('failed_update_event', ['error' => $e->getMessage()]));
             $this->redirect("/events/{$id}/edit");
         }
     }
@@ -123,15 +123,15 @@ class EventController extends BaseController {
         
         try {
             if ($this->eventService->delete($id)) {
-                $this->redirectWithFlash('/events', 'success', 'Event successfully deleted.');
+                $this->redirectWithFlash('/events', 'success', __('event_deleted'));
             } else {
-                $this->redirectWithFlash('/events', 'error', 'Failed to delete event.');
+                $this->redirectWithFlash('/events', 'error', __('failed_delete_event'));
             }
         } catch (\PDOException $e) {
             if ($e->getCode() == 23000) {
-                $this->redirectWithFlash('/events', 'error', 'Cannot delete event. It is still used by a menu or order.');
+                $this->redirectWithFlash('/events', 'error', __('event_in_use'));
             } else {
-                $this->redirectWithFlash('/events', 'error', 'Database error: ' . $e->getMessage());
+                $this->redirectWithFlash('/events', 'error', __('db_error', ['error' => $e->getMessage()]));
             }
         }
     }

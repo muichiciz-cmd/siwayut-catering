@@ -3,12 +3,14 @@ declare(strict_types=1);
 // File: src/Helpers/functions.php
 
 if (!function_exists('env')) {
-    function env(string $key, mixed $default = null): mixed {
+    function env(string $key, mixed $default = null): mixed
+    {
         return $_ENV[$key] ?? $default;
     }
 }
 if (!function_exists('config')) {
-    function config(string $key, mixed $default = null): mixed {
+    function config(string $key, mixed $default = null): mixed
+    {
         static $configs = [];
         $parts = explode('.', $key, 2);
         $file = $parts[0];
@@ -28,22 +30,26 @@ if (!function_exists('config')) {
     }
 }
 if (!function_exists('base_path')) {
-    function base_path(string $path = ''): string {
+    function base_path(string $path = ''): string
+    {
         return BASE_PATH . ($path ? '/' . ltrim($path, '/') : '');
     }
 }
 if (!function_exists('asset')) {
-    function asset(string $path): string {
+    function asset(string $path): string
+    {
         return APP_URL . '/assets/' . ltrim($path, '/');
     }
 }
 if (!function_exists('url')) {
-    function url(string $path = ''): string {
+    function url(string $path = ''): string
+    {
         return APP_URL . '/' . ltrim($path, '/');
     }
 }
 if (!function_exists('old')) {
-    function old(string $key, mixed $default = ''): mixed {
+    function old(string $key, mixed $default = ''): mixed
+    {
         $old = \App\Core\Session::old();
         // Put it back since old() consumes the session data — we re-store for multi-field access
         if (!empty($old)) {
@@ -53,17 +59,20 @@ if (!function_exists('old')) {
     }
 }
 if (!function_exists('csrf_field')) {
-    function csrf_field(): string {
+    function csrf_field(): string
+    {
         return \App\Core\Csrf::field();
     }
 }
 if (!function_exists('e')) {
-    function e(mixed $value): string {
+    function e(mixed $value): string
+    {
         return \App\Core\View::e($value);
     }
 }
 if (!function_exists('dd')) {
-    function dd(mixed ...$vars): never {
+    function dd(mixed ...$vars): never
+    {
         echo '<pre>';
         foreach ($vars as $var) {
             var_dump($var);
@@ -73,18 +82,21 @@ if (!function_exists('dd')) {
     }
 }
 if (!function_exists('now')) {
-    function now(): string {
+    function now(): string
+    {
         return date('Y-m-d H:i:s');
     }
 }
 if (!function_exists('component')) {
-    function component(string $_componentName_, array $_componentData_ = []): void {
+    function component(string $_componentName_, array $_componentData_ = []): void
+    {
         extract($_componentData_);
         require base_path('src/Views/components/' . ltrim($_componentName_, '/') . '.php');
     }
 }
 if (!function_exists('error')) {
-    function error(string $key): ?string {
+    function error(string $key): ?string
+    {
         $errorsJson = \App\Core\Session::getFlash('errors');
         if (!empty($errorsJson)) {
             \App\Core\Session::flash('errors', $errorsJson);
@@ -94,3 +106,13 @@ if (!function_exists('error')) {
     }
 }
 
+if (!function_exists('__')) {
+    /**
+     * Translate a given language key.
+     * Usage: __('login') or __('greeting', ['name' => 'Budi'])
+     */
+    function __(string $key, array $replace = []): string
+    {
+        return \App\Core\Lang::get($key, $replace);
+    }
+}

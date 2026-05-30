@@ -30,12 +30,14 @@
                     <span class="text-[1.8rem] drop-shadow-[0_0_8px_var(--accent-gold-glow)]">🍲</span>
                     <span class="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">Siwayut Catering</span>
                 </a>
-                <?php if ($navUser): ?>
-                    <a href="/orders" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300">Dashboard</a>
-                <?php else: ?>
-                    <a href="/auth" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300">Login</a>
-                <?php endif; ?>
-            </div>
+                <div class="flex items-center gap-3">
+                    <?php component('lang-switcher') ?>
+                    <?php if ($navUser): ?>
+                        <a href="/orders" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('dashboard') ?></a>
+                    <?php else: ?>
+                        <a href="/auth" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('login') ?></a>
+                    <?php endif; ?>
+                </div>
         </header>
 
         <main>
@@ -44,13 +46,11 @@
                 <section class="py-20 md:py-24 text-center relative">
                     <span
                         class="inline-flex items-center bg-gold/10 border border-gold/20 text-gold px-5 py-2 rounded-full text-sm font-semibold mb-6 tracking-wide uppercase">✨
-                        Premium Holiday Catering</span>
+                        <?= __('premium_holiday_catering') ?></span>
                     <h1
                         class="text-[clamp(2.3rem,5vw,3.5rem)] font-extrabold leading-[1.15] tracking-tight mb-6 bg-gradient-to-r from-white via-zinc-100 to-gold bg-clip-text text-transparent">
-                        Exquisite Taste<br>For Your Most Sacred Moments</h1>
-                    <p class="text-lg text-muted max-w-[700px] mx-auto mb-10 leading-relaxed">Siwayut Catering provides
-                        exclusive catering menus specially crafted to celebrate your holidays. Enjoy delicious dishes
-                        without the hassle together with your loved ones.</p>
+                        <?= __('exquisite_taste') ?></h1>
+                    <p class="text-lg text-muted max-w-[700px] mx-auto mb-10 leading-relaxed"><?= __('hero_desc') ?></p>
                     <div class="flex items-center justify-center gap-5 flex-wrap">
                         <a href="/order-form"
                             class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full text-base font-semibold no-underline whitespace-nowrap min-w-[210px] bg-gold border border-gold text-white shadow-[0_0_15px_var(--color-gold-glow)] hover:-translate-y-0.5 hover:shadow-[0_0_25px_var(--color-gold-glow)] transition-all duration-300">
@@ -59,11 +59,10 @@
                                 <path
                                     d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                             </svg>
-                            Order Now
+                            <?= __('order_now') ?>
                         </a>
                         <a href="/track-order"
-                            class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full text-base font-semibold no-underline whitespace-nowrap min-w-[210px] bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-transparent hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:-translate-y-0.5 transition-all duration-300">Track
-                            Order</a>
+                            class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full text-base font-semibold no-underline whitespace-nowrap min-w-[210px] bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-transparent hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:-translate-y-0.5 transition-all duration-300"><?= __('track_order') ?></a>
                     </div>
                 </section>
 
@@ -114,7 +113,7 @@
                 <section>
                     <div class="flex items-end justify-between pb-3 mb-8 border-b border-border">
                         <div>
-                            <h2 class="text-3xl font-bold text-white font-display">Featured Holiday Menu</h2>
+                            <h2 class="text-3xl font-bold text-white font-display"><?= __('featured_menu') ?></h2>
                             <div class="w-[50px] h-[1.5px] bg-gold shadow-[0_0_8px_var(--color-gold)] mt-1"></div>
                         </div>
                     </div>
@@ -123,7 +122,7 @@
                             <div
                                 class="col-span-full bg-card-bg border border-dashed border-border rounded-xl p-12 text-center text-muted">
                                 <div class="text-4xl mb-4 opacity-50">🍽️</div>
-                                <p>No menu items available at the moment.</p>
+                                <p><?= __('no_menu_avail') ?></p>
                             </div>
                         <?php else: ?>
                             <?php foreach ($initialMenus as $menu): ?>
@@ -151,8 +150,7 @@
                                             <span class="font-display text-xl font-bold text-gold">Rp
                                                 <?= number_format((float) $menu['price'], 0, ',', '.') ?></span>
                                             <span
-                                                class="text-xs text-muted bg-white/5 px-2 py-0.5 rounded border border-border">Min.
-                                                <?= (int) $menu['minimum_portions'] ?> Portions</span>
+                                                class="text-xs text-muted bg-white/5 px-2 py-0.5 rounded border border-border"><?= __('min_portions', ['min' => (int) $menu['minimum_portions']]) ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -163,7 +161,7 @@
                         <div class="text-center mt-10">
                             <a id="see-more-btn" href="javascript:void(0)"
                                 class="text-muted no-underline cursor-pointer text-sm hover:text-gold transition-colors duration-200">
-                                See More ↓
+                                <?= __('see_more') ?>
                             </a>
                         </div>
                     <?php endif; ?>
@@ -175,7 +173,7 @@
                 <div class="max-w-[1200px] mx-auto px-6">
                     <div class="flex items-end justify-between pb-3 mb-8 border-b border-border">
                         <div>
-                            <h2 class="text-3xl font-bold text-white font-display">Our Location</h2>
+                            <h2 class="text-3xl font-bold text-white font-display"><?= __('our_location') ?></h2>
                             <div class="w-[50px] h-[1.5px] bg-gold shadow-[0_0_8px_var(--color-gold)] mt-1"></div>
                         </div>
                     </div>
@@ -231,7 +229,7 @@
                                     <circle cx="12" cy="12" r="10" />
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
-                                <span>Sabtu - Kamis: 08:00 - 17:00</span>
+                                <span><?= __('working_hours') ?></span>
                             </div>
                         </div>
                     </div>
@@ -242,7 +240,7 @@
         <!-- Footer -->
         <footer class="border-t border-border py-10 bg-bg/40 text-center text-sm text-muted">
             <div class="max-w-[1200px] mx-auto px-6">
-                <p>&copy; <?= date('Y') ?> Siwayut Catering. All rights reserved.</p>
+                <p>&copy; <?= date('Y') ?> Siwayut Catering. <?= __('all_rights_reserved') ?></p>
             </div>
         </footer>
     </div>

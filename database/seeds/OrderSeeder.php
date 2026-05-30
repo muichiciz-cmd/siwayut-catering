@@ -8,7 +8,7 @@ class OrderSeeder {
 
     public function run(): void {
         $events = $this->db->query("SELECT id FROM events")->fetchAll(\PDO::FETCH_COLUMN);
-        $menus = $this->db->query("SELECT id, price FROM menus")->fetchAll(\PDO::FETCH_ASSOC);
+        $menus = $this->db->query("SELECT id, price, name FROM menus")->fetchAll(\PDO::FETCH_ASSOC);
 
         if (empty($events) || empty($menus)) {
             echo "Error: Events or Menus table is empty. Please run MenuSeeder first.\n";
@@ -16,6 +16,7 @@ class OrderSeeder {
         }
 
         $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+        $this->db->query("TRUNCATE TABLE order_items");
         $this->db->query("TRUNCATE TABLE orders");
         $this->db->query("TRUNCATE TABLE customers");
         $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
@@ -28,18 +29,21 @@ class OrderSeeder {
         ];
 
         $customerIds = [];
-        $stmtCustomer = $this->db->prepare("INSERT INTO customers (name, phone, email, address, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmtCustomer = $this->db->prepare("INSERT INTO customers (name, phone, email, address, notes, created_at, updated_at, customer_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-        foreach ($customers as $c) {
+        foreach ($customers as $idx => $c) {
             $now = date('Y-m-d H:i:s');
-            $stmtCustomer->execute([$c['name'], $c['phone'], $c['email'], $c['address'], $c['notes'], $now, $now]);
+            $code = 'CST-' . date('ym') . '-' . str_pad((string)($idx + 1), 4, '0', STR_PAD_LEFT);
+            $stmtCustomer->execute([$c['name'], $c['phone'], $c['email'], $c['address'], $c['notes'], $now, $now, $code]);
             $customerIds[] = $this->db->lastInsertId();
         }
         echo "Customers seeded successfully.\n";
 
         $statuses = ['pending', 'processing', 'delivering', 'completed', 'cancelled'];
 
-        $stmtOrder = $this->db->prepare("INSERT INTO orders (customer_id, event_id, menu_id, event_date, quantity, total_price, delivery_address, notes, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmtOrder = $this->db->prepare("INSERT INTO orders (customer_id, event_id, event_date, total_price, delivery_address, notes, status, created_at, updated_at, order_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $stmtItem = $this->db->prepare("INSERT INTO order_items (order_id, menu_id, quantity, price_at_time, subtotal) VALUES (?, ?, ?, ?, ?)");
 
         for ($i = 0; $i < 15; $i++) {
             $customerId = $customerIds[array_rand($customerIds)];
@@ -73,11 +77,16 @@ class OrderSeeder {
             }
 
             $now = date('Y-m-d H:i:s', strtotime("-" . rand(0, 10) . " days"));
+            $orderNumber = 'ORD-' . date('Ymd', strtotime($now)) . '-' . str_pad((string)($i + 1), 4, '0', STR_PAD_LEFT);
 
             $stmtOrder->execute([
-                $customerId, $eventId, $menuId, $eventDate, $quantity, $totalPrice,
-                $deliveryAddress, $notes, $status, $now, $now
+                $customerId, $eventId, $eventDate, $totalPrice,
+                $deliveryAddress, $notes, $status, $now, $now, $orderNumber
             ]);
+
+            $orderId = (int) $this->db->lastInsertId();
+
+            $stmtItem->execute([$orderId, $menuId, $quantity, $menuPrice, $totalPrice]);
         }
         echo "15 Orders seeded successfully.\n";
     }

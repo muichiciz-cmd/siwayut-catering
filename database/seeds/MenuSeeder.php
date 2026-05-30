@@ -269,10 +269,10 @@ class MenuSeeder {
 
         echo "Seeding menus...\n";
         $stmtMenu = $this->db->prepare(
-            "INSERT INTO `menus` (`name`, `description`, `price`, `category_id`, `event_id`, `minimum_portions`, `image`, `status`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+            "INSERT INTO `menus` (`name`, `description`, `price`, `category_id`, `event_id`, `minimum_portions`, `image`, `status`, `created_at`, `updated_at`, `menu_code`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)"
         );
 
-        foreach ($menus as $m) {
+        foreach ($menus as $idx => $m) {
             $catId = $catIds[$m['category_slug']] ?? null;
             $eventId = $eventIds[$m['event_name']] ?? null;
 
@@ -292,6 +292,7 @@ class MenuSeeder {
                 }
             }
 
+            $menuCode = 'MNU-' . str_pad((string)($idx + 1), 4, '0', STR_PAD_LEFT);
             $stmtMenu->execute([
                 $m['name'],
                 $m['description'],
@@ -300,7 +301,8 @@ class MenuSeeder {
                 $eventId,
                 $m['minimum_portions'],
                 $image,
-                $m['status']
+                $m['status'],
+                $menuCode,
             ]);
             echo "  Created Menu: {$m['name']} (Event: {$m['event_name']})\n";
         }

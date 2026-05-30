@@ -42,7 +42,7 @@ class AuthController extends BaseController
         if (!Turnstile::verify($request->input('cf-turnstile-response', ''))) {
             $this->withOldInput(['email' => $email]);
             Session::flash('auth_tab', 'login');
-            $this->redirectWithFlash('/auth', 'error', 'Captcha verification failed.');
+            $this->redirectWithFlash('/auth', 'error', __('captcha_failed'));
         }
 
         $validator = new Validator();
@@ -54,7 +54,7 @@ class AuthController extends BaseController
         if ($validator->fails()) {
             $this->withOldInput(['email' => $email]);
             Session::flash('auth_tab', 'login');
-            $this->redirectWithFlash('/auth', 'error', $validator->error('email') ?? $validator->error('password') ?? 'Validation failed.');
+            $this->redirectWithFlash('/auth', 'error', $validator->error('email') ?? $validator->error('password') ?? __('validation_failed'));
         }
 
         if ($this->authService->login($email, $password)) {
@@ -64,7 +64,7 @@ class AuthController extends BaseController
 
         $this->withOldInput(['email' => $email]);
         Session::flash('auth_tab', 'login');
-        $this->redirectWithFlash('/auth', 'error', 'Invalid email or password.');
+        $this->redirectWithFlash('/auth', 'error', __('invalid_credentials'));
     }
 
     public function register(Request $request): void
@@ -78,7 +78,7 @@ class AuthController extends BaseController
                 'phone' => (string) ($data['phone'] ?? ''),
             ]);
             Session::flash('auth_tab', 'register');
-            $this->redirectWithFlash('/auth', 'error', 'Captcha verification failed.');
+            $this->redirectWithFlash('/auth', 'error', __('captcha_failed'));
         }
 
         $validator = new Validator(Database::getInstance());
@@ -108,7 +108,7 @@ class AuthController extends BaseController
         );
 
         Session::flash('auth_tab', 'login');
-        $this->redirectWithFlash('/auth', 'success', 'Registration successful. Please sign in.');
+        $this->redirectWithFlash('/auth', 'success', __('registration_success'));
     }
 
     public function logout(Request $request): void

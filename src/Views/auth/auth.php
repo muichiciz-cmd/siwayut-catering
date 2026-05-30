@@ -7,7 +7,7 @@
                 <?= \App\Core\View::e(APP_NAME) ?>
             </h1>
             <p id="auth-subtitle" class="text-sm text-muted transition-all duration-200">
-                Sign in to your account
+                <?= __('sign_in_subtitle') ?>
             </p>
         </div>
 
@@ -31,10 +31,10 @@
 
         <div class="grid grid-cols-2 gap-2 mb-6 p-1 rounded-xl bg-white/5 border border-border">
             <button type="button" data-auth-tab-btn="login" class="auth-tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150">
-                Login
+                <?= __('login') ?>
             </button>
             <button type="button" data-auth-tab-btn="register" class="auth-tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150">
-                Register
+                <?= __('register') ?>
             </button>
         </div>
 
@@ -44,14 +44,14 @@
                     <?= \App\Core\Csrf::field() ?>
 
                     <div class="mb-5">
-                        <label for="login-email" class="block text-sm font-medium text-text mb-1.5">Email Address</label>
+                        <label for="login-email" class="block text-sm font-medium text-text mb-1.5"><?= __('email_address') ?></label>
                         <input type="email" id="login-email" name="email"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('email')) ?>" placeholder="admin@example.com" required autofocus>
                     </div>
 
                     <div class="mb-5">
-                        <label for="login-password" class="block text-sm font-medium text-text mb-1.5">Password</label>
+                        <label for="login-password" class="block text-sm font-medium text-text mb-1.5"><?= __('password') ?></label>
                         <input type="password" id="login-password" name="password"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             placeholder="••••••••" required>
@@ -65,7 +65,7 @@
 
                     <button type="submit" data-turnstile-submit="1" <?= \App\Core\Turnstile::enabled() ? 'disabled' : '' ?>
                         class="mt-6 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-primary text-white border-primary hover:bg-primary-hover hover:border-primary-hover hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white w-full">
-                        Sign In
+                        <?= __('sign_in') ?>
                     </button>
                 </form>
             </div>
@@ -75,38 +75,38 @@
                     <?= \App\Core\Csrf::field() ?>
 
                     <div class="mb-5">
-                        <label for="register-name" class="block text-sm font-medium text-text mb-1.5">Full Name</label>
+                        <label for="register-name" class="block text-sm font-medium text-text mb-1.5"><?= __('full_name') ?></label>
                         <input type="text" id="register-name" name="name"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('name')) ?>" placeholder="Full name" required>
                     </div>
 
                     <div class="mb-5">
-                        <label for="register-email" class="block text-sm font-medium text-text mb-1.5">Email Address</label>
+                        <label for="register-email" class="block text-sm font-medium text-text mb-1.5"><?= __('email_address') ?></label>
                         <input type="email" id="register-email" name="email"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('email')) ?>" placeholder="user@example.com" required>
                     </div>
 
                     <div class="mb-5">
-                        <label for="register-phone" class="block text-sm font-medium text-text mb-1.5">Phone Number</label>
+                        <label for="register-phone" class="block text-sm font-medium text-text mb-1.5"><?= __('phone_number') ?></label>
                         <input type="tel" id="register-phone" name="phone"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
                             value="<?= \App\Core\View::e(old('phone')) ?>" placeholder="08xxxxxxxxxx" required>
                     </div>
 
                     <div class="mb-5">
-                        <label for="register-password" class="block text-sm font-medium text-text mb-1.5">Password</label>
+                        <label for="register-password" class="block text-sm font-medium text-text mb-1.5"><?= __('password') ?></label>
                         <input type="password" id="register-password" name="password"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
-                            placeholder="Minimum 6 characters" required>
+                            placeholder="<?= __('min_chars', ['min' => 6]) ?>" required>
                     </div>
 
                     <div class="mb-5">
-                        <label for="register-password-confirmation" class="block text-sm font-medium text-text mb-1.5">Confirm Password</label>
+                        <label for="register-password-confirmation" class="block text-sm font-medium text-text mb-1.5"><?= __('confirm_password') ?></label>
                         <input type="password" id="register-password-confirmation" name="password_confirmation"
                             class="w-full px-3 py-3 border border-border rounded-lg text-sm leading-relaxed text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light"
-                            placeholder="Repeat password" required>
+                            placeholder="<?= __('repeat_password') ?>" required>
                     </div>
 
                     <?php if (\App\Core\Turnstile::enabled()): ?>
@@ -117,7 +117,7 @@
 
                     <button type="submit" data-turnstile-submit="1" <?= \App\Core\Turnstile::enabled() ? 'disabled' : '' ?>
                         class="mt-6 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-primary text-white border-primary hover:bg-primary-hover hover:border-primary-hover hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white w-full">
-                        Create account
+                        <?= __('create_account') ?>
                     </button>
                 </form>
             </div>
@@ -134,8 +134,8 @@
         var subtitleEl = document.getElementById('auth-subtitle');
         var currentTab = null;
         var subtitles = {
-            login: 'Sign in to your account',
-            register: 'Create account'
+            login: <?= json_encode(__('sign_in_subtitle')) ?>,
+            register: <?= json_encode(__('create_account')) ?>
         };
 
         function updateTabButton(tab) {

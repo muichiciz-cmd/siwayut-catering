@@ -17,7 +17,7 @@ class AdminSeeder {
         }
 
         $stmt = $this->db->prepare(
-            "INSERT INTO `users` (`name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO `users` (`name`, `email`, `password`, `role`, `created_at`, `updated_at`, `user_code`) VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             'Administrator',
@@ -26,6 +26,7 @@ class AdminSeeder {
             'admin',
             date('Y-m-d H:i:s'),
             date('Y-m-d H:i:s'),
+            'USR-0001',
         ]);
 
         echo "Admin user created successfully.\n";

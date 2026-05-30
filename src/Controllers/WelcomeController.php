@@ -25,7 +25,7 @@ class WelcomeController extends BaseController {
         $initial = $this->menuService->paginate(1, 9, ['status' => 'active']);
 
         $this->render('welcome', [
-            'title' => 'Siwayut Catering — Premium Holiday Catering Service',
+            'title' => 'Siwayut Catering — ' . __('premium_holiday_catering'),
             'events' => $events,
             'categories' => $categories,
             'menus' => $allMenus,
