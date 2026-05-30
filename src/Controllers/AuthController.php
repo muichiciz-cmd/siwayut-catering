@@ -96,7 +96,10 @@ class AuthController extends BaseController
                 'phone' => (string) ($data['phone'] ?? ''),
             ]);
             Session::flash('auth_tab', 'register');
-            $firstError = reset($validator->errors());
+
+            $errors = $validator->errors();
+            $firstError = reset($errors);
+
             $this->redirectWithFlash('/auth', 'error', (string) $firstError);
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controllers;
@@ -10,7 +11,8 @@ use App\Services\MenuService;
 use App\Services\EventService;
 use App\Models\Customer;
 
-class OrderController extends BaseController {
+class OrderController extends BaseController
+{
     public function __construct(
         private OrderService $orderService,
         private MenuService $menuService,
@@ -20,15 +22,16 @@ class OrderController extends BaseController {
         parent::__construct();
     }
 
-    public function myOrders(Request $request): void {
+    public function myOrders(Request $request): void
+    {
         $user = Session::get('user');
         if (!$user) {
             $this->redirect('/auth');
             return;
         }
 
-        $customer = $this->customer->findByUserId((int)$user['id']);
-        $orders = $customer ? $this->orderService->getOrdersByCustomerId((int)$customer['id']) : [];
+        $customer = $this->customer->findByUserId((int) $user['id']);
+        $orders = $customer ? $this->orderService->getOrdersByCustomerId((int) $customer['id']) : [];
 
         $events = $this->eventService->getActive();
         $eventMap = [];
@@ -43,7 +46,8 @@ class OrderController extends BaseController {
         ], '');
     }
 
-    public function publicForm(Request $request): void {
+    public function publicForm(Request $request): void
+    {
         $menus = $this->menuService->all();
         $activeMenus = array_filter($menus, fn($m) => ($m['status'] ?? 'active') === 'active');
         $events = $this->eventService->getActive();
@@ -55,7 +59,8 @@ class OrderController extends BaseController {
         ], '');
     }
 
-    public function publicSubmit(Request $request): void {
+    public function publicSubmit(Request $request): void
+    {
         $data = $request->only(['name', 'event_date', 'address', 'notes']);
         $items = $request->input('items', []);
 
@@ -74,7 +79,8 @@ class OrderController extends BaseController {
 
         if ($validator->fails()) {
             $this->withOldInput($data);
-            $firstError = reset($validator->errors());
+            $errors = $validator->errors();
+            $firstError = reset($errors);
             Session::flash('error', $firstError);
             $this->redirect('/order-form');
         }
@@ -87,16 +93,16 @@ class OrderController extends BaseController {
 
         // Build WhatsApp message
         $message = __('whatsapp_intro') . "\n\n"
-                 . __('whatsapp_name') . ": {$data['name']}\n"
-                 . __('whatsapp_event_date') . ": {$data['event_date']}\n"
-                 . __('whatsapp_address') . ": {$data['address']}\n"
-                 . __('whatsapp_menu_items') . ":\n";
+            . __('whatsapp_name') . ": {$data['name']}\n"
+            . __('whatsapp_event_date') . ": {$data['event_date']}\n"
+            . __('whatsapp_address') . ": {$data['address']}\n"
+            . __('whatsapp_menu_items') . ":\n";
 
         foreach ($items as $item) {
-            $menuId = (int)($item['menu_id'] ?? 0);
+            $menuId = (int) ($item['menu_id'] ?? 0);
             $menu = $this->menuService->find($menuId);
             $menuName = $menu['name'] ?? __('unknown');
-            $qty = (int)($item['quantity'] ?? 1);
+            $qty = (int) ($item['quantity'] ?? 1);
             $message .= "- {$menuName}: {$qty} " . __('whatsapp_portions') . "\n";
         }
 
@@ -109,13 +115,15 @@ class OrderController extends BaseController {
         $this->redirect('https://wa.me/6287865252313?text=' . urlencode($message));
     }
 
-    public function trackForm(Request $request): void {
+    public function trackForm(Request $request): void
+    {
         $this->render('order/track', [
             'title' => __('track_order_title') . ' — Siwayut Catering',
         ], '');
     }
 
-    public function track(Request $request): void {
+    public function track(Request $request): void
+    {
         $orderNumber = $request->input('order_number');
         $phone = $request->input('phone');
 
@@ -133,7 +141,8 @@ class OrderController extends BaseController {
 
         if ($validator->fails()) {
             $this->withOldInput(['order_number' => $orderNumber, 'phone' => $phone]);
-            $firstError = reset($validator->errors());
+            $errors = $validator->errors();
+            $firstError = reset($errors);
             Session::flash('error', $firstError);
             $this->redirect('/track-order');
         }
@@ -145,7 +154,7 @@ class OrderController extends BaseController {
             $this->redirect('/track-order');
         }
 
-        $customer = $this->customer->find((int)$order['customer_id']);
+        $customer = $this->customer->find((int) $order['customer_id']);
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
         $cleanCustomerPhone = preg_replace('/[^0-9]/', '', $customer['phone'] ?? '');
 
@@ -158,7 +167,8 @@ class OrderController extends BaseController {
         $this->redirect('/track-order/' . urlencode($orderNumber) . '?phone=' . urlencode($phone));
     }
 
-    public function trackResult(Request $request): void {
+    public function trackResult(Request $request): void
+    {
         $orderNumber = $request->param('id');
         $phone = $request->input('phone') ?? '';
 
@@ -167,11 +177,11 @@ class OrderController extends BaseController {
             $this->redirect('/track-order');
         }
 
-        $customer = $this->customer->find((int)$order['customer_id']);
+        $customer = $this->customer->find((int) $order['customer_id']);
 
         // Skip phone verification if logged-in user owns this order
         $user = Session::get('user');
-        $isOwner = $user && $customer && !empty($customer['user_id']) && (int)$customer['user_id'] === (int)$user['id'];
+        $isOwner = $user && $customer && !empty($customer['user_id']) && (int) $customer['user_id'] === (int) $user['id'];
         if (!$isOwner) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
             $cleanCustomerPhone = preg_replace('/[^0-9]/', '', $customer['phone'] ?? '');
@@ -180,8 +190,8 @@ class OrderController extends BaseController {
             }
         }
 
-        $items = $this->orderService->getItems((int)$order['id']);
-        $event = $this->eventService->find((int)$order['event_id']);
+        $items = $this->orderService->getItems((int) $order['id']);
+        $event = $this->eventService->find((int) $order['event_id']);
 
         $this->render('order/track-result', [
             'title' => __('order_details') . ' ' . htmlspecialchars($orderNumber) . ' — Siwayut Catering',
@@ -192,7 +202,8 @@ class OrderController extends BaseController {
         ], '');
     }
 
-    public function index(Request $request): void {
+    public function index(Request $request): void
+    {
         $page = (int) $request->input('page', 1);
         $search = $request->input('search', '');
         $orderBy = $request->input('sort_by', 'created_at');
@@ -219,7 +230,8 @@ class OrderController extends BaseController {
         ]);
     }
 
-    public function create(Request $request): void {
+    public function create(Request $request): void
+    {
         $menus = $this->menuService->paginate(1, 100)['data'];
         $events = $this->eventService->getActive();
 
@@ -230,7 +242,8 @@ class OrderController extends BaseController {
         ]);
     }
 
-    public function store(Request $request): void {
+    public function store(Request $request): void
+    {
         $data = $request->only(['phone', 'customer_name', 'delivery_address', 'event_id', 'event_date', 'notes']);
         $items = $request->input('items', []);
 
@@ -277,16 +290,18 @@ class OrderController extends BaseController {
         }
     }
 
-    private function resolveOrder(string $id): ?array {
+    private function resolveOrder(string $id): ?array
+    {
         if (is_numeric($id)) {
-            $order = $this->orderService->find((int)$id);
+            $order = $this->orderService->find((int) $id);
         } else {
             $order = $this->orderService->findByOrderNumber($id);
         }
         return $order;
     }
 
-    public function show(Request $request): void {
+    public function show(Request $request): void
+    {
         $id = $request->param('id');
         $order = $this->resolveOrder($id);
 
@@ -294,8 +309,8 @@ class OrderController extends BaseController {
             throw new NotFoundException(__('order_not_found'));
         }
 
-        $customer = $this->customer->find((int)$order['customer_id']);
-        $items = $this->orderService->getItems((int)$order['id']);
+        $customer = $this->customer->find((int) $order['customer_id']);
+        $items = $this->orderService->getItems((int) $order['id']);
 
         $this->render('order/show', [
             'title' => __('order') . ' ' . $order['order_number'],
@@ -305,13 +320,15 @@ class OrderController extends BaseController {
         ]);
     }
 
-    public function update(Request $request): void {
+    public function update(Request $request): void
+    {
         $id = $request->param('id');
         $data = $request->only(['status', 'payment_status']);
 
         $order = $this->resolveOrder($id);
         if (!$order) {
-            if ($request->isAjax()) Response::jsonError(__('order_not_found_short'));
+            if ($request->isAjax())
+                Response::jsonError(__('order_not_found_short'));
             Session::flash('error', __('order_not_found_short'));
             $this->redirect('/orders');
         }
@@ -323,17 +340,20 @@ class OrderController extends BaseController {
         ]);
 
         if ($validator->fails()) {
-            if ($request->isAjax()) Response::jsonError(__('validation_failed'), $validator->errors());
+            if ($request->isAjax())
+                Response::jsonError(__('validation_failed'), $validator->errors());
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/orders/' . $order['order_number']);
         }
 
         try {
-            $this->orderService->updateStatus((int)$order['id'], $data['status'], $data['payment_status']);
-            if ($request->isAjax()) Response::jsonSuccess(null, __('order_updated'));
+            $this->orderService->updateStatus((int) $order['id'], $data['status'], $data['payment_status']);
+            if ($request->isAjax())
+                Response::jsonSuccess(null, __('order_updated'));
             $this->redirectWithFlash('/orders', 'success', __('order_update_success'));
         } catch (\Exception $e) {
-            if ($request->isAjax()) Response::jsonError(__('failed_update_order', ['error' => $e->getMessage()]));
+            if ($request->isAjax())
+                Response::jsonError(__('failed_update_order', ['error' => $e->getMessage()]));
             Session::flash('error', __('failed_update_order', ['error' => $e->getMessage()]));
             $this->redirect("/orders/{$order['order_number']}");
         }
