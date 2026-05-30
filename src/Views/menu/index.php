@@ -44,7 +44,7 @@ $filters = [
             </thead>
             <tbody>
                 <?php foreach ($menus as $menu): ?>
-                <tr class="cursor-pointer hover:bg-white/[0.03]" onclick="if(!event.target.closest('a,button,form')){location.href='/menus/<?= (int)$menu['id'] ?>'}">
+                <tr class="cursor-pointer hover:bg-white/[0.03]" onclick="if(!event.target.closest('a,button,form')){location.href='/menus/<?= e($menu['menu_code']) ?>'}">
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text font-medium"><?= e($menu['menu_code']) ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
                         <?php if ($menu['image']): ?>
@@ -67,8 +67,8 @@ $filters = [
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text text-center"><?= (int)$menu['order_count'] ?></td>
                     <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
                         <div class="flex items-center gap-2">
-                            <a href="#" data-edit="menus" data-id="<?= e($menu['id']) ?>" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 px-3 py-1.5 text-[0.8125rem] bg-white/6 text-text border-border hover:bg-white/10 hover:text-text"><?= __('edit') ?></a>
-                            <form action="/menus/<?= e($menu['id']) ?>/delete" method="POST" class="inline">
+                            <a href="#" data-edit="menus" data-id="<?= e($menu['menu_code']) ?>" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 px-3 py-1.5 text-[0.8125rem] bg-white/6 text-text border-border hover:bg-white/10 hover:text-text"><?= __('edit') ?></a>
+                            <form action="/menus/<?= e($menu['menu_code']) ?>/delete" method="POST" class="inline">
                                 <?= \App\Core\Csrf::field() ?>
                                 <button type="submit" data-modal-confirm="<?= __('confirm_delete_menu') ?>" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 px-3 py-1.5 text-[0.8125rem] bg-danger text-white border-danger hover:bg-danger-hover hover:border-danger-hover hover:text-white"><?= __('delete') ?></button>
                             </form>

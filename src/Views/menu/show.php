@@ -7,12 +7,12 @@
             <?= __('back_to_menus') ?>
         </a>
         <div class="flex items-center gap-3">
-            <a href="#" data-edit="menus" data-id="<?= (int)$menu['id'] ?>"
+            <a href="#" data-edit="menus" data-id="<?= e($menu['menu_code']) ?>"
                 class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/5 border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
                 <?= __('edit') ?>
             </a>
-            <form action="/menus/<?= (int)$menu['id'] ?>/delete" method="POST" class="inline">
+            <form action="/menus/<?= e($menu['menu_code']) ?>/delete" method="POST" class="inline">
                 <?= csrf_field() ?>
                 <button type="submit" data-modal-confirm="Yakin ingin menghapus menu ini?"
                     class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/5 border-border text-text backdrop-blur-[8px] hover:bg-danger hover:border-danger hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:text-white">

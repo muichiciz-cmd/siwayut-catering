@@ -57,12 +57,12 @@ return function (Router $router): void {
 
             // Menus
             $r->get('/menus',                           [MenuController::class, 'index']);
-            $r->get('/menus/{id}',                      [MenuController::class, 'show']);
+            $r->get('/menus/{code}',                    [MenuController::class, 'show']);
             $r->post('/menus',                          [MenuController::class, 'store']);
             $r->post('/menus/generate-description',     [MenuController::class, 'generateDescription']);
-            $r->post('/menus/{id}',                     [MenuController::class, 'update']);
-            $r->post('/menus/{id}/delete',              [MenuController::class, 'destroy']);
-            $r->get('/api/menus/{id}',                  [MenuController::class, 'apiShow']);
+            $r->post('/menus/{code}',                   [MenuController::class, 'update']);
+            $r->post('/menus/{code}/delete',            [MenuController::class, 'destroy']);
+            $r->get('/api/menus/{code}',                [MenuController::class, 'apiShow']);
 
             // Orders
             $r->get('/orders',              [OrderController::class, 'index']);

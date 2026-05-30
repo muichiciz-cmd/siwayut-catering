@@ -67,15 +67,15 @@ class MenuController extends BaseController {
     }
 
     public function show(Request $request): void {
-        $id = (int) $request->param('id');
-        $menu = $this->menuService->find($id);
+        $code = $request->param('code');
+        $menu = $this->menuService->findByCode($code);
         if (!$menu) throw new NotFoundException(__('menu_not_found'));
 
         $category = $this->categoryService->find((int)$menu['category_id']);
         $event = $this->eventService->find((int)$menu['event_id']);
 
         $orderModel = new Order();
-        $recentOrders = $orderModel->getOrdersByMenuId($id, 10);
+        $recentOrders = $orderModel->getOrdersByMenuId((int)$menu['id'], 10);
 
         $this->render('menu/show', [
             'title' => __('menu_details'),
@@ -157,15 +157,19 @@ class MenuController extends BaseController {
     }
 
     public function apiShow(Request $request): void {
-        $id = (int) $request->param('id');
-        $menu = $this->menuService->find($id);
+        $code = $request->param('code');
+        $menu = $this->menuService->findByCode($code);
         if (!$menu) Response::jsonError(__('not_found_api'), [], 404);
         $menu['image_url'] = $menu['image'] ? '/uploads/' . $menu['image'] : null;
         Response::jsonSuccess($menu);
     }
 
     public function update(Request $request): void {
-        $id = (int) $request->param('id');
+        $code = $request->param('code');
+        $menu = $this->menuService->findByCode($code);
+        if (!$menu) throw new NotFoundException(__('menu_not_found'));
+        $id = (int)$menu['id'];
+
         $data = $request->only(['name', 'description', 'price', 'category_id', 'event_id', 'minimum_portions', 'status']);
         $gambar = $request->file('image');
 
@@ -183,7 +187,7 @@ class MenuController extends BaseController {
             if ($request->isAjax()) Response::jsonError(__('validation_failed'), $validator->errors());
             $this->withOldInput($data);
             Session::flash('errors', json_encode($validator->errors()));
-            $this->redirect("/menus/{$id}/edit");
+            $this->redirect("/menus/{$code}");
         }
 
         if ($gambar) {
@@ -195,13 +199,13 @@ class MenuController extends BaseController {
                 if ($request->isAjax()) Response::jsonError(__('invalid_file_type'));
                 $this->withOldInput($data);
                 Session::flash('error', __('invalid_file_type'));
-                $this->redirect("/menus/{$id}/edit");
+                $this->redirect("/menus/{$code}");
             }
             if ($gambar['size'] > $maxSize) {
                 if ($request->isAjax()) Response::jsonError(__('file_too_large'));
                 $this->withOldInput($data);
                 Session::flash('error', __('file_too_large'));
-                $this->redirect("/menus/{$id}/edit");
+                $this->redirect("/menus/{$code}");
             }
         }
 
@@ -213,7 +217,7 @@ class MenuController extends BaseController {
             if ($request->isAjax()) Response::jsonError(__('failed_update_menu', ['error' => $e->getMessage()]));
             $this->withOldInput($data);
             Session::flash('error', __('failed_update_menu', ['error' => $e->getMessage()]));
-            $this->redirect("/menus/{$id}/edit");
+            $this->redirect("/menus/{$code}");
         }
     }
 
@@ -235,7 +239,10 @@ class MenuController extends BaseController {
     }
 
     public function destroy(Request $request): void {
-        $id = (int) $request->param('id');
+        $code = $request->param('code');
+        $menu = $this->menuService->findByCode($code);
+        if (!$menu) throw new NotFoundException(__('menu_not_found'));
+        $id = (int)$menu['id'];
         
         try {
             if ($this->menuService->delete($id)) {
