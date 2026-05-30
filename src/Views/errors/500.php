@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/app.css?v=2">
+    <link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg">
 </head>
 
 <body class="bg-[#09090b] text-[#f4f4f5] font-body flex justify-center items-center min-h-screen text-center m-0">

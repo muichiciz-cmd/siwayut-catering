@@ -72,6 +72,7 @@ Parsial:     src/Views/partials/{name}.php (berdasarkan konvensi)
 <head>
     <title><?= e($title ?? '') ?> — <?= e(APP_NAME) ?></title>
     <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg">
 </head>
 <body>
     <div class="app-layout">

@@ -14,6 +14,7 @@
     <?php if (\App\Core\Turnstile::enabled()): ?>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <?php endif; ?>
+    <link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg">
 </head>
 
 <body class="bg-bg text-text min-h-screen leading-relaxed font-body overflow-x-hidden bg-fixed bg-[radial-gradient(circle_at_15%_25%,rgba(229,142,38,0.12)_0%,transparent_45%),radial-gradient(circle_at_85%_75%,rgba(234,32,39,0.08)_0%,transparent_45%)]">

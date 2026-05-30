@@ -11,15 +11,19 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/app.css?v=3">
+    <link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg">
 </head>
 
-<body class="bg-bg text-text min-h-screen leading-relaxed font-body overflow-x-hidden bg-fixed bg-[radial-gradient(circle_at_15%_25%,rgba(229,142,38,0.12)_0%,transparent_45%),radial-gradient(circle_at_85%_75%,rgba(234,32,39,0.08)_0%,transparent_45%)]">
+<body
+    class="bg-bg text-text min-h-screen leading-relaxed font-body overflow-x-hidden bg-fixed bg-[radial-gradient(circle_at_15%_25%,rgba(229,142,38,0.12)_0%,transparent_45%),radial-gradient(circle_at_85%_75%,rgba(234,32,39,0.08)_0%,transparent_45%)]">
 
     <header class="sticky top-0 z-[100] bg-bg/60 backdrop-blur-[12px] border-b border-border py-4">
         <div class="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
             <a href="/" class="flex items-center gap-2 no-underline text-text">
                 <span class="text-[1.8rem] drop-shadow-[0_0_8px_var(--accent-gold-glow)]">🍲</span>
-                <span class="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">Siwayut Catering</span>
+                <span
+                    class="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">Siwayut
+                    Catering</span>
             </a>
 
         </div>
@@ -60,11 +64,13 @@
                     </div>
                 </div>
                 <div class="flex gap-2 flex-wrap">
-                    <span class="inline-flex items-center px-4 py-[0.35rem] rounded-full text-[0.8rem] font-semibold uppercase tracking-wide"
+                    <span
+                        class="inline-flex items-center px-4 py-[0.35rem] rounded-full text-[0.8rem] font-semibold uppercase tracking-wide"
                         style="<?= \App\Core\View::e($statusStyles[$order['status']] ?? '') ?>">
                         <?= \App\Core\View::e($statusLabels[$order['status']] ?? $order['status']) ?>
                     </span>
-                    <span class="inline-flex items-center px-4 py-[0.35rem] rounded-full text-[0.8rem] font-semibold uppercase tracking-wide"
+                    <span
+                        class="inline-flex items-center px-4 py-[0.35rem] rounded-full text-[0.8rem] font-semibold uppercase tracking-wide"
                         style="<?= \App\Core\View::e($statusStyles[$order['payment_status']] ?? '') ?>">
                         <?= \App\Core\View::e($paymentLabels[$order['payment_status']] ?? $order['payment_status']) ?>
                     </span>
@@ -96,11 +102,12 @@
                         </thead>
                         <tbody>
                             <?php foreach ($items as $item): ?>
-                            <tr class="border-b border-border/50">
-                                <td class="py-1.5"><?= \App\Core\View::e($item['menu_name']) ?></td>
-                                <td class="py-1.5 text-right"><?= (int) $item['quantity'] ?></td>
-                                <td class="py-1.5 text-right font-medium">Rp <?= number_format((float) $item['subtotal'], 0, ',', '.') ?></td>
-                            </tr>
+                                <tr class="border-b border-border/50">
+                                    <td class="py-1.5"><?= \App\Core\View::e($item['menu_name']) ?></td>
+                                    <td class="py-1.5 text-right"><?= (int) $item['quantity'] ?></td>
+                                    <td class="py-1.5 text-right font-medium">Rp
+                                        <?= number_format((float) $item['subtotal'], 0, ',', '.') ?></td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -110,7 +117,8 @@
                 <div class="text-text"><?= \App\Core\View::e($event['name'] ?? '-') ?></div>
 
                 <div class="text-muted font-medium max-md:text-[0.8rem]"><?= __('total_price') ?></div>
-                <div class="font-display text-xl font-bold text-gold">Rp <?= number_format((float) $order['total_price'], 0, ',', '.') ?></div>
+                <div class="font-display text-xl font-bold text-gold">Rp
+                    <?= number_format((float) $order['total_price'], 0, ',', '.') ?></div>
 
                 <div class="text-muted font-medium max-md:text-[0.8rem]"><?= __('event_date') ?></div>
                 <div class="text-text"><?= date('d F Y, H:i', strtotime($order['event_date'])) ?></div>
@@ -152,9 +160,12 @@
                     }
                     ?>
                     <div class="flex gap-4 items-start">
-                        <div class="w-3 h-3 rounded-full mt-1 shrink-0 <?= $isActive ? 'bg-gold shadow-[0_0_8px_var(--color-gold-glow)]' : 'bg-white/10' ?>"></div>
+                        <div
+                            class="w-3 h-3 rounded-full mt-1 shrink-0 <?= $isActive ? 'bg-gold shadow-[0_0_8px_var(--color-gold-glow)]' : 'bg-white/10' ?>">
+                        </div>
                         <div>
-                            <div class="font-semibold text-[0.9rem] <?= $isActive ? 'text-text' : 'text-muted' ?>"><?= \App\Core\View::e($step['label']) ?></div>
+                            <div class="font-semibold text-[0.9rem] <?= $isActive ? 'text-text' : 'text-muted' ?>">
+                                <?= \App\Core\View::e($step['label']) ?></div>
                             <div class="text-[0.8rem] text-muted"><?= \App\Core\View::e($step['desc']) ?></div>
                         </div>
                     </div>
@@ -162,7 +173,8 @@
 
                 <?php if ($orderStatus === 'cancelled'): ?>
                     <div class="flex gap-4 items-start">
-                        <div class="w-3 h-3 rounded-full mt-1 shrink-0 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]"></div>
+                        <div class="w-3 h-3 rounded-full mt-1 shrink-0 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]">
+                        </div>
                         <div>
                             <div class="font-semibold text-[0.9rem] text-[#ef4444]"><?= __('cancelled_label') ?></div>
                             <div class="text-[0.8rem] text-muted"><?= __('cancelled_desc') ?></div>
@@ -171,7 +183,8 @@
                 <?php endif; ?>
             </div>
 
-            <a href="javascript:void(0)" onclick="history.back();return false" class="block text-center mt-6 text-gold no-underline text-[0.9rem] font-medium transition-all duration-300 hover:[text-shadow:0_0_8px_var(--color-gold-glow)]"><?= __('back') ?></a>
+            <a href="javascript:void(0)" onclick="history.back();return false"
+                class="block text-center mt-6 text-gold no-underline text-[0.9rem] font-medium transition-all duration-300 hover:[text-shadow:0_0_8px_var(--color-gold-glow)]"><?= __('back') ?></a>
         </div>
 
     </main>
