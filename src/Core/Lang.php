@@ -9,12 +9,18 @@ class Lang
     private static array $translations = [];
     private static ?string $locale = null;
 
-    public static function get(string $key, array $replace = []): string
+    public static function locale(): string
     {
         if (self::$locale === null) {
-            self::$locale = Session::get('locale') ?? 'id';
+            self::$locale = Session::get('locale') ?? self::detectBrowserLocale();
             self::load();
         }
+        return self::$locale;
+    }
+
+    public static function get(string $key, array $replace = []): string
+    {
+        self::locale();
 
         $translation = self::$translations[$key] ?? $key;
 
@@ -25,6 +31,17 @@ class Lang
         }
 
         return $translation;
+    }
+
+    private static function detectBrowserLocale(): string
+    {
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+            if (in_array($lang, ['en', 'id'], true)) {
+                return $lang;
+            }
+        }
+        return 'id';
     }
 
     private static function load(): void
