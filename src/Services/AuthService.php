@@ -49,8 +49,26 @@ class AuthService {
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
+        $customerData = [
+            'user_id' => $userId,
+            'name' => $name,
+            'phone' => $cleanPhone,
+            'email' => $email,
+            'address' => '',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
         if ($cleanPhone !== '') {
-            $this->customerModel->linkUserByPhone($cleanPhone, $userId);
+            $existing = $this->customerModel->findByPhone($cleanPhone);
+            if ($existing) {
+                $this->customerModel->linkUserByPhone($cleanPhone, $userId);
+                $customerData = null;
+            }
+        }
+
+        if ($customerData !== null) {
+            $this->customerModel->create($customerData);
         }
 
         return $userId;
