@@ -179,7 +179,7 @@ return [
     'order_info' => 'Order Information',
     'payment_status' => 'Payment Status',
     'update_order' => 'Update Order',
-    'back_to_orders' => '← Back to Orders',
+    'back_to_orders' => 'Back',
     'notes_label' => 'Notes',
     'no_notes' => 'No additional notes.',
     'select_status' => 'Select status',
@@ -189,7 +189,7 @@ return [
     'menu_details' => 'Menu Details',
     'menu_info' => 'Menu Information',
     'portions' => 'portions',
-    'back_to_menus' => '← Back to Menus',
+    'back_to_menus' => 'Back',
 
     // Create Modal
     'create' => 'Create',

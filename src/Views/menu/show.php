@@ -1,7 +1,7 @@
 <div class="max-w-[1040px] mx-auto">
     <!-- Back + header -->
     <div class="flex items-center justify-between mb-10 flex-wrap gap-3">
-        <a href="/menus"
+        <a href="/menus" onclick="history.back();return false"
             class="inline-flex items-center gap-2 px-0 text-sm text-muted no-underline hover:text-gold transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
             <?= __('back_to_menus') ?>
@@ -140,14 +140,9 @@
             <?php foreach ($recentOrders as $ord): ?>
             <a href="/orders/<?= e($ord['order_number']) ?>"
                 class="flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl bg-white/[0.02] border border-white/5 no-underline text-inherit hover:bg-white/[0.04] hover:border-white/10 transition-all duration-200 group">
-                <div class="flex items-center gap-4 min-w-0">
-                    <div class="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/5 flex items-center justify-center shrink-0 group-hover:border-gold/30 group-hover:bg-gold/5 transition-all duration-200">
-                        <span class="text-xs font-mono font-semibold text-muted group-hover:text-gold transition-colors duration-200"><?= htmlspecialchars($ord['order_number']) ?></span>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="text-sm font-medium text-text truncate"><?= e($ord['customer_name'] ?? __('unknown_customer')) ?></div>
-                        <div class="text-xs text-muted"><?= date('d M Y', strtotime($ord['created_at'])) ?></div>
-                    </div>
+                <div class="min-w-0">
+                    <div class="text-sm font-medium text-text"><?= htmlspecialchars($ord['order_number']) ?></div>
+                    <div class="text-xs text-muted"><?= date('d M Y', strtotime($ord['created_at'])) ?></div>
                 </div>
                 <div class="flex items-center gap-3 shrink-0">
                     <span class="text-sm font-semibold text-success">Rp <?= number_format((float)$ord['total_price'], 0, ',', '.') ?></span>

@@ -179,7 +179,7 @@ return [
     'order_info' => 'Informasi Pesanan',
     'payment_status' => 'Status Pembayaran',
     'update_order' => 'Perbarui Pesanan',
-    'back_to_orders' => '← Kembali ke Pesanan',
+    'back_to_orders' => 'Kembali',
     'notes_label' => 'Catatan',
     'no_notes' => 'Tidak ada catatan tambahan.',
     'select_status' => 'Pilih status',
@@ -189,7 +189,7 @@ return [
     'menu_details' => 'Detail Menu',
     'menu_info' => 'Informasi Menu',
     'portions' => 'porsi',
-    'back_to_menus' => '← Kembali ke Menu',
+    'back_to_menus' => 'Kembali',
 
     // Create Modal
     'create' => 'Buat',

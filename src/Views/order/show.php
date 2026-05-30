@@ -1,7 +1,7 @@
 <div class="max-w-[1040px] mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between mb-10 flex-wrap gap-3">
-        <a href="/orders"
+        <a href="/orders" onclick="history.back();return false"
             class="inline-flex items-center gap-2 px-0 text-sm text-muted no-underline hover:text-gold transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
             <?= __('back_to_orders') ?>
@@ -20,10 +20,6 @@
         <div class="h-[200px] max-md:h-[160px] rounded-2xl bg-gradient-to-br from-gold/15 via-gold/5 to-accent-red/5 flex items-center justify-center overflow-hidden">
             <div class="absolute inset-0 opacity-[0.06]">
                 <svg class="w-full h-full" viewBox="0 0 1040 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 120 Q 260 40, 520 100 T 1040 80 L 1040 200 L 0 200 Z" fill="currentColor"/></svg>
-            </div>
-            <div class="text-center relative z-[1]">
-                <div class="text-xs text-muted/50 uppercase tracking-widest font-medium mb-1"><?= __('order') ?></div>
-                <div class="font-display text-4xl md:text-5xl font-bold text-white/10 tracking-tight select-none"><?= htmlspecialchars($order['order_number']) ?></div>
             </div>
         </div>
 
@@ -292,24 +288,6 @@
         });
     }
 
-    var totalEl = document.getElementById('order-total');
-    if (totalEl) {
-        var target = parseFloat(totalEl.textContent.replace(/[^0-9]/g, ''));
-        if (target > 0) {
-            var duration = 600;
-            var startTime = null;
-            function animate(time) {
-                if (!startTime) startTime = time;
-                var elapsed = time - startTime;
-                var progress = Math.min(elapsed / duration, 1);
-                var eased = 1 - (1 - progress) * (1 - progress);
-                var current = Math.floor(eased * target);
-                totalEl.textContent = 'Rp ' + current.toLocaleString('id-ID');
-                if (progress < 1) requestAnimationFrame(animate);
-            }
-            totalEl.textContent = 'Rp 0';
-            requestAnimationFrame(animate);
-        }
-    }
+
 })();
 </script>
