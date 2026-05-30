@@ -157,10 +157,9 @@
                 var preview = document.querySelector('#' + modalId + ' [data-image-preview]');
                 if (preview) {
                     var field = preview.dataset.imagePreview || 'image';
-                    var dir = preview.dataset.imageDir || field;
                     var filename = data[field];
                     if (filename) {
-                        preview.innerHTML = '<p class="text-sm text-muted mb-1">Current Image:</p><img src="/uploads/' + dir + '/' + filename + '" class="w-24 h-24 object-cover rounded-lg border border-border">';
+                        preview.innerHTML = '<img src="/uploads/' + filename + '" class="w-24 h-24 object-cover rounded-lg border border-border" onerror="this.style.display=\'none\'">';
                         preview.classList.remove('hidden');
                     }
                 }

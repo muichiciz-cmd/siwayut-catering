@@ -160,7 +160,7 @@ class MenuController extends BaseController {
         $id = (int) $request->param('id');
         $menu = $this->menuService->find($id);
         if (!$menu) Response::jsonError(__('not_found_api'), [], 404);
-        $menu['image_url'] = $menu['image'] ? '/uploads/menus/' . $menu['image'] : null;
+        $menu['image_url'] = $menu['image'] ? '/uploads/' . $menu['image'] : null;
         Response::jsonSuccess($menu);
     }
 
