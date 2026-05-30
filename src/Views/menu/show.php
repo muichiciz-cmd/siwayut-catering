@@ -47,6 +47,7 @@
                         <span class="text-[0.7rem] text-muted uppercase tracking-widest"><?= __('menu') ?></span>
                     </div>
                     <h1 class="text-2xl md:text-3xl font-bold font-display text-text leading-tight"><?= e($menu['name']) ?></h1>
+                    <div class="text-xs text-muted mt-1 font-mono tracking-wide"><?= e($menu['menu_code']) ?></div>
                 </div>
                 <div class="text-right shrink-0">
                     <div class="text-xs text-muted uppercase tracking-wider font-medium"><?= __('price') ?></div>
@@ -71,7 +72,7 @@
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/5 text-xs text-muted font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-            <?= (int)$menu['minimum_portions'] ?> <?= __('portions') ?>
+            <?= __('min_portion') ?>: <?= (int)$menu['minimum_portions'] ?>
         </span>
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/5 text-xs text-muted font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-gold"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>

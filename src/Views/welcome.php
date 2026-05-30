@@ -33,7 +33,11 @@
                 <div class="flex items-center gap-3">
                     <?php component('lang-switcher') ?>
                     <?php if ($navUser): ?>
+                        <?php if ($navUser['role'] === 'admin'): ?>
                         <a href="/orders" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('dashboard') ?></a>
+                        <?php else: ?>
+                        <a href="/my-orders" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('my_orders') ?></a>
+                        <?php endif; ?>
                     <?php else: ?>
                         <a href="/auth" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('login') ?></a>
                     <?php endif; ?>
@@ -117,6 +121,12 @@
                             <div class="w-[50px] h-[1.5px] bg-gold shadow-[0_0_8px_var(--color-gold)] mt-1"></div>
                         </div>
                     </div>
+                    <div class="flex flex-wrap gap-2 mb-6" id="category-filters">
+                        <button class="filter-tab active" data-category=""><?= __('all_categories') ?></button>
+                        <?php foreach ($categories as $cat): ?>
+                        <button class="filter-tab" data-category="<?= e((string)$cat['id']) ?>"><?= e($cat['name']) ?></button>
+                        <?php endforeach; ?>
+                    </div>
                     <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 mb-20" id="menu-grid">
                         <?php if (empty($initialMenus)): ?>
                             <div
@@ -126,8 +136,8 @@
                             </div>
                         <?php else: ?>
                             <?php foreach ($initialMenus as $menu): ?>
-                                <div
-                                    class="bg-card-bg border border-border backdrop-blur-[16px] rounded-xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-[5px] hover:border-gold/25 hover:shadow-xl">
+                                <a href="/menu/<?= e($menu['menu_code']) ?>"
+                                    class="bg-card-bg border border-border backdrop-blur-[16px] rounded-xl overflow-hidden flex flex-col no-underline text-inherit transition-all duration-300 hover:-translate-y-[5px] hover:border-gold/25 hover:shadow-xl group">
                                     <div
                                         class="h-[180px] bg-gradient-to-br from-gold/20 to-accent-red/10 relative flex items-center justify-center text-white/15">
                                         <?php if ($menu['image']): ?>
@@ -142,7 +152,7 @@
                                         <?php endif; ?>
                                     </div>
                                     <div class="p-5 flex flex-col flex-1">
-                                        <h3 class="text-lg font-bold mb-2 text-white font-display">
+                                        <h3 class="text-lg font-bold mb-2 text-white font-display group-hover:text-gold transition-colors duration-200">
                                             <?= \App\Core\View::e($menu['name']) ?></h3>
                                         <p class="text-sm text-muted mb-5 flex-1 line-clamp-2">
                                             <?= \App\Core\View::e($menu['description']) ?></p>
@@ -153,7 +163,7 @@
                                                 class="text-xs text-muted bg-white/5 px-2 py-0.5 rounded border border-border"><?= __('min_portions', ['min' => (int) $menu['minimum_portions']]) ?></span>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
@@ -250,6 +260,7 @@
         'currentPage' => $currentPage,
         'lastPage' => $lastPage,
         'eventMap' => $eventMap,
+        'categories' => array_map(fn($c) => ['id' => (int)$c['id'], 'name' => $c['name']], $categories),
     ], JSON_UNESCAPED_UNICODE) ?></script>
 
     <script src="/assets/js/modules/turnstile.js"></script>

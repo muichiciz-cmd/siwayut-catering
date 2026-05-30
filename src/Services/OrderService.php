@@ -26,6 +26,10 @@ class OrderService {
         return $this->order->findByOrderNumber($orderNumber);
     }
 
+    public function getOrdersByCustomerId(int $customerId): array {
+        return $this->order->getByCustomerId($customerId);
+    }
+
     public function getItems(int $orderId): array {
         return $this->order->getItemsByOrderId($orderId);
     }

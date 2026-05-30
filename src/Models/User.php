@@ -21,6 +21,7 @@ class User extends BaseModel {
     }
 
     public function create(array $data): int {
+        $data['user_code'] = $data['user_code'] ?? 'TEMP';
         $id = parent::create($data);
         if ($id > 0) {
             $code = 'USR-' . str_pad((string)$id, 4, '0', STR_PAD_LEFT);

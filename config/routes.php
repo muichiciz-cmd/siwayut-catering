@@ -25,10 +25,15 @@ return function (Router $router): void {
     $router->post('/track-order',            [OrderController::class, 'track']);
     $router->get('/track-order/{id}',        [OrderController::class, 'trackResult']);
 
+    // Public: Menu detail
+    $router->get('/menu/{code}', [WelcomeController::class, 'publicShow']);
+
     // Public API
     $router->get('/api/menus', [WelcomeController::class, 'apiMenus']);
 
     $router->group(['middleware' => ['auth'], 'prefix' => ''], function (Router $r): void {
+        // Customer: My Orders
+        $r->get('/my-orders', [OrderController::class, 'myOrders']);
         $r->group(['middleware' => ['role:admin']], function (Router $r): void {
             // Users
             $r->get('/users',              [UserController::class, 'index']);

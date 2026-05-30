@@ -24,7 +24,12 @@ class Menu extends BaseModel {
         ];
     }
 
+    public function findByMenuCode(string $code): ?array {
+        return $this->findWhere(['menu_code' => $code]);
+    }
+
     public function create(array $data): int {
+        $data['menu_code'] = $data['menu_code'] ?? 'TEMP';
         $id = parent::create($data);
         if ($id > 0) {
             $code = 'MNU-' . str_pad((string)$id, 4, '0', STR_PAD_LEFT);

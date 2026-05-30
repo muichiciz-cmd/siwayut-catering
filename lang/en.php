@@ -2,6 +2,7 @@
 return [
     'home' => 'Home',
     'orders' => 'Orders',
+    'my_orders' => 'My Orders',
     'menus' => 'Menus',
     'categories' => 'Categories',
     'events' => 'Events',

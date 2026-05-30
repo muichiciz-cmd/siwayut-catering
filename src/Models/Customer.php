@@ -12,12 +12,17 @@ class Customer extends BaseModel {
     }
 
     public function create(array $data): int {
+        $data['customer_code'] = $data['customer_code'] ?? 'TEMP';
         $id = parent::create($data);
         if ($id > 0) {
             $code = 'CST-' . date('ym') . '-' . str_pad((string)$id, 4, '0', STR_PAD_LEFT);
             $this->update($id, ['customer_code' => $code]);
         }
         return $id;
+    }
+
+    public function findByUserId(int $userId): ?array {
+        return $this->findWhere(['user_id' => $userId]);
     }
 
     public function findByPhone(string $phone): ?array {

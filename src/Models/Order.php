@@ -28,6 +28,15 @@ WHERE o.`order_number` = ? LIMIT 1";
         return $results[0] ?? null;
     }
 
+    public function getByCustomerId(int $customerId): array {
+        $sql = "SELECT o.*, c.`name` AS customer_name, c.`phone` AS customer_phone
+FROM `{$this->table}` o
+INNER JOIN `customers` c ON c.`id` = o.`customer_id`
+WHERE o.`customer_id` = ?
+ORDER BY o.`created_at` DESC";
+        return $this->query($sql, [$customerId]);
+    }
+
     public function getItemsByOrderId(int $orderId): array {
         $sql = "SELECT oi.*, m.`name` AS menu_name, m.`image` AS menu_image
 FROM `order_items` oi

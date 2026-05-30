@@ -78,7 +78,7 @@ class MenuController extends BaseController {
         $recentOrders = $orderModel->getOrdersByMenuId($id, 10);
 
         $this->render('menu/show', [
-            'title' => $menu['name'] . ' — ' . __('menu_details'),
+            'title' => __('menu_details'),
             'menu' => $menu,
             'category' => $category,
             'event' => $event,

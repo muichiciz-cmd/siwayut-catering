@@ -20,6 +20,29 @@ class OrderController extends BaseController {
         parent::__construct();
     }
 
+    public function myOrders(Request $request): void {
+        $user = Session::get('user');
+        if (!$user) {
+            $this->redirect('/auth');
+            return;
+        }
+
+        $customer = $this->customer->findByUserId((int)$user['id']);
+        $orders = $customer ? $this->orderService->getOrdersByCustomerId((int)$customer['id']) : [];
+
+        $events = $this->eventService->getActive();
+        $eventMap = [];
+        foreach ($events as $ev) {
+            $eventMap[$ev['id']] = $ev['name'];
+        }
+
+        $this->render('order/my-orders', [
+            'title' => __('my_orders') . ' — Siwayut Catering',
+            'orders' => $orders,
+            'eventMap' => $eventMap,
+        ], '');
+    }
+
     public function publicForm(Request $request): void {
         $menus = $this->menuService->all();
         $activeMenus = array_filter($menus, fn($m) => ($m['status'] ?? 'active') === 'active');
@@ -137,7 +160,7 @@ class OrderController extends BaseController {
 
     public function trackResult(Request $request): void {
         $orderNumber = $request->param('id');
-        $phone = $request->input('phone');
+        $phone = $request->input('phone') ?? '';
 
         $order = $this->orderService->findByOrderNumber($orderNumber);
         if (!$order) {
@@ -145,10 +168,16 @@ class OrderController extends BaseController {
         }
 
         $customer = $this->customer->find((int)$order['customer_id']);
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-        $cleanCustomerPhone = preg_replace('/[^0-9]/', '', $customer['phone'] ?? '');
-        if ($cleanCustomerPhone !== $cleanPhone) {
-            $this->redirect('/track-order');
+
+        // Skip phone verification if logged-in user owns this order
+        $user = Session::get('user');
+        $isOwner = $user && $customer && !empty($customer['user_id']) && (int)$customer['user_id'] === (int)$user['id'];
+        if (!$isOwner) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+            $cleanCustomerPhone = preg_replace('/[^0-9]/', '', $customer['phone'] ?? '');
+            if ($cleanCustomerPhone !== $cleanPhone) {
+                $this->redirect('/track-order');
+            }
         }
 
         $items = $this->orderService->getItems((int)$order['id']);

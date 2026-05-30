@@ -22,6 +22,10 @@ class MenuService {
         return $this->menu->paginate($page, $perPage, $conditions, $search, $searchColumns, $orderBy, $direction);
     }
 
+    public function findByCode(string $code): ?array {
+        return $this->menu->findByMenuCode($code);
+    }
+
     public function find(int $id): ?array {
         return $this->menu->find($id);
     }

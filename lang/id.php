@@ -2,6 +2,7 @@
 return [
     'home' => 'Beranda',
     'orders' => 'Pesanan',
+    'my_orders' => 'Pesanan Saya',
     'menus' => 'Menu',
     'categories' => 'Kategori',
     'events' => 'Acara',

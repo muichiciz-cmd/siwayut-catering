@@ -21,7 +21,7 @@
                 <span class="text-[1.8rem] drop-shadow-[0_0_8px_var(--accent-gold-glow)]">🍲</span>
                 <span class="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gold bg-clip-text text-transparent">Siwayut Catering</span>
             </a>
-            <a href="/track-order" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium no-underline bg-white/5 border border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] transition-all duration-300"><?= __('search_again') ?></a>
+
         </div>
     </header>
 
@@ -171,7 +171,7 @@
                 <?php endif; ?>
             </div>
 
-            <a href="/track-order" class="block text-center mt-6 text-gold no-underline text-[0.9rem] font-medium transition-all duration-300 hover:[text-shadow:0_0_8px_var(--color-gold-glow)]"><?= __('track_another') ?></a>
+            <a href="javascript:void(0)" onclick="history.back();return false" class="block text-center mt-6 text-gold no-underline text-[0.9rem] font-medium transition-all duration-300 hover:[text-shadow:0_0_8px_var(--color-gold-glow)]"><?= __('back') ?></a>
         </div>
 
         <div class="text-center text-muted text-xs mt-8 pb-8">

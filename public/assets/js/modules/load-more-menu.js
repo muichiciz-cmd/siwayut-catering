@@ -24,11 +24,12 @@
         var paths = getThumbPath(menu.image);
         var eventName = menu.event_name || null;
 
-        var html = '<div class="menu-card">';
+        var html = '<a href="/menu/' + esc(menu.menu_code) + '" class="menu-card-link">';
+        html += '<div class="menu-card">';
         html += '<div class="menu-img-container">';
 
         if (menu.image) {
-            html += '<span class="progressive-wrap menu-img" style="display:inline-block;overflow:hidden;line-height:0;vertical-align:top;">';
+            html += '<span class="progressive-wrap" style="display:inline-block;overflow:hidden;line-height:0;vertical-align:top;width:100%;height:100%;">';
             html += '<img src="' + esc(paths.thumb) + '" data-full="' + esc(paths.full) + '" alt="' + esc(menu.name) + '"';
             html += ' class="progressive-img blur-up" style="display:block;width:100%;height:100%;object-fit:cover"';
             html += ' onerror="this.onerror=null;this.src=\'' + paths.full + '\';this.classList.remove(\'blur-up\');this.classList.add(\'loaded\')">';
@@ -38,21 +39,47 @@
         }
 
         if (eventName) {
-            html += '<span class="menu-tag">' + esc(eventName) + '</span>';
+            html += '<span class="menu-card-tag">' + esc(eventName) + '</span>';
         }
 
         html += '</div>';
-        html += '<div class="menu-body">';
-        html += '<h3 class="menu-title">' + esc(menu.name) + '</h3>';
-        html += '<p class="menu-desc">' + esc(menu.description || '') + '</p>';
-        html += '<div class="menu-meta">';
-        html += '<span class="menu-price">Rp ' + formatPrice(menu.price) + '</span>';
-        html += '<span class="menu-portions">Min. ' + esc(menu.minimum_portions) + ' Portions</span>';
+        html += '<div class="menu-card-body">';
+        html += '<h3 class="menu-card-title">' + esc(menu.name) + '</h3>';
+        html += '<p class="menu-card-desc">' + esc(menu.description || '') + '</p>';
+        html += '<div class="menu-card-meta">';
+        html += '<span class="menu-card-price">Rp ' + formatPrice(menu.price) + '</span>';
+        html += '<span class="menu-card-portions">Min. ' + esc(menu.minimum_portions) + ' Portions</span>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
+        html += '</a>';
 
         return html;
+    }
+
+    function setActiveTab(categoryId) {
+        document.querySelectorAll('.filter-tab').forEach(function (btn) {
+            var val = btn.getAttribute('data-category');
+            btn.classList.toggle('active', val === categoryId);
+        });
+    }
+
+    function replaceGrid(items) {
+        var grid = document.getElementById('menu-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        var frag = document.createDocumentFragment();
+        items.forEach(function (menu) {
+            var div = document.createElement('div');
+            div.innerHTML = renderMenuCard(menu);
+            frag.appendChild(div.firstElementChild);
+        });
+        grid.appendChild(frag);
+
+        if (typeof window.loadProgressiveImages === 'function') {
+            window.loadProgressiveImages(grid);
+        }
     }
 
     function init() {
@@ -63,14 +90,76 @@
         try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
 
         var btn = document.getElementById('see-more-btn');
-        if (!btn) return;
-
         var grid = document.getElementById('menu-grid');
         if (!grid) return;
 
         var currentPage = data.currentPage || 1;
         var lastPage = data.lastPage || 1;
+        var activeCategory = '';
         var loading = false;
+
+        // --- Category filter tabs ---
+        var tabContainer = document.getElementById('category-filters');
+        if (tabContainer) {
+            var seeMoreBtn = btn;
+            tabContainer.addEventListener('click', function (e) {
+                var tabBtn = e.target.closest('.filter-tab');
+                if (!tabBtn) return;
+
+                if (loading) return;
+
+                var catId = tabBtn.getAttribute('data-category') || '';
+                if (catId === activeCategory) return;
+
+                activeCategory = catId;
+                setActiveTab(activeCategory);
+                currentPage = 0;
+                lastPage = 1;
+                loading = true;
+
+                if (seeMoreBtn) {
+                    seeMoreBtn.style.display = 'none';
+                }
+
+                var params = 'page=1' + (activeCategory ? '&category_id=' + activeCategory : '');
+                fetch('/api/menus?' + params)
+                    .then(function (res) { return res.json(); })
+                    .then(function (result) {
+                        if (!result.success || !result.data) {
+                            throw new Error(result.message || 'Failed to load menus');
+                        }
+
+                        var items = result.data.data || [];
+                        replaceGrid(items);
+
+                        currentPage = result.data.current_page || 1;
+                        lastPage = result.data.last_page || 1;
+
+                        if (currentPage < lastPage) {
+                            if (seeMoreBtn) {
+                                seeMoreBtn.style.display = '';
+                                seeMoreBtn.textContent = 'See More \u2193';
+                                seeMoreBtn.style.pointerEvents = '';
+                                seeMoreBtn.style.opacity = '';
+                            }
+                        }
+
+                        loading = false;
+                    })
+                    .catch(function (err) {
+                        console.error('Filter error:', err);
+                        loading = false;
+                        if (seeMoreBtn) {
+                            seeMoreBtn.textContent = 'See More \u2193';
+                            seeMoreBtn.style.pointerEvents = '';
+                            seeMoreBtn.style.opacity = '';
+                        }
+                    });
+            });
+        }
+
+        // --- See More / Load More ---
+        if (!btn) return;
 
         btn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -86,7 +175,10 @@
             btn.style.opacity = '0.5';
 
             var nextPage = currentPage + 1;
-            fetch('/api/menus?page=' + nextPage)
+            var params = 'page=' + nextPage;
+            if (activeCategory) params += '&category_id=' + activeCategory;
+
+            fetch('/api/menus?' + params)
                 .then(function (res) { return res.json(); })
                 .then(function (result) {
                     if (!result.success || !result.data || !result.data.data) {
@@ -108,7 +200,7 @@
                     }
 
                     currentPage = nextPage;
-                    btn.textContent = 'See More ↓';
+                    btn.textContent = 'See More \u2193';
                     btn.style.pointerEvents = '';
                     btn.style.opacity = '';
                     loading = false;
@@ -119,7 +211,7 @@
                 })
                 .catch(function (err) {
                     console.error('Load more error:', err);
-                    btn.textContent = 'See More ↓';
+                    btn.textContent = 'See More \u2193';
                     btn.style.pointerEvents = '';
                     btn.style.opacity = '';
                     loading = false;
