@@ -165,3 +165,31 @@
         <?php endif; ?>
     </div>
 </div>
+<?php
+$createModalId = 'createMenuModal';
+$createTitle = __('edit') . ' ' . __('menu');
+$createAction = '/menus';
+$createSubmitText = __('save_menu');
+$createEnctype = 'multipart/form-data';
+$katMap = array_column($categories ?? [], 'name', 'id');
+$eventMap = array_column($events ?? [], 'name', 'id');
+ob_start();
+component('form/input', ['name' => 'name', 'label' => __('menu_name'), 'required' => true]);
+component('form/textarea', ['name' => 'description', 'label' => __('description'), 'rows' => 4]);
+echo '<button type="button" onclick="generateDescription(this)" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text -mt-3 mb-5">' . __('generate_ai') . '</button>';
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/select', ['name' => 'category_id', 'label' => __('category'), 'options' => $katMap, 'placeholder' => __('select_category'), 'required' => true]);
+component('form/select', ['name' => 'event_id', 'label' => __('event'), 'options' => $eventMap, 'placeholder' => __('select_event'), 'required' => true]);
+echo '</div>';
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/select', ['name' => 'status', 'label' => __('status'), 'options' => ['active' => __('active'), 'inactive' => __('inactive')], 'required' => true]);
+echo '</div>';
+echo '<div class="grid grid-cols-2 gap-4">';
+component('form/input', ['name' => 'price', 'label' => __('price') . ' (Rp)', 'type' => 'number', 'required' => true]);
+component('form/input', ['name' => 'minimum_portions', 'label' => __('min_portions'), 'type' => 'number', 'value' => '1', 'min' => '1', 'required' => true]);
+echo '</div>';
+echo '<div data-image-preview="image" data-image-dir="menus" class="hidden mb-2"></div>';
+component('form/input', ['name' => 'image', 'label' => __('menu_image_optional'), 'type' => 'file', 'accept' => 'image/jpeg,image/png,image/webp']);
+$createFormContent = ob_get_clean();
+require __DIR__ . '/../partials/create-modal.php';
+?>

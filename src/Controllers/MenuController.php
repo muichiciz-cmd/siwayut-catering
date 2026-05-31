@@ -84,6 +84,8 @@ class MenuController extends BaseController {
             'category' => $category,
             'event' => $event,
             'recentOrders' => $recentOrders,
+            'categories' => $this->categoryService->all(),
+            'events' => $this->eventService->getActive(),
         ]);
     }
 
