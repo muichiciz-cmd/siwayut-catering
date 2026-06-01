@@ -48,6 +48,10 @@
                 </div>
                 <button type="button" id="add-menu-item"
                     class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text mt-2"><?= __('add_another_menu') ?></button>
+                <div id="running-total" class="mt-4 p-4 bg-white/5 border border-border rounded-xl text-right hidden">
+                    <div class="text-xs text-muted uppercase tracking-wider"><?= __('estimated_total') ?></div>
+                    <div class="text-xl font-bold font-display text-gold">Rp <span id="running-total-amount">0</span></div>
+                </div>
             </div>
 
             <div class="mb-5">
@@ -231,9 +235,53 @@ if ($flashError)
                 if (row) {
                     row.remove();
                     updateIndices();
+                    recalcTotal();
                 }
             });
 
+            function recalcTotal() {
+                var rows = container.querySelectorAll('.menu-item-row');
+                var total = 0;
+                rows.forEach(function(row) {
+                    var sel = row.querySelector('select');
+                    if (!sel) return;
+                    var qty = row.querySelector('input[type="number"]');
+                    if (!qty) return;
+                    var menuId = parseInt(sel.value, 10);
+                    var quantity = parseInt(qty.value, 10) || 0;
+                    for (var i = 0; i < menuList.length; i++) {
+                        if (menuList[i].id === menuId) {
+                            total += menuList[i].price * quantity;
+                            break;
+                        }
+                    }
+                });
+                var el = document.getElementById('running-total');
+                var amt = document.getElementById('running-total-amount');
+                if (el && amt) {
+                    if (total > 0) {
+                        el.classList.remove('hidden');
+                        amt.textContent = Number(total).toLocaleString('id-ID');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                }
+            }
+
+            // Recalculate on change
+            container.addEventListener('change', function(e) {
+                recalcTotal();
+            });
+            container.addEventListener('input', function(e) {
+                if (e.target.type === 'number') recalcTotal();
+            });
+
+            // Also recalc after adding a new row
+            addBtn.addEventListener('click', function() {
+                setTimeout(recalcTotal, 50);
+            });
+
             updateIndices();
+            recalcTotal();
         })();
 </script>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 // File: config/routes.php
 
 use App\Core\Router;
-use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController, EventController, LangController};
+use App\Controllers\{AuthController, UserController, WelcomeController, MenuController, CategoryController, OrderController, EventController, LangController, DashboardController, ReportController};
 
 return function (Router $router): void {
     $router->group(['middleware' => ['csrf']], function (Router $r): void {
@@ -72,8 +72,15 @@ return function (Router $router): void {
             // Orders
             $r->get('/orders',              [OrderController::class, 'index']);
             $r->post('/orders',             [OrderController::class, 'store']);
-            $r->get('/orders/{order_number}',  [OrderController::class, 'show']);
-            $r->post('/orders/{order_number}', [OrderController::class, 'update']);
+            $r->get('/orders/{order_number}',     [OrderController::class, 'show']);
+            $r->post('/orders/{order_number}',    [OrderController::class, 'update']);
+            $r->get('/orders/{order_number}/receipt', [OrderController::class, 'receipt']);
+
+            // Dashboard & Reports
+            $r->get('/dashboard',                  [DashboardController::class, 'index']);
+            $r->get('/reports/revenue',            [ReportController::class, 'revenue']);
+            $r->get('/reports/revenue/export',     [ReportController::class, 'exportCsv']);
+            $r->get('/reports/menu-revenue',       [ReportController::class, 'menuRevenue']);
         });
     });
 };

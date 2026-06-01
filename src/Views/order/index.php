@@ -74,6 +74,7 @@ $sortIcon = function($col) use ($s, $d) {
                     <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('total_price') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline"><?= __('total_price') ?><?= $sortIcon('total_price') ?></a></th>
                     <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('status') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline"><?= __('status') ?><?= $sortIcon('status') ?></a></th>
                     <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('payment_status') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline"><?= __('payment') ?><?= $sortIcon('payment_status') ?></a></th>
+                    <th class="bg-black/30 text-left text-xs font-semibold uppercase tracking-wider text-muted border-b border-border"><a href="<?= $sortUrl('payment_method') ?>" class="flex items-center gap-1 px-4 py-3 group text-muted hover:text-gold transition-colors no-underline"><?= __('payment_method') ?><?= $sortIcon('payment_method') ?></a></th>
                 </tr>
             </thead>
             <tbody>
@@ -119,6 +120,9 @@ $sortIcon = function($col) use ($s, $d) {
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase" style="background: <?= $paymentColor ?>; color: white;">
                             <?= e($paymentLabels[$order['payment_status']] ?? $order['payment_status']) ?>
                         </span>
+                    </td>
+                    <td class="px-4 py-3.5 text-sm border-b border-white/[0.06] align-middle text-text">
+                        <span class="text-xs"><?= e(__($order['payment_method'] ?? 'cash')) ?></span>
                     </td>
 
                 </tr>

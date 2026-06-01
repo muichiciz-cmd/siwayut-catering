@@ -52,6 +52,10 @@
                 <div class="text-right shrink-0">
                     <div class="text-xs text-muted uppercase tracking-wider font-medium"><?= __('price') ?></div>
                     <div class="font-display text-2xl md:text-3xl font-bold text-gold">Rp <?= number_format((float)$menu['price'], 0, ',', '.') ?></div>
+                    <?php if ((float)($menu['cost_price'] ?? 0) > 0): ?>
+                    <div class="text-xs text-muted mt-1"><?= __('cost_price') ?>: Rp <?= number_format((float)$menu['cost_price'], 0, ',', '.') ?></div>
+                    <div class="text-xs <?= ((float)$menu['price'] - (float)$menu['cost_price']) > 0 ? 'text-success' : 'text-danger' ?>"><?= __('profit') ?>: Rp <?= number_format((float)$menu['price'] - (float)$menu['cost_price'], 0, ',', '.') ?> (<?= number_format(((float)$menu['price'] - (float)$menu['cost_price']) / (float)$menu['price'] * 100, 1) ?>%)</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

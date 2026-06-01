@@ -7,8 +7,8 @@ class Order extends BaseModel {
     public function __construct() {
         parent::__construct();
         $this->table = 'orders';
-        $this->fillable = ['order_number', 'customer_id', 'event_date', 'occasion', 'total_price', 'delivery_address', 'notes', 'status', 'payment_status'];
-        $this->sortableColumns = ['id', 'order_number', 'customer_id', 'occasion', 'event_date', 'total_price', 'status', 'payment_status', 'created_at', 'customer_name', 'items_count'];
+        $this->fillable = ['order_number', 'invoice_number', 'customer_id', 'event_date', 'occasion', 'total_price', 'total_cost', 'tax_rate', 'tax_amount', 'discount_type', 'discount_value', 'discount_amount', 'grand_total', 'down_payment', 'down_payment_due', 'remaining_balance', 'delivery_address', 'notes', 'status', 'payment_status', 'payment_method', 'paid_at'];
+        $this->sortableColumns = ['id', 'order_number', 'customer_id', 'occasion', 'event_date', 'total_price', 'total_cost', 'grand_total', 'status', 'payment_status', 'payment_method', 'created_at', 'customer_name', 'items_count'];
     }
 
     public function find(int $id): ?array {
@@ -48,8 +48,8 @@ ORDER BY oi.`id` ASC";
     }
 
     public function rawInsertOrderItem(int $orderId, array $item): void {
-        $sql = "INSERT INTO `order_items` (`order_id`, `menu_id`, `quantity`, `price_at_time`, `subtotal`) VALUES (?, ?, ?, ?, ?)";
-        $this->execute($sql, [$orderId, $item['menu_id'], $item['quantity'], $item['price_at_time'], $item['subtotal']]);
+        $sql = "INSERT INTO `order_items` (`order_id`, `menu_id`, `quantity`, `price_at_time`, `cost_price_at_time`, `subtotal`) VALUES (?, ?, ?, ?, ?, ?)";
+        $this->execute($sql, [$orderId, $item['menu_id'], $item['quantity'], $item['price_at_time'], $item['cost_price_at_time'] ?? 0, $item['subtotal']]);
     }
 
     public function getOrdersByMenuId(int $menuId, int $limit = 10): array {

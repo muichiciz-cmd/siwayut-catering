@@ -6,6 +6,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Customer;
 use App\Models\Menu;
+use PDO;
 
 class OrderService {
     public function __construct(
@@ -63,6 +64,7 @@ class OrderService {
 
         // Calculate total price & validate items
         $totalPrice = 0;
+        $totalCost = 0;
         $orderItems = [];
         foreach ($items as $item) {
             $menuItem = $this->menu->find((int)$item['menu_id']);
@@ -76,12 +78,15 @@ class OrderService {
             }
 
             $subtotal = $quantity * (float)$menuItem['price'];
+            $costSubtotal = $quantity * (float)($menuItem['cost_price'] ?? 0);
             $totalPrice += $subtotal;
+            $totalCost += $costSubtotal;
 
             $orderItems[] = [
                 'menu_id' => $menuItem['id'],
                 'quantity' => $quantity,
                 'price_at_time' => $menuItem['price'],
+                'cost_price_at_time' => $menuItem['cost_price'] ?? 0,
                 'subtotal' => $subtotal,
             ];
         }
@@ -93,6 +98,8 @@ class OrderService {
             'event_date' => $data['event_date'],
             'occasion' => $data['occasion'] ?? '',
             'total_price' => $totalPrice,
+            'total_cost' => $totalCost,
+            'grand_total' => $totalPrice,
             'delivery_address' => $data['delivery_address'],
             'notes' => $data['notes'] ?? '',
             'status' => 'pending',
@@ -113,12 +120,114 @@ class OrderService {
         return $orderId;
     }
 
+    public function getTotalRevenue(): float {
+        $sql = "SELECT COALESCE(SUM(`total_price`), 0) FROM `orders` WHERE `status` != 'cancelled'";
+        $stmt = $this->order->db()->query($sql);
+        return (float) $stmt->fetchColumn();
+    }
+
+    public function getTotalProfit(): float {
+        $sql = "SELECT COALESCE(SUM(`total_price` - `total_cost`), 0) FROM `orders` WHERE `status` != 'cancelled'";
+        $stmt = $this->order->db()->query($sql);
+        return (float) $stmt->fetchColumn();
+    }
+
+    public function getKpis(): array {
+        $db = $this->order->db();
+        $totalRevenue = (float) $db->query("SELECT COALESCE(SUM(`total_price`), 0) FROM `orders` WHERE `status` != 'cancelled'")->fetchColumn();
+        $totalOrders = (int) $db->query("SELECT COUNT(*) FROM `orders`")->fetchColumn();
+        $unpaidOrders = (int) $db->query("SELECT COUNT(*) FROM `orders` WHERE `payment_status` = 'unpaid'")->fetchColumn();
+        $totalCost = (float) $db->query("SELECT COALESCE(SUM(`total_cost`), 0) FROM `orders` WHERE `status` != 'cancelled'")->fetchColumn();
+        $totalProfit = $totalRevenue - $totalCost;
+        $avgOrder = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+        $revenueMonth = (float) $db->query("SELECT COALESCE(SUM(`total_price`), 0) FROM `orders` WHERE `status` != 'cancelled' AND MONTH(`created_at`) = MONTH(CURDATE()) AND YEAR(`created_at`) = YEAR(CURDATE())")->fetchColumn();
+        $ordersToday = (int) $db->query("SELECT COUNT(*) FROM `orders` WHERE DATE(`created_at`) = CURDATE()")->fetchColumn();
+
+        return [
+            'total_revenue' => $totalRevenue,
+            'total_profit' => $totalProfit,
+            'total_orders' => $totalOrders,
+            'unpaid_orders' => $unpaidOrders,
+            'avg_order_value' => $avgOrder,
+            'revenue_this_month' => $revenueMonth,
+            'orders_today' => $ordersToday,
+        ];
+    }
+
+    public function getRevenueByPeriod(string $startDate, string $endDate): array {
+        $sql = "SELECT DATE(`created_at`) AS `date`, COUNT(*) AS `orders`, COALESCE(SUM(`total_price`), 0) AS `revenue`, COALESCE(SUM(`total_price` - `total_cost`), 0) AS `profit`
+FROM `orders`
+WHERE `status` != 'cancelled' AND DATE(`created_at`) BETWEEN ? AND ?
+GROUP BY DATE(`created_at`)
+ORDER BY `date` ASC";
+        $stmt = $this->order->db()->prepare($sql);
+        $stmt->execute([$startDate, $endDate]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getTopMenus(int $limit = 5): array {
+        $sql = "SELECT m.`id`, m.`name`, m.`price`, m.`cost_price`,
+SUM(oi.`quantity`) AS `total_qty`,
+COALESCE(SUM(oi.`quantity` * oi.`price_at_time`), 0) AS `total_revenue`,
+COALESCE(SUM(oi.`quantity` * oi.`cost_price_at_time`), 0) AS `total_cost`
+FROM `order_items` oi
+INNER JOIN `orders` o ON o.`id` = oi.`order_id` AND o.`status` != 'cancelled'
+INNER JOIN `menus` m ON m.`id` = oi.`menu_id`
+GROUP BY oi.`menu_id`
+ORDER BY `total_revenue` DESC
+LIMIT ?";
+        $stmt = $this->order->db()->prepare($sql);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getRevenueChartData(int $days = 7): array {
+        $db = $this->order->db();
+        $endDate = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime("-{$days} days"));
+        $rows = $this->getRevenueByPeriod($startDate, $endDate);
+        $dateMap = [];
+        foreach ($rows as $r) {
+            $dateMap[$r['date']] = $r;
+        }
+        $labels = [];
+        $revenue = [];
+        $profit = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $label = date('d M', strtotime($date));
+            $labels[] = $label;
+            if (isset($dateMap[$date])) {
+                $revenue[] = (float) $dateMap[$date]['revenue'];
+                $profit[] = (float) $dateMap[$date]['profit'];
+            } else {
+                $revenue[] = 0;
+                $profit[] = 0;
+            }
+        }
+        return ['labels' => $labels, 'revenue' => $revenue, 'profit' => $profit];
+    }
+
+    public function getOrderStatusBreakdown(): array {
+        $db = $this->order->db();
+        $paid = (int) $db->query("SELECT COUNT(*) FROM `orders` WHERE `payment_status` = 'paid'")->fetchColumn();
+        $unpaid = (int) $db->query("SELECT COUNT(*) FROM `orders` WHERE `payment_status` = 'unpaid'")->fetchColumn();
+        $partial = (int) $db->query("SELECT COUNT(*) FROM `orders` WHERE `payment_status` = 'partial'")->fetchColumn();
+        $cancelled = (int) $db->query("SELECT COUNT(*) FROM `orders` WHERE `status` = 'cancelled'")->fetchColumn();
+        return [
+            ['label' => 'Paid', 'value' => $paid, 'color' => '#10b981'],
+            ['label' => 'Unpaid', 'value' => $unpaid, 'color' => '#ef4444'],
+            ['label' => 'Partial', 'value' => $partial, 'color' => '#e58e26'],
+            ['label' => 'Cancelled', 'value' => $cancelled, 'color' => '#6b7280'],
+        ];
+    }
+
     public function countByMenuIds(array $menuIds): array {
         return $this->order->countByMenuIds($menuIds);
     }
 
     public function updateOrder(int $id, array $data): void {
-        $this->order->update($id, [
+        $updateData = [
             'event_date' => $data['event_date'],
             'occasion' => $data['occasion'],
             'delivery_address' => $data['delivery_address'],
@@ -126,14 +235,141 @@ class OrderService {
             'status' => $data['status'],
             'payment_status' => $data['payment_status'],
             'updated_at' => date('Y-m-d H:i:s'),
-        ]);
+        ];
+
+        // Billing fields
+        if (array_key_exists('tax_rate', $data)) {
+            $updateData['tax_rate'] = (float) $data['tax_rate'];
+        }
+        if (array_key_exists('discount_type', $data)) {
+            $updateData['discount_type'] = $data['discount_type'];
+        }
+        if (array_key_exists('discount_value', $data)) {
+            $updateData['discount_value'] = (float) $data['discount_value'];
+        }
+        if (array_key_exists('payment_method', $data)) {
+            $updateData['payment_method'] = $data['payment_method'];
+        }
+        if (array_key_exists('down_payment', $data)) {
+            $updateData['down_payment'] = (float) $data['down_payment'];
+        }
+        if (array_key_exists('down_payment_due', $data)) {
+            $updateData['down_payment_due'] = $data['down_payment_due'] ?: null;
+        }
 
         $order = $this->order->find($id);
-        if ($order) {
-            $this->customer->update((int)$order['customer_id'], [
+        $totalPrice = (float) ($data['total_price'] ?? $order['total_price'] ?? 0);
+
+        // Calculate discount
+        $discountAmount = 0;
+        $discountType = $updateData['discount_type'] ?? $data['discount_type'] ?? $order['discount_type'] ?? 'none';
+        $discountValue = (float) ($updateData['discount_value'] ?? $data['discount_value'] ?? $order['discount_value'] ?? 0);
+        if ($discountType === 'percentage' && $discountValue > 0) {
+            $discountAmount = $totalPrice * ($discountValue / 100);
+        } elseif ($discountType === 'fixed' && $discountValue > 0) {
+            $discountAmount = min($discountValue, $totalPrice);
+        }
+        $updateData['discount_amount'] = $discountAmount;
+
+        // Calculate tax
+        $afterDiscount = $totalPrice - $discountAmount;
+        $taxRate = (float) ($updateData['tax_rate'] ?? $data['tax_rate'] ?? $order['tax_rate'] ?? 0);
+        $taxAmount = $afterDiscount * ($taxRate / 100);
+        $updateData['tax_amount'] = $taxAmount;
+        $updateData['grand_total'] = $afterDiscount + $taxAmount;
+
+        // Calculate remaining balance (grand_total - down_payment)
+        $downPayment = (float) ($updateData['down_payment'] ?? $data['down_payment'] ?? $order['down_payment'] ?? 0);
+        $updateData['remaining_balance'] = max(0, $updateData['grand_total'] - $downPayment);
+
+        // Generate invoice number when paid
+        if ($data['payment_status'] === 'paid' && empty($order['invoice_number'])) {
+            $updateData['invoice_number'] = 'INV-' . date('Ymd') . '-' . str_pad((string)$id, 4, '0', STR_PAD_LEFT);
+        }
+
+        // Set paid_at when marked paid
+        if ($data['payment_status'] === 'paid') {
+            $updateData['paid_at'] = date('Y-m-d H:i:s');
+        }
+
+        $this->order->update($id, $updateData);
+
+        // Update items if provided
+        if (!empty($data['items']) && is_array($data['items'])) {
+            $newTotals = $this->updateOrderItems($id, $data['items']);
+            // Recalculate billing with new total_price
+            $data['total_price'] = $newTotals['total_price'];
+            $this->order->update($id, [
+                'total_price' => $newTotals['total_price'],
+                'total_cost' => $newTotals['total_cost'],
+                'discount_amount' => $newTotals['discount_amount'],
+                'tax_amount' => $newTotals['tax_amount'],
+                'grand_total' => $newTotals['grand_total'],
+                'remaining_balance' => $newTotals['remaining_balance'],
+            ]);
+        }
+
+        // Update customer name
+        $updatedOrder = $this->order->find($id);
+        if ($updatedOrder) {
+            $this->customer->update((int)$updatedOrder['customer_id'], [
                 'name' => $data['customer_name'],
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
         }
+    }
+
+    public function updateOrderItems(int $orderId, array $items): array {
+        // Delete existing items
+        $this->order->db()->prepare("DELETE FROM `order_items` WHERE `order_id` = ?")->execute([$orderId]);
+
+        // Recalculate
+        $totalPrice = 0;
+        $totalCost = 0;
+        foreach ($items as $item) {
+            $menuItem = $this->menu->find((int)$item['menu_id']);
+            if (!$menuItem) continue;
+
+            $quantity = max(1, (int)$item['quantity']);
+            $subtotal = $quantity * (float)$menuItem['price'];
+            $costSubtotal = $quantity * (float)($menuItem['cost_price'] ?? 0);
+            $totalPrice += $subtotal;
+            $totalCost += $costSubtotal;
+
+            $this->order->rawInsertOrderItem($orderId, [
+                'menu_id' => $menuItem['id'],
+                'quantity' => $quantity,
+                'price_at_time' => $menuItem['price'],
+                'cost_price_at_time' => $menuItem['cost_price'] ?? 0,
+                'subtotal' => $subtotal,
+            ]);
+        }
+
+        // Recalculate discount/tax based on order's current settings
+        $order = $this->order->find($orderId);
+        $discountType = $order['discount_type'] ?? 'none';
+        $discountValue = (float) ($order['discount_value'] ?? 0);
+        $discountAmount = 0;
+        if ($discountType === 'percentage' && $discountValue > 0) {
+            $discountAmount = $totalPrice * ($discountValue / 100);
+        } elseif ($discountType === 'fixed' && $discountValue > 0) {
+            $discountAmount = min($discountValue, $totalPrice);
+        }
+
+        $afterDiscount = $totalPrice - $discountAmount;
+        $taxRate = (float) ($order['tax_rate'] ?? 0);
+        $taxAmount = $afterDiscount * ($taxRate / 100);
+        $grandTotal = $afterDiscount + $taxAmount;
+        $downPayment = (float) ($order['down_payment'] ?? 0);
+        $remainingBalance = max(0, $grandTotal - $downPayment);
+
+        return [
+            'total_price' => $totalPrice,
+            'total_cost' => $totalCost,
+            'discount_amount' => $discountAmount,
+            'tax_amount' => $taxAmount,
+            'grand_total' => $grandTotal,
+            'remaining_balance' => $remainingBalance,
+        ];
     }
 }

@@ -309,20 +309,42 @@ class OrderController extends BaseController
 
         $customer = $this->customer->find((int) $order['customer_id']);
         $items = $this->orderService->getItems((int) $order['id']);
+        $menus = $this->menuService->all();
 
         $this->render('order/show', [
             'title' => __('order') . ' ' . $order['order_number'],
             'order' => $order,
             'customer' => $customer,
             'items' => $items,
+            'menus' => $menus,
             'canEditCustomerName' => empty($customer['user_id']),
         ]);
+    }
+
+    public function receipt(Request $request): void
+    {
+        $orderNumber = $request->param('order_number');
+        $order = $this->resolveOrder($orderNumber);
+
+        if (!$order) {
+            throw new NotFoundException(__('order_not_found'));
+        }
+
+        $customer = $this->customer->find((int) $order['customer_id']);
+        $items = $this->orderService->getItems((int) $order['id']);
+
+        $this->render('order/receipt', [
+            'title' => __('receipt') . ' — ' . $order['order_number'],
+            'order' => $order,
+            'customer' => $customer,
+            'items' => $items,
+        ], '');
     }
 
     public function update(Request $request): void
     {
         $orderNumber = $request->param('order_number');
-        $data = $request->only(['customer_name', 'delivery_address', 'event_date', 'event_time', 'occasion', 'occasion_custom', 'notes', 'status', 'payment_status']);
+        $data = $request->only(['customer_name', 'delivery_address', 'event_date', 'event_time', 'occasion', 'occasion_custom', 'notes', 'status', 'payment_status', 'tax_rate', 'discount_type', 'discount_value', 'payment_method', 'down_payment', 'down_payment_due']);
 
         $order = $this->resolveOrder($orderNumber);
         if (!$order) {
@@ -349,6 +371,12 @@ class OrderController extends BaseController
             'occasion' => 'required',
             'status' => 'required|in:pending,processing,delivering,completed,cancelled',
             'payment_status' => 'required|in:unpaid,paid,refunded',
+            'tax_rate' => 'numeric|min:0|max:100',
+            'discount_type' => 'in:none,percentage,fixed',
+            'discount_value' => 'numeric|min:0',
+            'payment_method' => 'in:cash,transfer,qris,other',
+            'down_payment' => 'numeric|min:0',
+            'down_payment_due' => 'date',
         ]);
 
         if ($validator->fails()) {
@@ -356,6 +384,22 @@ class OrderController extends BaseController
                 Response::jsonError(__('validation_failed'), $validator->errors());
             Session::flash('errors', json_encode($validator->errors()));
             $this->redirect('/orders/' . $order['order_number']);
+        }
+
+        // Handle items update from edit modal
+        $items = $request->input('items', []);
+        if (!empty($items) && is_array($items)) {
+            $filteredItems = [];
+            foreach ($items as $item) {
+                $menuId = (int)($item['menu_id'] ?? 0);
+                $qty = (int)($item['quantity'] ?? 0);
+                if ($menuId > 0 && $qty > 0) {
+                    $filteredItems[] = ['menu_id' => $menuId, 'quantity' => $qty];
+                }
+            }
+            if (!empty($filteredItems)) {
+                $data['items'] = $filteredItems;
+            }
         }
 
         try {

@@ -17,7 +17,7 @@ abstract class BaseModel {
     public function __construct() {
     }
 
-    protected function db(): PDO {
+    public function db(): PDO {
         if ($this->db === null) {
             $this->db = Database::getInstance();
         }

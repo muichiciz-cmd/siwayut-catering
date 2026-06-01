@@ -7,6 +7,11 @@
             <?= __('back_to_orders') ?>
         </a>
         <div class="flex items-center gap-3">
+            <a href="/orders/<?= e($order['order_number']) ?>/receipt" target="_blank"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/5 border-border text-text backdrop-blur-[8px] hover:bg-primary hover:border-primary hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z"/></svg>
+                <?= __('print') ?>
+            </a>
             <button type="button" onclick="showEditOrderModal()"
                 class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/5 border-border text-text backdrop-blur-[8px] hover:bg-gold hover:border-gold hover:shadow-[0_0_15px_var(--color-gold-glow)] hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
@@ -54,11 +59,18 @@
                             <span class="text-[0.7rem] text-muted uppercase tracking-widest"><?= __('order') ?></span>
                         </div>
                         <h1 class="text-2xl md:text-3xl font-bold font-display text-text leading-tight"><?= __('order') ?> <span class="text-gold"><?= e($order['order_number']) ?></span></h1>
+                        <?php if (!empty($order['invoice_number'])): ?>
+                        <div class="text-xs text-muted mt-1"><?= __('invoice') ?>: <?= e($order['invoice_number']) ?></div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="text-right shrink-0">
                     <div class="text-xs text-muted uppercase tracking-wider font-medium mb-1"><?= __('total') ?></div>
                     <div class="font-display text-2xl md:text-3xl font-bold text-gold" id="order-total">Rp <?= number_format((float)$order['total_price'], 0, ',', '.') ?></div>
+                    <?php if ((float)($order['total_cost'] ?? 0) > 0): ?>
+                    <div class="text-xs text-muted mt-1"><?= __('cost_price') ?>: Rp <?= number_format((float)$order['total_cost'], 0, ',', '.') ?></div>
+                    <div class="text-xs <?= ((float)$order['total_price'] - (float)$order['total_cost']) > 0 ? 'text-success' : 'text-danger' ?>"><?= __('profit') ?>: Rp <?= number_format((float)$order['total_price'] - (float)$order['total_cost'], 0, ',', '.') ?></div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -169,6 +181,14 @@
                         <?php endif; ?>
                         <div class="text-muted"><?= __('address') ?></div>
                         <div class="text-text"><?= nl2br(e($order['delivery_address'])) ?></div>
+                        <?php if (!empty($order['payment_method'])): ?>
+                        <div class="text-muted"><?= __('payment_method') ?></div>
+                        <div class="text-text"><?= e(__($order['payment_method'])) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($order['paid_at'])): ?>
+                        <div class="text-muted"><?= __('paid_at') ?></div>
+                        <div class="text-text"><?= date('d M Y H:i', strtotime($order['paid_at'])) ?></div>
+                        <?php endif; ?>
                         <?php if ($order['notes']): ?>
                         <div class="text-muted"><?= __('notes') ?></div>
                         <div class="text-text text-muted italic"><?= nl2br(e($order['notes'])) ?></div>
@@ -206,9 +226,37 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="3" class="px-5 py-3.5 text-sm font-semibold text-text text-right"><?= __('total') ?></td>
+                                    <td colspan="3" class="px-5 py-3.5 text-sm font-semibold text-text text-right"><?= __('subtotal') ?></td>
                                     <td class="px-5 py-3.5 text-sm font-bold text-gold text-right" id="items-total">Rp <?= number_format($total, 0, ',', '.') ?></td>
                                 </tr>
+                                <?php if ((float)($order['discount_amount'] ?? 0) > 0): ?>
+                                <tr>
+                                    <td colspan="3" class="px-5 py-2 text-sm text-muted text-right"><?= __('discount') ?>
+                                        <?php if ($order['discount_type'] === 'percentage'): ?>(<?= (float)$order['discount_value'] ?>%)<?php endif; ?>
+                                    </td>
+                                    <td class="px-5 py-2 text-sm text-danger text-right">- Rp <?= number_format((float)$order['discount_amount'], 0, ',', '.') ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php if ((float)($order['tax_amount'] ?? 0) > 0): ?>
+                                <tr>
+                                    <td colspan="3" class="px-5 py-2 text-sm text-muted text-right"><?= __('tax') ?> (<?= (float)$order['tax_rate'] ?>%)</td>
+                                    <td class="px-5 py-2 text-sm text-text text-right">Rp <?= number_format((float)$order['tax_amount'], 0, ',', '.') ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr>
+                                    <td colspan="3" class="px-5 py-3.5 text-sm font-semibold text-text text-right"><?= __('grand_total') ?></td>
+                                    <td class="px-5 py-3.5 text-sm font-bold text-gold text-right" id="order-grand-total">Rp <?= number_format((float)($order['grand_total'] ?? $total), 0, ',', '.') ?></td>
+                                </tr>
+                                <?php if ((float)($order['down_payment'] ?? 0) > 0): ?>
+                                <tr>
+                                    <td colspan="3" class="px-5 py-2 text-sm text-muted text-right"><?= __('down_payment') ?></td>
+                                    <td class="px-5 py-2 text-sm text-warning text-right">- Rp <?= number_format((float)$order['down_payment'], 0, ',', '.') ?></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="px-5 py-2 text-sm font-semibold text-text text-right"><?= __('remaining_balance') ?></td>
+                                    <td class="px-5 py-2 text-sm font-bold <?= (float)$order['remaining_balance'] > 0 ? 'text-warning' : 'text-success' ?> text-right">Rp <?= number_format((float)$order['remaining_balance'], 0, ',', '.') ?></td>
+                                </tr>
+                                <?php endif; ?>
                             </tfoot>
                         </table>
                     </div>
@@ -306,6 +354,71 @@ $customOccasion = $isPredefined ? '' : $order['occasion'];
                         </select>
                     </div>
                 </div>
+                <hr class="border-white/5 my-2">
+                <h4 class="text-sm font-semibold text-muted uppercase tracking-wider mb-3"><?= __('menu_items') ?></h4>
+                <div id="edit-menu-items-container" class="flex flex-col gap-3">
+                    <?php foreach ($items as $idx => $item): ?>
+                    <div class="edit-menu-item-row flex items-start gap-2" data-index="<?= $idx ?>">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-text mb-1.5"><?= __('menu') ?> <span class="text-danger">*</span></label>
+                            <select name="items[<?= $idx ?>][menu_id]" required class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                                <option value="">-- <?= __('select_menu') ?> --</option>
+                                <?php foreach ($menus ?? [] as $m): ?>
+                                <option value="<?= (int)$m['id'] ?>" <?= (int)$m['id'] === (int)$item['menu_id'] ? 'selected' : '' ?>><?= e($m['name']) ?> (Rp <?= number_format((float)$m['price'], 0, ',', '.') ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="w-28 shrink-0">
+                            <label class="block text-sm font-medium text-text mb-1.5"><?= __('qty') ?> <span class="text-danger">*</span></label>
+                            <input type="number" name="items[<?= $idx ?>][quantity]" value="<?= (int)$item['quantity'] ?>" min="1" required class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                        </div>
+                        <button type="button" class="remove-edit-menu-item mt-6 w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-all duration-150 cursor-pointer border-0 bg-transparent shrink-0 <?= count($items) <= 1 ? 'hidden' : '' ?>" data-index="<?= $idx ?>" title="<?= __('remove') ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" id="add-edit-menu-item" class="inline-flex items-center justify-center gap-2 px-3 py-1.5 text-[0.8125rem] rounded-lg text-sm font-medium leading-tight cursor-pointer border transition-all duration-150 no-underline whitespace-nowrap font-body hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 bg-white/6 text-text border-border hover:bg-white/10 hover:text-text mt-2"><?= __('add_another_menu') ?></button>
+                <hr class="border-white/5 my-2">
+                <h4 class="text-sm font-semibold text-muted uppercase tracking-wider mb-3"><?= __('billing') ?></h4>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-1.5"><?= __('discount_type') ?></label>
+                        <select name="discount_type" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                            <option value="none" <?= ($order['discount_type'] ?? 'none') === 'none' ? 'selected' : '' ?>><?= __('none') ?></option>
+                            <option value="percentage" <?= ($order['discount_type'] ?? '') === 'percentage' ? 'selected' : '' ?>><?= __('discount_percentage') ?></option>
+                            <option value="fixed" <?= ($order['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>><?= __('discount_fixed') ?></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-1.5"><?= __('discount_value') ?></label>
+                        <input type="number" name="discount_value" value="<?= e((string)($order['discount_value'] ?? '0')) ?>" min="0" step="0.01" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-1.5"><?= __('tax_rate') ?> (%)</label>
+                        <input type="number" name="tax_rate" value="<?= e((string)($order['tax_rate'] ?? '0')) ?>" min="0" max="100" step="0.01" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-1.5"><?= __('payment_method') ?></label>
+                        <select name="payment_method" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                            <option value="cash" <?= ($order['payment_method'] ?? 'cash') === 'cash' ? 'selected' : '' ?>><?= __('cash') ?></option>
+                            <option value="transfer" <?= ($order['payment_method'] ?? '') === 'transfer' ? 'selected' : '' ?>><?= __('transfer') ?></option>
+                            <option value="qris" <?= ($order['payment_method'] ?? '') === 'qris' ? 'selected' : '' ?>><?= __('qris') ?></option>
+                            <option value="other" <?= ($order['payment_method'] ?? '') === 'other' ? 'selected' : '' ?>><?= __('other') ?></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text mb-1.5"><?= __('down_payment') ?></label>
+                        <input type="number" name="down_payment" value="<?= e((string)($order['down_payment'] ?? '0')) ?>" min="0" step="0.01" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-text mb-1.5"><?= __('dp_due_date') ?></label>
+                    <input type="date" name="down_payment_due" value="<?= !empty($order['down_payment_due']) ? e($order['down_payment_due']) : '' ?>" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">
+                </div>
+                <hr class="border-white/5 my-2">
                 <div>
                     <label class="block text-sm font-medium text-text mb-1.5"><?= __('notes') ?></label>
                     <textarea name="notes" class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light min-h-[60px] resize-vertical"><?= e($order['notes'] ?? '') ?></textarea>
@@ -444,4 +557,73 @@ document.addEventListener('keydown', function(e) {
         if (el && !el.classList.contains('hidden')) closeEditOrderModal();
     }
 });
+
+// Edit modal menu items management
+(function() {
+    var container = document.getElementById('edit-menu-items-container');
+    var addBtn = document.getElementById('add-edit-menu-item');
+    if (!container || !addBtn) return;
+
+    var menuData = <?= json_encode(array_map(function($m) {
+        return ['id' => $m['id'], 'name' => $m['name'], 'price' => $m['price']];
+    }, $menus ?? []), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+
+    function buildSelect(idx) {
+        var s = '<select name="items[' + idx + '][menu_id]" required class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">';
+        s += '<option value="">-- <?= e(__('select_menu')) ?> --</option>';
+        for (var i = 0; i < menuData.length; i++) {
+            s += '<option value="' + menuData[i].id + '">' + menuData[i].name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + ' (Rp ' + Number(menuData[i].price).toLocaleString('id-ID') + ')</option>';
+        }
+        s += '</select>';
+        return s;
+    }
+
+    function updateEditIndices() {
+        var rows = container.querySelectorAll('.edit-menu-item-row');
+        rows.forEach(function(row, i) {
+            row.dataset.index = i;
+            var selects = row.querySelectorAll('select, input');
+            selects.forEach(function(el) {
+                el.name = el.name.replace(/\[\d+\]/, '[' + i + ']');
+            });
+            var removeBtn = row.querySelector('.remove-edit-menu-item');
+            if (removeBtn) removeBtn.dataset.index = i;
+            // Hide remove btn if only 1 row
+            var allRows = container.querySelectorAll('.edit-menu-item-row');
+            allRows.forEach(function(r) {
+                var btn = r.querySelector('.remove-edit-menu-item');
+                if (btn) btn.classList.toggle('hidden', allRows.length <= 1);
+            });
+        });
+    }
+
+    addBtn.addEventListener('click', function() {
+        var rows = container.querySelectorAll('.edit-menu-item-row');
+        var idx = rows.length;
+        var div = document.createElement('div');
+        div.className = 'edit-menu-item-row flex items-start gap-2';
+        div.dataset.index = idx;
+        div.innerHTML =
+            '<div class="flex-1"><label class="block text-sm font-medium text-text mb-1.5"><?= __('menu') ?> <span class="text-danger">*</span></label>' +
+            buildSelect(idx) +
+            '</div>' +
+            '<div class="w-28 shrink-0"><label class="block text-sm font-medium text-text mb-1.5"><?= __('qty') ?> <span class="text-danger">*</span></label>' +
+            '<input type="number" name="items[' + idx + '][quantity]" value="1" min="1" required class="w-full px-3 py-3 border border-border rounded-lg text-sm text-text bg-black/40 font-body focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary-light">' +
+            '</div>' +
+            '<button type="button" class="remove-edit-menu-item mt-6 w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-all duration-150 cursor-pointer border-0 bg-transparent shrink-0" data-index="' + idx + '" title="<?= __('remove') ?>">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>';
+        container.appendChild(div);
+        updateEditIndices();
+    });
+
+    container.addEventListener('click', function(e) {
+        var btn = e.target.closest('.remove-edit-menu-item');
+        if (!btn) return;
+        var row = btn.closest('.edit-menu-item-row');
+        if (row) {
+            row.remove();
+            updateEditIndices();
+        }
+    });
+})();
 </script>

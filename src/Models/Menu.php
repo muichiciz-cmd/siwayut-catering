@@ -7,14 +7,15 @@ class Menu extends BaseModel {
     public function __construct() {
         parent::__construct();
         $this->table = 'menus';
-        $this->fillable = ['menu_code', 'name', 'description', 'price', 'category_id', 'event_id', 'minimum_portions', 'image', 'status'];
-        $this->sortableColumns = ['id', 'menu_code', 'name', 'price', 'category_id', 'status', 'created_at', 'order_count'];
+        $this->fillable = ['menu_code', 'name', 'description', 'price', 'cost_price', 'category_id', 'event_id', 'minimum_portions', 'image', 'status'];
+        $this->sortableColumns = ['id', 'menu_code', 'name', 'price', 'cost_price', 'category_id', 'status', 'created_at', 'order_count'];
         $this->searchableColumns = [
             'id',
             'menu_code',
             'name',
             'description',
             'price',
+            'cost_price',
             'category_id',
             'event_id',
             'minimum_portions',
