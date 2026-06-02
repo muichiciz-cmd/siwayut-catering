@@ -19,6 +19,10 @@ class OrderService {
         return $this->order->paginateForAdmin($page, $perPage, $filters, $search, $orderBy, $direction);
     }
 
+    public function getAllForExport(string $search = '', array $filters = [], string $orderBy = 'created_at', string $direction = 'DESC'): array {
+        return $this->order->getAllForExport($filters, $search, $orderBy, $direction);
+    }
+
     public function find(int $id): ?array {
         return $this->order->find($id);
     }
@@ -154,15 +158,49 @@ class OrderService {
         ];
     }
 
-    public function getRevenueByPeriod(string $startDate, string $endDate): array {
+    public function getRevenueByPeriod(string $startDate, string $endDate, string $sortBy = 'date', string $dir = 'ASC', int $page = 1, int $perPage = 25): array {
+        $allowedSort = ['date', 'orders', 'revenue', 'profit'];
+        if (!in_array($sortBy, $allowedSort)) $sortBy = 'date';
+        $dir = strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $where = "WHERE `status` != 'cancelled' AND DATE(`created_at`) BETWEEN ? AND ?";
+
+        // Total rows count (for pagination)
+        $countSql = "SELECT COUNT(*) FROM (SELECT DATE(`created_at`) FROM `orders` {$where} GROUP BY DATE(`created_at`)) AS sub";
+        $stmt = $this->order->db()->prepare($countSql);
+        $stmt->execute([$startDate, $endDate]);
+        $total = (int) $stmt->fetchColumn();
+
+        // Totals (all matching rows, not just page)
+        $totalsSql = "SELECT COUNT(*) AS `orders`, COALESCE(SUM(`total_price`), 0) AS `revenue`, COALESCE(SUM(`total_price` - `total_cost`), 0) AS `profit` FROM `orders` {$where}";
+        $stmt = $this->order->db()->prepare($totalsSql);
+        $stmt->execute([$startDate, $endDate]);
+        $totals = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        // Paginated rows
+        $offset = ($page - 1) * $perPage;
         $sql = "SELECT DATE(`created_at`) AS `date`, COUNT(*) AS `orders`, COALESCE(SUM(`total_price`), 0) AS `revenue`, COALESCE(SUM(`total_price` - `total_cost`), 0) AS `profit`
 FROM `orders`
-WHERE `status` != 'cancelled' AND DATE(`created_at`) BETWEEN ? AND ?
+{$where}
 GROUP BY DATE(`created_at`)
-ORDER BY `date` ASC";
+ORDER BY `{$sortBy}` {$dir}
+LIMIT ? OFFSET ?";
         $stmt = $this->order->db()->prepare($sql);
-        $stmt->execute([$startDate, $endDate]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt->execute([$startDate, $endDate, $perPage, $offset]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $lastPage = max(1, (int) ceil($total / $perPage));
+
+        return [
+            'rows' => $rows,
+            'totals' => $totals,
+            'pagination' => [
+                'total' => $total,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+            ],
+        ];
     }
 
     public function getTopMenus(int $limit = 5): array {
@@ -182,12 +220,11 @@ LIMIT ?";
     }
 
     public function getRevenueChartData(int $days = 7): array {
-        $db = $this->order->db();
         $endDate = date('Y-m-d');
         $startDate = date('Y-m-d', strtotime("-{$days} days"));
-        $rows = $this->getRevenueByPeriod($startDate, $endDate);
+        $result = $this->getRevenueByPeriod($startDate, $endDate);
         $dateMap = [];
-        foreach ($rows as $r) {
+        foreach ($result['rows'] as $r) {
             $dateMap[$r['date']] = $r;
         }
         $labels = [];

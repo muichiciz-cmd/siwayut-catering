@@ -235,6 +235,54 @@ class OrderController extends BaseController
         ]);
     }
 
+    public function exportCsv(Request $request): void
+    {
+        $search = $request->input('search', '');
+        $orderBy = $request->input('sort_by', 'created_at');
+        $direction = $request->input('dir', 'DESC');
+        $filters = [
+            'status' => $request->input('status', ''),
+            'payment_status' => $request->input('payment_status', ''),
+        ];
+
+        $orders = $this->orderService->getAllForExport($search, $filters, $orderBy, $direction);
+
+        ob_clean();
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="orders-export.csv"');
+
+        $out = fopen('php://output', 'w');
+
+        fputcsv($out, [__('orders')], escape: "\\");
+        fputcsv($out, [], escape: "\\");
+
+        fputcsv($out, [
+            __('order_no'), __('customer'), __('phone'), __('items'), __('occasion'),
+            __('total_price'), __('status'), __('payment'), __('payment_method'),
+            __('event_date'), __('delivery_address'), __('created_at'),
+        ], escape: "\\");
+
+        foreach ($orders as $row) {
+            fputcsv($out, [
+                $row['order_number'] ?? '',
+                $row['customer_name'] ?? '',
+                $row['customer_phone'] ?? '',
+                (int) ($row['item_cnt'] ?? 0),
+                $row['occasion'] ?? '',
+                number_format((float) ($row['total_price'] ?? 0), 0, ',', '.'),
+                $row['status'] ?? '',
+                $row['payment_status'] ?? '',
+                $row['payment_method'] ?? '',
+                $row['event_date'] ?? '',
+                $row['delivery_address'] ?? '',
+                $row['created_at'] ?? '',
+            ], escape: "\\");
+        }
+
+        fclose($out);
+        exit;
+    }
+
     public function store(Request $request): void
     {
         $data = $request->only(['phone', 'customer_name', 'delivery_address', 'event_date', 'event_time', 'occasion', 'occasion_custom', 'notes']);

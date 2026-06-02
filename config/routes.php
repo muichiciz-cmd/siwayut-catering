@@ -71,6 +71,7 @@ return function (Router $router): void {
 
             // Orders
             $r->get('/orders',              [OrderController::class, 'index']);
+            $r->get('/orders/export',       [OrderController::class, 'exportCsv']);
             $r->post('/orders',             [OrderController::class, 'store']);
             $r->get('/orders/{order_number}',     [OrderController::class, 'show']);
             $r->post('/orders/{order_number}',    [OrderController::class, 'update']);
@@ -80,7 +81,8 @@ return function (Router $router): void {
             $r->get('/dashboard',                  [DashboardController::class, 'index']);
             $r->get('/reports/revenue',            [ReportController::class, 'revenue']);
             $r->get('/reports/revenue/export',     [ReportController::class, 'exportCsv']);
-            $r->get('/reports/menu-revenue',       [ReportController::class, 'menuRevenue']);
+            $r->get('/reports/menu-revenue',            [ReportController::class, 'menuRevenue']);
+            $r->get('/reports/menu-revenue/export',     [ReportController::class, 'exportMenuRevenueCsv']);
         });
     });
 };

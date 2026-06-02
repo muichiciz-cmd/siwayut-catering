@@ -1,6 +1,5 @@
-<div class="mb-8">
+<div class="mb-6">
     <h1 class="text-2xl font-bold font-display text-white"><?= __('dashboard') ?></h1>
-    <div class="w-10 h-[2px] bg-gold rounded-full mt-2"></div>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -17,7 +16,8 @@
             </span>
         </div>
         <div class="text-2xl font-bold font-display text-white tracking-tight">Rp
-            <?= number_format((float) ($kpis['total_revenue'] ?? 0), 0, ',', '.') ?></div>
+            <?= number_format((float) ($kpis['total_revenue'] ?? 0), 0, ',', '.') ?>
+        </div>
         <div class="text-[11px] text-muted mt-1.5"><?= __('revenue_this_month') ?> <span class="text-white/80">Rp
                 <?= number_format((float) ($kpis['revenue_this_month'] ?? 0), 0, ',', '.') ?></span></div>
     </div>
@@ -34,7 +34,8 @@
             </span>
         </div>
         <div class="text-2xl font-bold font-display text-white tracking-tight">Rp
-            <?= number_format((float) ($kpis['total_profit'] ?? 0), 0, ',', '.') ?></div>
+            <?= number_format((float) ($kpis['total_profit'] ?? 0), 0, ',', '.') ?>
+        </div>
         <div class="text-[11px] text-muted mt-1.5"><?= __('profit_margin') ?> <span
                 class="text-emerald-400"><?= ($kpis['total_revenue'] ?? 0) > 0 ? number_format((float) ($kpis['total_profit'] ?? 0) / (float) ($kpis['total_revenue'] ?? 0) * 100, 1) : 0 ?>%</span>
         </div>
@@ -52,7 +53,8 @@
             </span>
         </div>
         <div class="text-2xl font-bold font-display text-white tracking-tight">
-            <?= number_format((int) ($kpis['total_orders'] ?? 0)) ?></div>
+            <?= number_format((int) ($kpis['total_orders'] ?? 0)) ?>
+        </div>
         <div class="text-[11px] text-muted mt-1.5"><?= __('orders_today') ?> <span
                 class="text-white/80"><?= (int) ($kpis['orders_today'] ?? 0) ?></span> &middot;
             <?= __('unpaid_orders') ?> <span
@@ -72,7 +74,8 @@
             </span>
         </div>
         <div class="text-2xl font-bold font-display text-white tracking-tight">Rp
-            <?= number_format((float) ($kpis['avg_order_value'] ?? 0), 0, ',', '.') ?></div>
+            <?= number_format((float) ($kpis['avg_order_value'] ?? 0), 0, ',', '.') ?>
+        </div>
     </div>
 </div>
 
@@ -129,10 +132,12 @@
                             </td>
                             <td class="py-3 text-right text-white/70"><?= (int) $m['total_qty'] ?></td>
                             <td class="py-3 text-right text-gold font-medium">Rp
-                                <?= number_format((float) $m['total_revenue'], 0, ',', '.') ?></td>
+                                <?= number_format((float) $m['total_revenue'], 0, ',', '.') ?>
+                            </td>
                             <td
                                 class="py-3 text-right <?= ((float) $m['total_revenue'] - (float) $m['total_cost']) > 0 ? 'text-emerald-400' : 'text-red-400' ?> font-medium">
-                                Rp <?= number_format((float) $m['total_revenue'] - (float) $m['total_cost'], 0, ',', '.') ?></td>
+                                Rp <?= number_format((float) $m['total_revenue'] - (float) $m['total_cost'], 0, ',', '.') ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

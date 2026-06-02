@@ -76,6 +76,79 @@ LIMIT ?";
         return $result;
     }
 
+    public function getAllForExport(array $filters, string $search, string $orderBy = 'created_at', string $direction = 'DESC'): array {
+        $bindings = [];
+        $clauses = [];
+
+        if (!empty($filters['status'])) {
+            $clauses[] = 'o.`status` = ?';
+            $bindings[] = $filters['status'];
+        }
+
+        if (!empty($filters['payment_status'])) {
+            $clauses[] = 'o.`payment_status` = ?';
+            $bindings[] = $filters['payment_status'];
+        }
+
+        if ($search !== '') {
+            $searchLike = '%' . $search . '%';
+            $clauses[] = '(' . implode(' OR ', [
+                'CAST(o.`id` AS CHAR) LIKE ?',
+                'o.`order_number` LIKE ?',
+                'CAST(o.`customer_id` AS CHAR) LIKE ?',
+                'o.`event_date` LIKE ?',
+                'CAST(o.`total_price` AS CHAR) LIKE ?',
+                'o.`status` LIKE ?',
+                'o.`payment_status` LIKE ?',
+                'o.`delivery_address` LIKE ?',
+                'o.`notes` LIKE ?',
+                'o.`created_at` LIKE ?',
+                'o.`updated_at` LIKE ?',
+                'c.`name` LIKE ?',
+                'c.`phone` LIKE ?',
+                'c.`email` LIKE ?',
+                'c.`address` LIKE ?',
+                'c.`notes` LIKE ?',
+                'EXISTS (SELECT 1 FROM `order_items` oi2 INNER JOIN `menus` m2 ON m2.`id` = oi2.`menu_id` WHERE oi2.`order_id` = o.`id` AND m2.`name` LIKE ?)',
+            ]) . ')';
+            for ($i = 0; $i < 17; $i++) {
+                $bindings[] = $searchLike;
+            }
+            $bindings[] = $searchLike;
+        }
+
+        $where = '';
+        if (!empty($clauses)) {
+            $where = ' WHERE ' . implode(' AND ', $clauses);
+        }
+
+        $from = ' FROM `orders` o
+            INNER JOIN `customers` c ON c.`id` = o.`customer_id`';
+
+        if (!in_array($orderBy, $this->sortableColumns, true)) {
+            $orderBy = 'created_at';
+        }
+        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+
+        $sortMap = [
+            'customer_name' => 'c.`name`',
+            'items_count'   => 'item_cnt',
+        ];
+
+        if (isset($sortMap[$orderBy])) {
+            $orderCol = $sortMap[$orderBy];
+        } else {
+            $orderCol = "o.`{$orderBy}`";
+        }
+
+        $sql = 'SELECT o.*, c.`name` AS customer_name, c.`phone` AS customer_phone'
+            . ', (SELECT COUNT(*) FROM `order_items` oi3 WHERE oi3.`order_id` = o.`id`) AS item_cnt'
+            . $from . $where
+            . " ORDER BY {$orderCol} {$direction}";
+
+        return $this->query($sql, $bindings);
+    }
+
     public function paginateForAdmin(
         int $page = 1,
         int $perPage = 10,
