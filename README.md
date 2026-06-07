@@ -16,7 +16,6 @@ A catering management application based on **Vanilla PHP MVC** — featuring a p
 - Composer 2.x
 - MySQL / MariaDB 8.0+
 - Node.js 18+ (for building Tailwind CSS)
-- **Or** simply use **Docker** (recommended).
 
 ## Quickstart (Manual)
 
@@ -39,20 +38,6 @@ Development with CSS hot-reload:
 ```bash
 npm run dev
 ```
-
-## Quickstart (Docker)
-
-The easiest way to run the application locally or in production.
-
-```bash
-cp .env.example .env
-docker compose up -d --build
-# Run migrations inside the container
-docker exec -it siwayut-app php vanilla migrate
-docker exec -it siwayut-app php vanilla db:seed
-```
-
-Access at `http://localhost:8080` and phpMyAdmin at `http://localhost:8081`.
 
 ## 📚 Documentation
 
