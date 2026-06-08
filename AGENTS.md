@@ -32,7 +32,8 @@ npm run dev                  # Run both PHP server + Tailwind watcher (needs con
 
 ### Directory layout
 - `public/index.php` — entrypoint, loads `.env` + bootstrap + routes
-- `config/routes.php` — all routes defined in a single closure
+- `routes/web.php` — web routes (public, auth, user, admin)
+- `routes/api.php` — JSON API endpoints
 - `config/bindings.php` — DI container wiring (Model → Service → Controller)
 - `src/Controllers/` — thin controllers, inject services via constructor
 - `src/Services/` — business logic layer

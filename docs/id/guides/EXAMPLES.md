@@ -179,7 +179,7 @@ $container->bind(\App\Controllers\ProductController::class, fn($c) =>
 
 ### 1.6 Mendaftarkan Routes
 
-Di `config/routes.php`, di dalam grup auth:
+Di `routes/web.php`, di dalam grup auth:
 
 ```php
 $router->get('/products', [\App\Controllers\ProductController::class, 'index']);

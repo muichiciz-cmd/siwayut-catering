@@ -42,7 +42,7 @@ The exact initialization order in `public/index.php` → `bootstrap/app.php`:
 | 8 | `bootstrap/app.php` | `new Container()` |
 | 9 | `bootstrap/app.php` | `require config/bindings.php` — register factories |
 | 10 | `public/index.php` | Create `Router`, register middleware aliases |
-| 11 | `public/index.php` | `require config/routes.php` → register routes |
+| 11 | `public/index.php` | `require routes/web.php` + `routes/api.php` → register routes |
 | 12 | `public/index.php` | `Router::dispatch(new Request())` |
 
 ## Dependency Graph
@@ -84,7 +84,8 @@ graph TD
 | `config/app.php` | PHP (constants) | Defines `APP_NAME`, `APP_ENV`, `APP_DEBUG`, `APP_URL`, sets timezone |
 | `config/database.php` | PHP (returns array) | PDO DSN config array with driver, host, port, database, charset, options |
 | `config/bindings.php` | PHP (uses `$container`) | Registers factory closures for controllers, services, models |
-| `config/routes.php` | PHP (returns closure) | Receives `$router`, registers all routes and groups |
+| `routes/web.php` | PHP (returns closure) | Web routes: public, auth, user, admin |
+| `routes/api.php` | PHP (returns closure) | JSON API endpoints |
 
 ## Frontend Architecture
 

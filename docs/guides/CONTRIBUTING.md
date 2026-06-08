@@ -76,7 +76,7 @@ See [CONVENTIONS.md](CONVENTIONS.md) for full details.
 3. **Service**: `php vanilla make:service X` → inject model, add business logic
 4. **Controller**: `php vanilla make:controller X` → inject service, add actions
 5. **Binding**: Register factory in `config/bindings.php`
-6. **Routes**: Register endpoints in `config/routes.php`
+6. **Routes**: Register endpoints in `routes/web.php` (or `routes/api.php` for JSON endpoints)
 7. **Views**: Create templates in `src/Views/x/`
 
 Full example: [EXAMPLES.md](EXAMPLES.md)

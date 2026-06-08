@@ -42,7 +42,7 @@ Urutan inisialisasi yang tepat dalam `public/index.php` → `bootstrap/app.php`:
 | 8 | `bootstrap/app.php` | `new Container()` |
 | 9 | `bootstrap/app.php` | `require config/bindings.php` — mendaftarkan factory |
 | 10 | `public/index.php` | Membuat `Router`, mendaftarkan alias middleware |
-| 11 | `public/index.php` | `require config/routes.php` → mendaftarkan route |
+| 11 | `public/index.php` | `require routes/web.php` + `routes/api.php` → mendaftarkan route |
 | 12 | `public/index.php` | `Router::dispatch(new Request())` |
 
 ## Grafik Dependensi
@@ -84,7 +84,8 @@ graph TD
 | `config/app.php` | PHP (konstanta) | Mendefinisikan `APP_NAME`, `APP_ENV`, `APP_DEBUG`, `APP_URL`, mengatur zona waktu |
 | `config/database.php` | PHP (mengembalikan array) | Array konfigurasi PDO DSN dengan driver, host, port, database, charset, opsi |
 | `config/bindings.php` | PHP (menggunakan `$container`) | Mendaftarkan closure factory untuk controller, service, model |
-| `config/routes.php` | PHP (mengembalikan closure) | Menerima `$router`, mendaftarkan semua route dan grup |
+| `routes/web.php` | PHP (mengembalikan closure) | Route web: public, auth, user, admin |
+| `routes/api.php` | PHP (mengembalikan closure) | Endpoint JSON API |
 
 ## Arsitektur Frontend
 

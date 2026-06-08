@@ -40,7 +40,7 @@ Tingkat prioritas: **P0** (inti) → **P1** (peningkatan) → **P2** (opsional)
 |------|--------|
 | `src/Controllers/DashboardController.php` | Controller baru dengan `index()` — query agregat |
 | `src/Views/dashboard/index.php` | Kartu KPI: total pendapatan, total pesanan, jumlah belum bayar, rata-rata pesanan, pesanan hari ini |
-| `config/routes.php` | `GET /` → `DashboardController::index` (admin, auth) |
+| `routes/web.php` | `GET /` → `DashboardController::index` (admin, auth) |
 | `src/Models/Order.php` | Tambahkan metode query `DashboardController` untuk agregasi |
 
 **Kartu KPI yang ditampilkan:**
@@ -60,7 +60,7 @@ Tingkat prioritas: **P0** (inti) → **P1** (peningkatan) → **P2** (opsional)
 |------|--------|
 | `src/Controllers/ReportController.php` | Controller baru: `revenue()` — filter tanggal, grup berdasarkan periode, total |
 | `src/Views/report/revenue.php` | Tabel + grafik (pendapatan bulanan/mingguan/harian) |
-| `config/routes.php` | `GET /reports/revenue` → auth+admin |
+| `routes/web.php` | `GET /reports/revenue` → auth+admin |
 | `lang/en.php` + `lang/id.php` | Keys: `revenue`, `report`, `date_from`, `date_to`, `apply_filter`, `export_csv` |
 
 ---
@@ -129,7 +129,7 @@ Tingkat prioritas: **P0** (inti) → **P1** (peningkatan) → **P2** (opsional)
 |------|--------|
 | `src/Controllers/ReportController.php` | Tambahkan aksi `menuRevenue()` |
 | `src/Views/report/menu-revenue.php` | Tabel: nama menu, total qty terjual, total pendapatan, total biaya, laba, margin % |
-| `config/routes.php` | `GET /reports/menu-revenue` |
+| `routes/web.php` | `GET /reports/menu-revenue` |
 | `src/Models/Menu.php` | Query agregasi pendapatan (SUM dari `price_at_time * qty`) |
 
 ---
@@ -153,7 +153,7 @@ Tingkat prioritas: **P0** (inti) → **P1** (peningkatan) → **P2** (opsional)
 |------|--------|
 | `src/Views/order/receipt.php` | Template bersih yang ramah cetak (tanpa sidebar/navbar) |
 | `src/Controllers/OrderController.php` | Tambahkan aksi `receipt()` — merender view kuitansi |
-| `config/routes.php` | `GET /orders/{id}/receipt` |
+| `routes/web.php` | `GET /orders/{id}/receipt` |
 | Gunakan CSS `@media print` untuk tata letak cetak |
 
 ### 13. Ekspor CSV

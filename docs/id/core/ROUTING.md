@@ -2,17 +2,28 @@
 
 ## Definisi Route
 
-Route didefinisikan di dalam `config/routes.php` menggunakan metode HTTP verb:
+Route didefinisikan di dalam `routes/web.php` dan `routes/api.php` menggunakan metode HTTP verb:
 
 ```php
-// config/routes.php
-return function (\App\Core\Router $router): void {
-    $router->get('/path', [ControllerClass::class, 'method']);
-    $router->post('/path', [ControllerClass::class, 'method']);
-    $router->put('/path', [ControllerClass::class, 'method']);
-    $router->patch('/path', [ControllerClass::class, 'method']);
-    $router->delete('/path', [ControllerClass::class, 'method']);
+// routes/web.php — semua route web (public, auth, user, admin)
+return function (\App\Core\Router $r): void {
+    $r->get('/path', [ControllerClass::class, 'method']);
+    $r->post('/path', [ControllerClass::class, 'method']);
 };
+
+// routes/api.php — endpoint JSON API
+return function (\App\Core\Router $r): void {
+    $r->get('/api/menus', [MenuController::class, 'apiMenus']);
+};
+```
+
+Kedua file dimuat di `public/index.php` di dalam grup middleware `csrf`:
+
+```php
+$router->group(['middleware' => ['csrf']], function (Router $r): void {
+    (require BASE_PATH . '/routes/web.php')($r);
+    (require BASE_PATH . '/routes/api.php')($r);
+});
 ```
 
 Format Handler:

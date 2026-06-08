@@ -2,17 +2,28 @@
 
 ## Route Definition
 
-Routes are defined in `config/routes.php` using HTTP verb methods:
+Routes are defined in `routes/web.php` and `routes/api.php` using HTTP verb methods:
 
 ```php
-// config/routes.php
-return function (\App\Core\Router $router): void {
-    $router->get('/path', [ControllerClass::class, 'method']);
-    $router->post('/path', [ControllerClass::class, 'method']);
-    $router->put('/path', [ControllerClass::class, 'method']);
-    $router->patch('/path', [ControllerClass::class, 'method']);
-    $router->delete('/path', [ControllerClass::class, 'method']);
+// routes/web.php — all web routes (public, auth, user, admin)
+return function (\App\Core\Router $r): void {
+    $r->get('/path', [ControllerClass::class, 'method']);
+    $r->post('/path', [ControllerClass::class, 'method']);
 };
+
+// routes/api.php — JSON API endpoints
+return function (\App\Core\Router $r): void {
+    $r->get('/api/menus', [MenuController::class, 'apiMenus']);
+};
+```
+
+Both files are loaded in `public/index.php` inside the `csrf` middleware group:
+
+```php
+$router->group(['middleware' => ['csrf']], function (Router $r): void {
+    (require BASE_PATH . '/routes/web.php')($r);
+    (require BASE_PATH . '/routes/api.php')($r);
+});
 ```
 
 Handler formats:

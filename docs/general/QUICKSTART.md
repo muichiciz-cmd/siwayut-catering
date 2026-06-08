@@ -10,11 +10,11 @@ Add a new page at `/dashboard` that displays a greeting to the logged-in user.
 
 ## Step 1: Define a Route
 
-Edit `config/routes.php` — add inside the `auth` middleware group:
+Edit `routes/web.php` — add inside the `auth` middleware group:
 
 ```php
-// config/routes.php — inside the $router->group(['middleware' => ['auth', ...]], ...) block
-$router->get('/dashboard', [\App\Controllers\DashboardController::class, 'index']);
+// routes/web.php — inside the $router->group(['middleware' => ['auth', ...]], ...) block
+$r->get('/dashboard', [\App\Controllers\DashboardController::class, 'index']);
 ```
 
 ## Step 2: Create a Controller
@@ -99,7 +99,7 @@ Files created or modified in this guide:
 
 | Action | File |
 |--------|------|
-| Modified | `config/routes.php` |
+| Modified | `routes/web.php` |
 | Modified | `config/bindings.php` |
 | Created | `src/Controllers/DashboardController.php` |
 | Created | `src/Views/dashboard/index.php` |

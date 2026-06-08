@@ -10,11 +10,11 @@ Menambahkan halaman baru di `/dashboard` yang menampilkan salam kepada pengguna 
 
 ## Langkah 1: Mendefinisikan Route
 
-Edit `config/routes.php` — tambahkan di dalam grup middleware `auth`:
+Edit `routes/web.php` — tambahkan di dalam grup middleware `auth`:
 
 ```php
-// config/routes.php — di dalam blok $router->group(['middleware' => ['auth', ...]], ...)
-$router->get('/dashboard', [\App\Controllers\DashboardController::class, 'index']);
+// routes/web.php — di dalam blok $r->group(['middleware' => ['auth', ...]], ...)
+$r->get('/dashboard', [\App\Controllers\DashboardController::class, 'index']);
 ```
 
 ## Langkah 2: Membuat Controller
@@ -99,7 +99,7 @@ File yang dibuat atau dimodifikasi dalam panduan ini:
 
 | Aksi | File |
 |--------|------|
-| Dimodifikasi | `config/routes.php` |
+| Dimodifikasi | `routes/web.php` |
 | Dimodifikasi | `config/bindings.php` |
 | Dibuat | `src/Controllers/DashboardController.php` |
 | Dibuat | `src/Views/dashboard/index.php` |

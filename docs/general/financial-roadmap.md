@@ -40,7 +40,7 @@ Priority levels: **P0** (core) → **P1** (improvement) → **P2** (nice to have
 |------|--------|
 | `src/Controllers/DashboardController.php` | New controller with `index()` — query aggregates |
 | `src/Views/dashboard/index.php` | KPI cards: total revenue, total orders, unpaid count, avg order, today's orders |
-| `config/routes.php` | `GET /` → `DashboardController::index` (admin, auth) |
+| `routes/web.php` | `GET /` → `DashboardController::index` (admin, auth) |
 | `src/Models/Order.php` | Add `DashboardController` query methods for aggregation |
 
 **KPI cards to display:**
@@ -60,7 +60,7 @@ Priority levels: **P0** (core) → **P1** (improvement) → **P2** (nice to have
 |------|--------|
 | `src/Controllers/ReportController.php` | New controller: `revenue()` — filter date, group by period, total |
 | `src/Views/report/revenue.php` | Table + chart (monthly/weekly/daily revenue) |
-| `config/routes.php` | `GET /reports/revenue` → auth+admin |
+| `routes/web.php` | `GET /reports/revenue` → auth+admin |
 | `lang/en.php` + `lang/id.php` | Keys: `revenue`, `report`, `date_from`, `date_to`, `apply_filter`, `export_csv` |
 
 ---
@@ -129,7 +129,7 @@ Priority levels: **P0** (core) → **P1** (improvement) → **P2** (nice to have
 |------|--------|
 | `src/Controllers/ReportController.php` | Add `menuRevenue()` action |
 | `src/Views/report/menu-revenue.php` | Table: menu name, total qty sold, total revenue, total cost, profit, margin % |
-| `config/routes.php` | `GET /reports/menu-revenue` |
+| `routes/web.php` | `GET /reports/menu-revenue` |
 | `src/Models/Menu.php` | Revenue aggregation query (SUM of `price_at_time * qty`) |
 
 ---
@@ -153,7 +153,7 @@ Priority levels: **P0** (core) → **P1** (improvement) → **P2** (nice to have
 |------|--------|
 | `src/Views/order/receipt.php` | Clean, print-friendly template (no sidebar/navbar) |
 | `src/Controllers/OrderController.php` | Add `receipt()` action — renders receipt view |
-| `config/routes.php` | `GET /orders/{id}/receipt` |
+| `routes/web.php` | `GET /orders/{id}/receipt` |
 | Use CSS `@media print` for print layout |
 
 ### 13. CSV Export

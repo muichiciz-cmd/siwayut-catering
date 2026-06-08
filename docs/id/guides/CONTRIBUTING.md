@@ -76,7 +76,7 @@ Lihat [CONVENTIONS.md](CONVENTIONS.md) untuk detail lengkapnya.
 3. **Service**: `php vanilla make:service X` → inject model, tambahkan business logic
 4. **Controller**: `php vanilla make:controller X` → inject service, tambahkan aksi
 5. **Binding**: Daftarkan factory di `config/bindings.php`
-6. **Routes**: Daftarkan endpoint di `config/routes.php`
+6. **Routes**: Daftarkan endpoint di `routes/web.php` (atau `routes/api.php` untuk endpoint JSON)
 7. **Views**: Buat template di `src/Views/x/`
 
 Contoh lengkap: [EXAMPLES.md](EXAMPLES.md)
